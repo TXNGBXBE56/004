@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="บทเรียนออนไลน์เรื่อง Windows 10 ธีมฟุรุฮอนยะสุดอบอุ่น">
+<title>บทที่ 6 | Windows 10</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --primary:#c27d54;
+  --primary-dark:#9e6341;
+  --accent:#e09f6e;
+  --dark:#473831;
+  --cream:#faf5ee;
+  --yellow:#fcecdb;
+  --pink:#f7dcd1;
+  --green:#d8e5d9;
+  --text:#594840;
+  --muted:#8c786d;
+  --white:#fff;
+}
+
+*{box-sizing:border-box}
+
+html{
+  scroll-behavior:smooth;
+  scroll-padding-top:95px;
+}
+
+body{
+  margin:0;
+  font-family:'Prompt',sans-serif;
+  background:#fcf9f5;
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+body.lock-scroll,
+body.loading-active{overflow:hidden}
+
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+
+.progress{
+  position:fixed;
+  top:0;
+  left:0;
+  height:4px;
+  width:0;
+  background:linear-gradient(90deg,#c27d54,#e09f6e,#fcecdb);
+  z-index:9999;
+  transition:width .15s;
+}
+
+/* NAVIGATION */
+.nav{
+  position:fixed;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(1100px,calc(100% - 30px));
+  min-height:58px;
+  background:#FFFFFF;
+  backdrop-filter:blur(18px);
+  border:1px solid #f0e6dc;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 18px;
+  z-index:1000;
+  box-shadow:0 15px 40px rgba(71,56,49,.08);
+  gap:12px;
+}
+
+.menu-toggle{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  width:28px;
+  height:22px;
+  background:transparent;
+  border:none;
+  padding:0;
+}
+
+.menu-toggle span{
+  width:100%;
+  height:3px;
+  background:var(--dark);
+  border-radius:5px;
+  transition:.3s;
+}
+
+.menu-toggle:hover span{background:var(--primary)}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.logo-box{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#c27d54,#9e6341);
+  color:#fff;
+  font-size:12px;
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.nav-btn{
+  border:0;
+  background:transparent;
+  padding:8px 10px;
+  border-radius:10px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.nav-btn:hover{
+  background:#f7efe5;
+  color:var(--primary);
+}
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed;
+  top:0;
+  left:-300px;
+  width:280px;
+  height:100%;
+  background:#FFFDFF;
+  box-shadow:5px 0 25px rgba(71,56,49,.15);
+  z-index:1200;
+  transition:.35s ease;
+  padding:30px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+  overflow-y:auto;
+}
+
+.sidebar.active{left:0}
+
+.sidebar-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.sidebar-title{
+  font-weight:700;
+  font-size:18px;
+}
+
+.close-btn{
+  background:transparent;
+  border:none;
+  font-size:25px;
+  color:var(--muted);
+}
+
+.sidebar-menu{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.sidebar-menu a{
+  padding:12px 15px;
+  border-radius:12px;
+  background:#fcf7f2;
+  color:var(--text);
+  font-size:13px;
+  transition:.2s;
+}
+
+.sidebar-menu a:hover{
+  background:var(--primary);
+  color:white;
+  transform:translateX(4px);
+}
+
+.sidebar-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(71,56,49,.28);
+  backdrop-filter:blur(4px);
+  z-index:1150;
+  opacity:0;
+  visibility:hidden;
+  transition:.3s;
+}
+
+.sidebar-overlay.active{
+  opacity:1;
+  visibility:visible;
+}
+
+/* LOADING */
+.loading-screen{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(253,251,249,.97);
+  backdrop-filter:blur(15px);
+  opacity:0;
+  visibility:hidden;
+  transition:.3s;
+}
+
+.loading-screen.show{
+  opacity:1;
+  visibility:visible;
+}
+
+.loading-card{
+  width:min(390px,100%);
+  padding:35px 28px;
+  background:#fff;
+  border:1px solid #f0e6dc;
+  border-radius:23px;
+  text-align:center;
+  box-shadow:0 25px 80px rgba(71,56,49,.15);
+}
+
+.loading-logo{
+  font-size:27px;
+  font-weight:800;
+  color:var(--dark);
+  margin-bottom:24px;
+}
+
+.loading-logo span{color:var(--primary)}
+
+.spinner{
+  width:56px;
+  height:56px;
+  margin:0 auto 22px;
+  border:5px solid #f7efe5;
+  border-top-color:var(--primary);
+  border-right-color:#fcecdb;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.loading-card h2{font-size:21px}
+.loading-card p{
+  font-size:14px;
+  color:var(--muted);
+}
+
+.progress-track{
+  height:7px;
+  background:#f7efe5;
+  border-radius:20px;
+  margin-top:23px;
+  overflow:hidden;
+}
+
+.progress-bar-load{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--primary),#fcecdb);
+  border-radius:20px;
+}
+
+.progress-percent{
+  display:block;
+  margin-top:9px;
+  text-align:right;
+  color:var(--primary-dark);
+  font-size:12px;
+}
+
+body.loading-active .nav,
+body.loading-active .slide,
+body.loading-active footer,
+body.loading-active .sidebar{
+  filter:blur(5px);
+  pointer-events:none;
+}
+
+/* GENERAL SECTION */
+.slide{
+  min-height:80vh;
+  padding:120px 7vw 80px;
+  position:relative;
+  overflow:hidden;
+}
+
+.inner{
+  max-width:1180px;
+  margin:auto;
+}
+
+.eyebrow{
+  color:var(--primary-dark);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:2px;
+  margin-bottom:12px;
+}
+
+.big-title{
+  font-size:clamp(38px,6vw,72px);
+  line-height:1.12;
+  margin:0 0 20px;
+  letter-spacing:-2px;
+}
+
+.sub{
+  color:var(--muted);
+  max-width:720px;
+  line-height:1.9;
+}
+
+/* HERO */
+.hero{
+  min-height:100vh;
+  background:linear-gradient(135deg,#fcf7f2 0%,#f5ebd9 55%,#fcf2eb 100%);
+  display:flex;
+  align-items:center;
+}
+
+.hero-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  align-items:center;
+}
+
+.chapter{
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:2px;
+  color:var(--primary-dark);
+  margin-bottom:18px;
+}
+
+.hero h1{
+  margin:0;
+  font-size:clamp(48px,7vw,90px);
+  line-height:1.05;
+  letter-spacing:-3px;
+  color:var(--dark);
+}
+
+.hero h1 span{color:var(--primary)}
+
+.hero-desc{
+  max-width:500px;
+  margin:28px 0;
+  font-size:16px;
+  color:var(--muted);
+  line-height:1.9;
+}
+
+.start{
+  display:inline-flex;
+  align-items:center;
+  gap:14px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  padding:15px 20px;
+  border-radius:14px;
+  font-size:13px;
+  transition:.25s;
+  border:0;
+  box-shadow:0 10px 24px rgba(158,99,65,0.2);
+}
+
+.start:hover{
+  transform:translateY(-3px);
+  box-shadow:0 15px 30px rgba(158,99,65,0.3);
+}
+
+/* HERO ART */
+.hero-art{
+  position:relative;
+  height:490px;
+  isolation:isolate;
+}
+
+.blob{
+  position:absolute;
+  width:410px;
+  height:410px;
+  right:15px;
+  top:25px;
+  background:#f5dfc9;
+  border-radius:46% 54% 62% 38% / 40% 43% 57% 60%;
+  animation:float 6s ease-in-out infinite;
+  z-index:-1;
+}
+
+.monitor{
+  position:absolute;
+  width:340px;
+  height:220px;
+  right:55px;
+  top:100px;
+  background:#473831;
+  border:10px solid #a89080;
+  border-radius:20px;
+  transform:rotate(-6deg);
+  box-shadow:0 22px 50px rgba(71,56,49,.22);
+  overflow:hidden;
+  z-index:0;
+}
+
+.monitor-screen{
+  height:100%;
+  background:radial-gradient(circle at 40% 40%, #fcecdb 0%, transparent 45%), linear-gradient(135deg,#7092be,#473831);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:white;
+}
+
+.monitor-os{
+  font-size:40px;
+  font-weight:800;
+  letter-spacing:-1px;
+  text-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+
+.monitor-text{
+  font-size:10px;
+  letter-spacing:3px;
+  opacity:.85;
+}
+
+.furuhonya-photo{
+  position:absolute;
+  display:block;
+  object-fit:cover;
+  border-radius:50%;
+  background:#ffffff;
+  border:6px solid rgba(255,255,255,.95);
+  box-shadow:0 15px 35px rgba(71,56,49,.22);
+  transition:transform .35s ease,box-shadow .35s ease;
+  animation:photoFloat 5s ease-in-out infinite;
+  z-index:2;
+}
+.furuhonya-photo:hover{
+  transform:scale(1.06) rotate(3deg);
+  box-shadow:0 20px 40px rgba(71,56,49,.3);
+}
+
+.furuhonya-photo.photo-one{ width:135px; height:135px; right:15px; top:12px; animation-delay:0s; }
+.furuhonya-photo.photo-two{ width:125px; height:125px; left:25px; bottom:25px; animation-delay:-1.5s; }
+.furuhonya-photo.photo-three{ width:115px; height:115px; right:45px; bottom:15px; animation-delay:-3s; }
+
+.sticker-bubble{
+  position:absolute;
+  background:#fff;
+  padding:9px 14px;
+  border-radius:14px;
+  font-size:11px;
+  font-weight:600;
+  box-shadow:0 8px 22px rgba(71,56,49,.12);
+  border:1px solid #f0e6dc;
+  z-index:3;
+}
+.sticker-bubble.bubble-one{ right:145px; top:42px; transform:rotate(2deg); color:var(--dark); }
+.sticker-bubble.bubble-two{ left:30px; top:35px; transform:rotate(-8deg); background:#fcecdb; color:#855c1b; }
+.sticker-bubble.bubble-three{ right:165px; bottom:38px; transform:rotate(-4deg); background:#d8e5d9; color:#2f5934; }
+
+@keyframes float{
+  0%,100%{transform:rotate(-12deg) translateY(0)}
+  50%{transform:rotate(-9deg) translateY(-12px)}
+}
+
+@keyframes photoFloat{
+  0%,100%{translate:0 0}
+  50%{translate:0 -8px}
+}
+
+/* TOPICS */
+.topics{background:#FFFDFF}
+
+.topic-layout{
+  margin-top:55px;
+  display:grid;
+  grid-template-columns:1.3fr .7fr;
+  gap:20px;
+}
+
+.topic-main{
+  min-height:350px;
+  border-radius:30px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:white;
+  padding:40px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 15px 35px rgba(194,125,83,.25);
+}
+
+.topic-main h2{
+  font-size:clamp(28px,3vw,40px);
+  margin:0;
+  line-height:1.3;
+  position:relative;
+  z-index:1;
+}
+
+.topic-main p{
+  max-width:480px;
+  color:#faf5ee;
+  line-height:1.85;
+  position:relative;
+  z-index:1;
+}
+
+.topic-number{
+  position:absolute;
+  right:-20px;
+  bottom:-55px;
+  font-size:230px;
+  font-weight:800;
+  opacity:.12;
+}
+
+.topic-side{
+  display:grid;
+  gap:20px;
+}
+
+.topic-card{
+  border-radius:24px;
+  padding:28px;
+  min-height:165px;
+  position:relative;
+  border:1px solid #f0e6dc;
+}
+
+.topic-card:nth-child(1){background:#f7efe5}
+.topic-card:nth-child(2){background:#f7dcd1}
+
+.topic-card h3{
+  margin:0 0 10px;
+  font-size:24px;
+}
+
+.topic-card p{
+  line-height:1.8;
+  font-size:14px;
+  color:var(--muted);
+}
+
+/* CONCEPT */
+.concept{
+  background:linear-gradient(145deg,#473831,#2e2520);
+  color:white;
+}
+
+.concept .big-title{color:white}
+.concept .sub{color:#d5cdc6}
+.concept .eyebrow{color:#fcecdb!important}
+
+.system{
+  margin-top:55px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.system-box{
+  min-height:230px;
+  border-radius:24px;
+  padding:25px;
+  position:relative;
+  overflow:hidden;
+  transition:.25s;
+}
+
+.system-box:hover{transform:translateY(-8px)}
+
+.system-box:nth-child(1){background:#7092be}
+.system-box:nth-child(2){background:#c27d54}
+.system-box:nth-child(3){background:#d08a58}
+.system-box:nth-child(4){background:#83bebe}
+.system-box{color:#fff}
+
+.system-box .num{
+  font-size:12px;
+  opacity:.7;
+}
+
+.system-box h3{
+  font-size:22px;
+  margin-top:55px;
+  margin-bottom:5px;
+}
+
+.system-box p{
+  font-size:12px;
+  opacity:.95;
+  line-height:1.8;
+}
+
+.system-box .symbol{
+  position:absolute;
+  right:18px;
+  top:12px;
+  font-size:50px;
+  opacity:.25;
+}
+
+/* COMPETENCY */
+.competency{background:#faf5ee}
+
+.competency-grid{
+  margin-top:50px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+
+.comp{
+  background:white;
+  border-radius:24px;
+  padding:28px;
+  min-height:260px;
+  border:1px solid #f0e6dc;
+  transition:.25s;
+}
+
+.comp:hover{
+  transform:translateY(-7px);
+  box-shadow:0 20px 40px rgba(71,56,49,.08);
+}
+
+.comp-icon{font-size:38px}
+
+.comp h3{
+  font-size:20px;
+  margin:30px 0 8px;
+}
+
+.comp p{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.8;
+}
+
+/* OBJECTIVES */
+.objectives{background:#fcfaf5}
+
+.objective-layout{
+  margin-top:50px;
+  display:grid;
+  grid-template-columns:.8fr 1.2fr;
+  gap:50px;
+  align-items:center;
+}
+
+.target{
+  width:300px;
+  height:300px;
+  margin:auto;
+  border-radius:50%;
+  border:2px solid var(--primary);
+  display:grid;
+  place-items:center;
+  position:relative;
+}
+
+.target:before,.target:after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  border:2px solid var(--primary);
+}
+
+.target:before{width:220px;height:220px}
+.target:after{
+  width:140px;
+  height:140px;
+  background:#fcecdb;
+}
+
+.target-center{
+  position:relative;
+  z-index:2;
+  font-size:48px;
+}
+
+.objective-list{
+  display:grid;
+  gap:12px;
+}
+
+.objective{
+  display:flex;
+  gap:16px;
+  align-items:center;
+  background:white;
+  padding:17px 20px;
+  border-radius:16px;
+  line-height:1.7;
+  border:1px solid #f0e6dc;
+}
+
+.objective b{
+  flex:0 0 34px;
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  background:#f7efe5;
+  color:var(--primary);
+}
+
+/* OUTCOMES */
+.outcomes{background:#f5ebd9}
+
+.outcome-wrap{
+  margin-top:50px;
+  display:flex;
+  align-items:stretch;
+  gap:16px;
+}
+
+.outcome{
+  flex:1;
+  padding:30px 25px;
+  background:white;
+  border-radius:26px;
+  transition:.25s;
+  border:1px solid #f0e6dc;
+}
+
+.outcome:hover{transform:translateY(-7px)}
+
+.outcome-number{
+  font-size:60px;
+  font-weight:800;
+  color:#ebd5c4;
+}
+
+.outcome h3{margin-top:0;font-size:21px}
+
+.outcome p{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.8;
+}
+
+/* CONTENT */
+.content{background:#FFFDFF}
+
+.content-intro{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:30px;
+  margin-bottom:45px;
+}
+
+.content-tag{
+  display:inline-block;
+  padding:8px 12px;
+  background:#f7efe5;
+  color:var(--primary);
+  border-radius:10px;
+  font-size:11px;
+  font-weight:600;
+}
+
+.content-block{
+  margin:30px 0;
+  border-radius:30px;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:.8fr 1.2fr;
+  min-height:300px;
+  border:1px solid #f0e6dc;
+}
+
+.content-visual{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(60px,8vw,100px);
+  background:#f5dfc9;
+  min-height:220px;
+}
+
+.content-text{
+  padding:clamp(24px,4vw,45px);
+  background:#faf5ee;
+}
+
+.content-text h3{
+  font-size:clamp(23px,3vw,30px);
+  margin:0 0 15px;
+  line-height:1.4;
+  color:var(--dark);
+}
+
+.content-text p{
+  color:#7a6d65;
+  font-size:14px;
+  line-height:2;
+}
+
+.content-block:nth-of-type(even) .content-visual{background:#f7dcd1}
+.content-block:nth-of-type(3n) .content-visual{background:#fcecdb}
+
+.definition-list{
+  padding-left:22px;
+  line-height:1.9;
+  color:#7a6d65;
+}
+
+.definition-list li{margin:8px 0}
+
+.steps{
+  display:grid;
+  gap:12px;
+  margin-top:20px;
+}
+
+.step{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  padding:17px;
+  background:white;
+  border:1px solid #f0e6dc;
+  border-radius:15px;
+  transition:.25s;
+}
+
+.step:hover{
+  transform:translateX(5px);
+  border-color:var(--primary);
+  box-shadow:0 8px 20px rgba(194,125,83,0.1);
+}
+
+.step-num{
+  flex:0 0 35px;
+  width:35px;
+  height:35px;
+  display:grid;
+  place-items:center;
+  background:var(--primary);
+  color:white;
+  border-radius:11px;
+  font-weight:700;
+  font-size:13px;
+}
+
+.step h4{
+  margin:0 0 5px;
+  font-size:15px;
+  color:var(--dark);
+}
+
+.step p{
+  margin:0;
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.9;
+}
+
+.note{
+  background:#f7efe5;
+  border-left:4px solid var(--primary);
+  border-radius:12px;
+  padding:18px;
+  margin:20px 0;
+  font-size:13px;
+  line-height:1.9;
+}
+
+.sub-heading{
+  margin:35px 0 10px;
+  color:var(--primary);
+  font-size:21px;
+}
+
+/* SHORTCUT TABLE */
+.shortcut-table{
+  width:100%;
+  border-collapse:collapse;
+  border-radius:15px;
+  overflow:hidden;
+  margin-top:20px;
+}
+
+.shortcut-table th,
+.shortcut-table td{
+  padding:14px 17px;
+  text-align:left;
+  border-bottom:1px solid #f0e6dc;
+}
+
+.shortcut-table th{
+  background:#f7efe5;
+  color:var(--primary);
+}
+
+.shortcut-table td{
+  color:var(--text);
+}
+
+kbd{
+  background:#faf5ee;
+  border:1px solid #e3d4c7;
+  border-radius:6px;
+  padding:3px 8px;
+  color:var(--primary);
+  font-family:inherit;
+}
+
+/* QUIZ */
+.quiz-question{
+  background:#faf5ee;
+  padding:22px;
+  border-radius:18px;
+  margin:18px 0;
+  border:1px solid #f0e6dc;
+}
+
+.quiz-question p{
+  font-weight:600;
+  margin-bottom:12px;
+  color:var(--dark);
+}
+
+.quiz-question label{
+  display:block;
+  color:var(--text);
+  margin:8px 0;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.quiz-question input{
+  accent-color:var(--primary);
+  margin-right:8px;
+}
+
+.quiz-button{
+  background:linear-gradient(120deg,var(--primary),var(--primary-dark));
+  color:white;
+  border:none;
+  padding:13px 30px;
+  border-radius:30px;
+  font-size:15px;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(194,125,83,.25);
+  transition:.2s;
+  font-weight:600;
+}
+
+.quiz-button:hover{
+  transform:translateY(-3px);
+}
+
+#quizResult{
+  margin-top:18px;
+  font-weight:700;
+  color:var(--primary);
+}
+
+/* SUMMARY */
+.summary{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:white;
+}
+
+.summary .sub,.summary .eyebrow{color:#faf5ee!important}
+
+.summary-grid{
+  margin-top:50px;
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:20px;
+}
+
+.summary-main{
+  background:white;
+  color:var(--text);
+  border-radius:28px;
+  padding:35px;
+  box-shadow:0 15px 40px rgba(71,56,49,.1);
+}
+
+.summary-main h3{
+  font-size:26px;
+  margin-top:0;
+  color:var(--dark);
+}
+
+.summary-points{
+  display:grid;
+  gap:10px;
+}
+
+.summary-point{
+  padding:15px;
+  border-radius:14px;
+  background:#faf5ee;
+  font-size:13px;
+  line-height:1.9;
+  color:var(--muted);
+}
+
+.summary-side{
+  border-radius:28px;
+  background:#473831;
+  padding:35px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  line-height:1.8;
+}
+
+.summary-side .big{
+  font-size:65px;
+  font-weight:800;
+  line-height:1;
+  color:#fcecdb;
+}
+
+/* FOOTER */
+.footer{
+  background:#473831;
+  color:#f0e6dc;
+  text-align:center;
+  padding:35px 20px;
+  font-size:12px;
+  line-height:1.9;
+}
+
+/* REVEAL */
+.reveal{
+  opacity:0;
+  transform:translateY(25px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+
+.reveal.show{
+  opacity:1;
+  transform:none;
+}
+
+/* Furuhonya Click Effect (สมุดบันทึกและพู่กัน 📖✦) */
+.furuhonya-effect{
+  position:fixed;
+  z-index:9998;
+  width:1px;height:1px;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+}
+.furuhonya-click{
+  position:absolute;
+  left:0;top:0;
+  transform:translate(-50%,-50%) scale(.4) rotate(-20deg);
+  font-size:30px;
+  filter:drop-shadow(0 3px 6px rgba(194,125,83,0.3));
+  animation:furuBloom .52s cubic-bezier(.2,.8,.2,1) forwards;
+}
+@keyframes furuBloom{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(-35deg)}
+  65%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(10deg)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}
+}
+.furuhonya-petal{
+  position:absolute;
+  left:0;top:0;
+  opacity:0;
+  transform:translate(-50%,-50%) scale(.2);
+}
+.bursting .furuhonya-petal{
+  animation:furuBurst .78s cubic-bezier(.12,.72,.22,1) forwards;
+}
+@keyframes furuBurst{
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(0) scale(.2)}
+  18%{opacity:1}
+  100%{
+    opacity:0;
+    transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--turn)) scale(1.05);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-card">
+    <div class="loading-logo">WIN <span>10</span></div>
+    <div class="spinner"></div>
+    <h2 id="loadingTitle">กำลังโหลดบทเรียน</h2>
+    <p>กรุณารอสักครู่ ระบบกำลังพาคุณไปยังหน้าที่เลือก</p>
+    <div class="progress-track">
+      <div class="progress-bar-load" id="progressBarLoad"></div>
+    </div>
+    <span class="progress-percent" id="progressPercent">0%</span>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">เมนูการเรียนรู้ 🤎</div>
+    <button class="close-btn" id="closeSidebar">&times;</button>
+  </div>
+
+  <div class="sidebar-menu">
+    <a href="index.html" class="nav-link-load">🏠 หน้าแรก</a>
+    <a href="#home">🚀 หน้าหลักบทที่ 6</a>
+    <a href="#intro">📌 ภาพรวมและแนวคิด</a>
+    <a href="#objectives">🎯 จุดประสงค์การเรียนรู้</a>
+    <a href="#lesson61">💻 3.1 ส่วนประกอบหน้าจอ</a>
+    <a href="#lesson62">⚙️ 3.2 การใช้งานเบื้องต้น</a>
+    <a href="#shortcuts">⌨️ 4. แป้นพิมพ์ลัด</a>
+    <a href="#outcome">📝 5. สรุปผลการเรียนรู้</a>
+    <a href="#activity">📋 6. แบบทดสอบท้ายบท</a>
+  </div>
+</aside>
+
+<!-- NAVBAR -->
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:15px">
+    <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู">
+      <span></span><span></span><span></span>
+    </button>
+
+    <a class="logo nav-link-load" href="index.html">
+      <span class="logo-box">บทที่ 6</span>
+      <span>Windows 10</span>
+    </a>
+  </div>
+
+  <div class="nav-right">
+    <a class="nav-btn" href="#intro">ภาพรวม</a>
+    <a class="nav-btn" href="#lesson61">ส่วนประกอบ</a>
+    <a class="nav-btn" href="#shortcuts">แป้นพิมพ์ลัด</a>
+    <a class="nav-btn" href="#activity" style="color:var(--primary);font-weight:700">แบบทดสอบ</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="slide hero" id="home">
+  <div class="inner hero-grid">
+
+    <div class="reveal">
+      <div class="chapter">บทเรียนที่ 6 · OS LEARNING</div>
+
+      <h1>
+        ระบบปฏิบัติการ<br>
+        <span>Windows 10</span>
+      </h1>
+
+      <p class="hero-desc">
+        เรียนรู้ระบบปฏิบัติการ Windows 10 พื้นฐานการใช้งาน เครื่องมือจัดการระบบ 
+        และการควบคุมหน้าจออย่างง่ายในสไตล์อบอุ่นเป็นกันเอง
+      </p>
+
+      <a href="#intro" class="start">
+        เริ่มเรียนบทที่ 6 <span>→</span>
+      </a>
+    </div>
+
+    <div class="hero-art reveal">
+      <div class="blob"></div>
+
+      <div class="monitor">
+        <div class="monitor-screen">
+          <div class="monitor-os">WIN 10</div>
+          <div class="monitor-text">SYSTEM OS</div>
+        </div>
+      </div>
+
+      <img class="furuhonya-photo photo-one" src="ฟุรุฮอนยะ1.jpg" alt="ฟุรุฮอนยะ 1">
+      <img class="furuhonya-photo photo-two" src="ฟุรุฮอนยะ2.jpg" alt="ฟุรุฮอนยะ 2">
+      <img class="furuhonya-photo photo-three" src="ฟุรุฮอนยะ3.jpg" alt="ฟุรุฮอนยะ 3">
+
+      <div class="sticker-bubble bubble-one">มาเรียนด้วยกันนะ 📖</div>
+      <div class="sticker-bubble bubble-two">WINDOWS 🤎</div>
+      <div class="sticker-bubble bubble-three">OS LEARNING ✨</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION 1 -->
+<section class="slide topics" id="intro">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow">01 · OVERVIEW</div>
+      <h2 class="big-title">
+        ภาพรวมและแนวคิดสำคัญ<br>
+        <span style="color:var(--primary)">ทำความรู้จักกับ Windows 10</span>
+      </h2>
+      <p class="sub">
+        Windows 10 เป็นระบบปฏิบัติการที่พัฒนาต่อยอดจากรุ่นก่อนหน้า มุ่งเน้นการใช้งานที่หลากหลาย
+        และปรับปรุงหน้าตาให้สะดวกสบายต่อผู้ใช้งานทุกกลุ่ม
+      </p>
+    </div>
+
+    <div class="topic-layout reveal">
+      <div class="topic-main">
+        <h2>WINDOWS 10<br>OPERATING SYSTEM</h2>
+        <p>
+          ระบบปฏิบัติการที่ช่วยจัดการทรัพยากรภายในเครื่องคอมพิวเตอร์
+          พร้อมหน้าต่างการใช้งานที่คุ้นเคยและเต็มเปี่ยมไปด้วยประสิทธิภาพ
+        </p>
+        <div class="topic-number">06</div>
+      </div>
+
+      <div class="topic-side">
+        <div class="topic-card">
+          <div class="eyebrow">CONCEPT 01</div>
+          <h3>ใช้งานหลากหลาย</h3>
+          <p>รองรับทั้งคอมพิวเตอร์ตั้งโต๊ะ แล็ปท็อป และอุปกรณ์พกพา</p>
+        </div>
+
+        <div class="topic-card">
+          <div class="eyebrow">CONCEPT 02</div>
+          <h3>จัดการง่าย</h3>
+          <p>มีเครื่องมือครบครันสำหรับการจัดการไฟล์และตั้งค่าระบบ</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION 2 -->
+<section class="slide competency" id="objectives">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow">02 · OBJECTIVES</div>
+      <h2 class="big-title">
+        จุดประสงค์การเรียนรู้<br>
+        <span style="color:var(--primary)">สิ่งที่คุณจะได้รับจากบทนี้</span>
+      </h2>
+    </div>
+
+    <div class="competency-grid reveal">
+      <div class="comp">
+        <div class="comp-icon">🎓</div>
+        <h3>สมรรถนะย่อย</h3>
+        <p>แสดงความรู้เกี่ยวกับระบบปฏิบัติการ Windows 10 และประยุกต์ใช้งานได้จริง</p>
+      </div>
+
+      <div class="comp">
+        <div class="comp-icon">🖥️</div>
+        <h3>ส่วนประกอบหน้าจอ</h3>
+        <p>อธิบายองค์ประกอบบนหน้าจอ Desktop และเครื่องมือหลักได้อย่างถูกต้อง</p>
+      </div>
+
+      <div class="comp">
+        <div class="comp-icon">⚙️</div>
+        <h3>การใช้งานเบื้องต้น</h3>
+        <p>ใช้งาน Start Menu, File Explorer และปรับแต่งค่าพื้นฐานของระบบได้</p>
+      </div>
+
+      <div class="comp">
+        <div class="comp-icon">⌨️</div>
+        <h3>แป้นพิมพ์ลัด</h3>
+        <p>ใช้ Keyboard Shortcuts เพื่อช่วยเพิ่มความรวดเร็วในการปฏิบัติงาน</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION 3.1 -->
+<section class="slide content" id="lesson61">
+  <div class="inner">
+
+    <div class="content-intro reveal">
+      <div>
+        <div class="eyebrow">03 · LESSON CONTENT</div>
+        <h2 class="big-title">3.1 ส่วนประกอบหน้าจอ</h2>
+        <p class="sub">รู้จักเครื่องมือสำคัญบนหน้าจอคอมพิวเตอร์ Windows 10</p>
+      </div>
+      <span class="content-tag">SECTION 6.1</span>
+    </div>
+
+    <article class="content-block reveal">
+      <div class="content-visual">🖥️</div>
+
+      <div class="content-text">
+        <div class="content-tag">DESKTOP & TOOLS</div>
+        <h3>องค์ประกอบหลักบนหน้าจอ</h3>
+
+        <p>
+          เมื่อเข้าสู่ระบบ Windows 10 หน้าจอหลักจะเรียกว่า Desktop ซึ่งเป็นพื้นที่ทำงานหลัก 
+          ประกอบด้วยไอคอนและเครื่องมืออำนวยความสะดวกต่าง ๆ ดังนี้:
+        </p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>Desktop</h4>
+              <p>พื้นที่หน้าจอหลักสำหรับวางไอคอนโปรแกรม ไฟล์ และทางลัดต่าง ๆ</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>Start Menu</h4>
+              <p>เมนูเริ่มต้นสำหรับเปิดโปรแกรม ค้นหาแอปพลิเคชัน และจัดการระบบ</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>Taskbar</h4>
+              <p>แถบงานด้านล่างแสดงโปรแกรมที่กำลังเปิดใช้งานและปุ่มลัดโปรด</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">4</div>
+            <div>
+              <h4>Search Bar</h4>
+              <p>ช่องค้นหาไฟล์ โปรแกรม และข้อมูลภายในเครื่องได้อย่างรวดเร็ว</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">5</div>
+            <div>
+              <h4>File Explorer</h4>
+              <p>เครื่องมือจัดการไฟล์เอกสาร โฟลเดอร์ และไดรฟ์ในระบบ</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">6</div>
+            <div>
+              <h4>Action Center</h4>
+              <p>ศูนย์รวมการแจ้งเตือนและปุ่มทางลัดตั้งค่าด่วน (Wi-Fi, Bluetooth)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- SECTION 3.2 -->
+<section class="slide content" id="lesson62">
+  <div class="inner">
+
+    <article class="content-block reveal">
+      <div class="content-visual" style="background:#fcecdb">⚙️</div>
+
+      <div class="content-text">
+        <div class="content-tag">SECTION 6.2</div>
+        <h3>การใช้งานและการปรับแต่งเบื้องต้น</h3>
+
+        <p>
+          ผู้ใช้สามารถปรับเปลี่ยนรูปแบบหน้าจอตามความชอบส่วนตัว 
+          รวมถึงจัดระเบียบไฟล์ข้อมูลเพื่อให้ทำงานได้อย่างมีประสิทธิภาพ
+        </p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>การเปลี่ยนภาพพื้นหลัง</h4>
+              <p>คลิกขวาบน Desktop เลือก Personalize จากนั้นเลือก Background เพื่อเปลี่ยนรูปภาพ</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>การปรับแต่งการตั้งค่า</h4>
+              <p>เข้าสู่เมนู Settings (Windows + I) เพื่อปรับแต่งระบบ สีธีม และการแสดงผล</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>การจัดการไฟล์และโฟลเดอร์</h4>
+              <p>เปิด File Explorer เพื่อสร้าง คัดลอก ย้าย และจัดเก็บเอกสารอย่างเป็นระเบียบ</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- SECTION 4 -->
+<section class="slide content" id="shortcuts">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow">04 · SHORTCUTS</div>
+      <h2 class="big-title">แป้นพิมพ์ลัดที่ควรรู้</h2>
+      <p class="sub">ช่วยให้ทำงานบน Windows 10 ได้รวดเร็วยิ่งขึ้น</p>
+    </div>
+
+    <div class="content-block reveal" style="grid-template-columns:1fr">
+      <div class="content-text">
+        <div class="content-tag">KEYBOARD SHORTCUTS</div>
+        <h3>ตารางแป้นพิมพ์ลัดลัดเลี่ยงการใช้เมาส์</h3>
+
+        <table class="shortcut-table">
+          <thead>
+            <tr>
+              <th>แป้นพิมพ์ลัด</th>
+              <th>หน้าที่การทำงาน</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>C</kbd></td><td>คัดลอกข้อมูลหรือไฟล์ที่เลือก</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>V</kbd></td><td>วางข้อมูลหรือไฟล์ที่คัดลอกไว้</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>X</kbd></td><td>ตัดข้อมูลหรือย้ายไฟล์</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td><td>ย้อนกลับการทำงานล่าสุด (Undo)</td></tr>
+            <tr><td><kbd>Alt</kbd> + <kbd>Tab</kbd></td><td>สลับหน้าต่างโปรแกรมที่กำลังเปิดใช้งาน</td></tr>
+            <tr><td><kbd>Windows</kbd> + <kbd>D</kbd></td><td>แสดงหน้า Desktop ทันที</td></tr>
+            <tr><td><kbd>Windows</kbd> + <kbd>E</kbd></td><td>เปิดโปรแกรม File Explorer</td></tr>
+            <tr><td><kbd>Windows</kbd> + <kbd>I</kbd></td><td>เปิดหน้าต่าง Settings การตั้งค่าระบบ</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION 5 -->
+<section class="slide competency" id="outcome">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow">05 · SUMMARY</div>
+      <h2 class="big-title">สรุปผลการเรียนรู้</h2>
+      <p class="sub">ทบทวนสาระสำคัญของบทเรียน Windows 10</p>
+    </div>
+
+    <div class="outcome reveal" style="margin-top:40px">
+      <p style="font-size:16px;line-height:2;color:var(--text);">
+        Windows 10 เป็นระบบปฏิบัติการที่มีความยืดหยุ่นสูง มีเครื่องมือและส่วนประกอบหน้าจอที่ใช้งานง่าย 
+        ไม่ว่าจะเป็น Desktop, Start Menu, File Explorer หรือการใช้แป้นพิมพ์ลัด ช่วยให้ผู้เรียนสามารถจัดการไฟล์ 
+        ปรับแต่งระบบ และใช้งานคอมพิวเตอร์ได้อย่างมีประสิทธิภาพและคล่องตัวในชีวิตประจำวัน 🤎
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- SECTION 6 (QUIZ) -->
+<section class="slide content" id="activity">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow">06 · QUIZ</div>
+      <h2 class="big-title">แบบทดสอบท้ายบท</h2>
+      <p class="sub">ทบทวนความเข้าใจบทที่ 6 : Windows 10</p>
+    </div>
+
+    <div class="content-block reveal" style="grid-template-columns:1fr; margin-top:40px;">
+      <div class="content-text">
+        <div class="quiz-question">
+          <p>ข้อ 1. พื้นที่หน้าจอหลักของ Windows 10 ที่ใช้แสดงไอคอนเรียกว่าอะไร?</p>
+          <label><input type="radio" name="q1" value="a"> Taskbar</label>
+          <label><input type="radio" name="q1" value="b"> Desktop</label>
+          <label><input type="radio" name="q1" value="c"> Start Menu</label>
+        </div>
+
+        <div class="quiz-question">
+          <p>ข้อ 2. เมนูใดใช้สำหรับเปิดโปรแกรม ค้นหาแอป และปิดคอมพิวเตอร์?</p>
+          <label><input type="radio" name="q2" value="a"> Start Menu</label>
+          <label><input type="radio" name="q2" value="b"> Recycle Bin</label>
+          <label><input type="radio" name="q2" value="c"> Action Center</label>
+        </div>
+
+        <div class="quiz-question">
+          <p>ข้อ 3. โปรแกรมใดใช้สำหรับจัดการไฟล์และโฟลเดอร์ในคอมพิวเตอร์?</p>
+          <label><input type="radio" name="q3" value="a"> Microsoft Word</label>
+          <label><input type="radio" name="q3" value="b"> File Explorer</label>
+          <label><input type="radio" name="q3" value="c"> Paint</label>
+        </div>
+
+        <div class="quiz-question">
+          <p>ข้อ 4. แป้นพิมพ์ลัด <kbd>Ctrl</kbd> + <kbd>C</kbd> ใช้ทำหน้าที่อะไร?</p>
+          <label><input type="radio" name="q4" value="a"> วางข้อมูล</label>
+          <label><input type="radio" name="q4" value="b"> คัดลอกข้อมูล</label>
+          <label><input type="radio" name="q4" value="c"> ตัดข้อมูล</label>
+        </div>
+
+        <div class="quiz-question">
+          <p>ข้อ 5. หากต้องการเปิดหน้าต่าง Settings อย่างรวดเร็ว ควรใช้ปุ่มลัดใด?</p>
+          <label><input type="radio" name="q5" value="a"> Windows + I</label>
+          <label><input type="radio" name="q5" value="b"> Windows + D</label>
+          <label><input type="radio" name="q5" value="c"> Windows + E</label>
+        </div>
+
+        <div style="margin-top:25px;">
+          <button class="quiz-button" onclick="checkQuiz()">
+            <i class="fa-solid fa-check"></i> ตรวจคำตอบ
+          </button>
+        </div>
+
+        <div id="quizResult"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SUMMARY FOOTER -->
+<section class="slide summary" id="summary">
+  <div class="inner">
+    <div class="reveal">
+      <div class="eyebrow" style="color:#faf5ee">07 · CHAPTER SUMMARY</div>
+      <h2 class="big-title">
+        จบบทเรียนที่ 6<br>
+        <span style="color:#fcecdb">เรียนรู้อย่างมีความสุข</span>
+      </h2>
+    </div>
+
+    <div class="summary-grid reveal">
+      <div class="summary-main">
+        <h3>สรุปเนื้อหา Windows 10</h3>
+        <div class="summary-points">
+          <div class="summary-point"><b>01</b> เข้าใจความหมายและวิวัฒนาการของ Windows 10</div>
+          <div class="summary-point"><b>02</b> รู้จักส่วนประกอบหน้าจอ Desktop, Start Menu และ Taskbar</div>
+          <div class="summary-point"><b>03</b> ใช้ File Explorer ในการจัดการไฟล์และโฟลเดอร์</div>
+          <div class="summary-point"><b>04</b> ใช้แป้นพิมพ์ลัดเพื่อเพิ่มความสะดวกรวดเร็วในการทำงาน</div>
+        </div>
+      </div>
+
+      <div class="summary-side">
+        <div class="big">WIN 10</div>
+        <h3>ใช้งานคล่องตัว<br>พร้อมลุยทุกงาน</h3>
+        <p>ฝึกฝนการใช้งานระบบปฏิบัติการอย่างต่อเนื่องเพื่อทักษะที่ดีขึ้น</p>
+
+        <a href="index.html" class="start nav-link-load" style="background:#fff;color:#473831;margin-top:15px;justify-content:center;">
+          กลับหน้าแรก ↑
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <strong>FURUHONYA LEARNING 🤎</strong><br>
+  เว็บไซต์ประกอบการเรียนรู้รายวิชาระบบปฏิบัติการคอมพิวเตอร์<br>
+  บทเรียนที่ 6 : Windows 10
+</footer>
+
+<script>
+(() => {
+  // SCROLL PROGRESS
+  const progress = document.getElementById('progress');
+  function updateProgress(){
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
+    progress.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+  }
+  window.addEventListener('scroll', updateProgress, {passive:true});
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+
+  // SIDEBAR
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const closeSidebar = document.getElementById('closeSidebar');
+
+  function openMenu(){
+    sidebar.classList.add('active');
+    overlay.classList.add('active');
+    document.body.classList.add('lock-scroll');
+  }
+
+  function closeMenu(){
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+    document.body.classList.remove('lock-scroll');
+  }
+
+  menuToggle.addEventListener('click', openMenu);
+  closeSidebar.addEventListener('click', closeMenu);
+  overlay.addEventListener('click', closeMenu);
+
+  sidebar.querySelectorAll('a:not(.nav-link-load)').forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') closeMenu();
+  });
+
+  // LOADING SCREEN
+  const loadingScreen = document.getElementById('loadingScreen');
+  const progressBarLoad = document.getElementById('progressBarLoad');
+  const progressPercent = document.getElementById('progressPercent');
+
+  document.querySelectorAll('.nav-link-load').forEach(link => {
+    link.addEventListener('click', function(e){
+      const targetUrl = this.getAttribute('href');
+      if(!targetUrl || targetUrl === '#') return;
+      e.preventDefault();
+      closeMenu();
+      loadingScreen.classList.add('show');
+      document.body.classList.add('loading-active');
+
+      let currentPercent = 0;
+      const duration = 700;
+      const intervalTime = 20;
+      const step = (intervalTime / duration) * 100;
+
+      const timer = setInterval(() => {
+        currentPercent += step;
+        if(currentPercent >= 100){
+          currentPercent = 100;
+          clearInterval(timer);
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 150);
+        }
+        progressBarLoad.style.width = `${currentPercent}%`;
+        progressPercent.textContent = `${Math.round(currentPercent)}%`;
+      }, intervalTime);
+    });
+  });
+
+  // QUIZ LOGIC
+  window.checkQuiz = function() {
+    const answers = { q1: "b", q2: "a", q3: "b", q4: "b", q5: "a" };
+    let score = 0;
+    const total = Object.keys(answers).length;
+
+    for (let question in answers) {
+      const selected = document.querySelector('input[name="' + question + '"]:checked');
+      if (selected && selected.value === answers[question]) {
+        score++;
+      }
+    }
+
+    const result = document.getElementById("quizResult");
+    result.innerHTML = "คุณได้คะแนน " + score + " / " + total + " คะแนน 🤎";
+    if (score === total) {
+      result.innerHTML += "<br>ยอดเยี่ยมมาก! ตอบถูกทุกข้อเลย เก่งที่สุด 📖✨";
+    } else {
+      result.innerHTML += "<br>เก่งมาก ลองทบทวนเนื้อหาแล้วทำใหม่อีกรอบนะ ☕";
+    }
+  };
+
+  // Furuhonya Click Effect (สมุดบันทึกและพู่กัน 📖✦)
+  document.addEventListener('click', function(e){
+    if (e.target.closest('.loading-screen')) return;
+
+    const x = e.clientX;
+    const y = e.clientY;
+    const holder = document.createElement('div');
+    holder.className = 'furuhonya-effect';
+    holder.style.left = x + 'px';
+    holder.style.top = y + 'px';
+    holder.setAttribute('aria-hidden', 'true');
+
+    const item = document.createElement('span');
+    item.className = 'furuhonya-click';
+    item.textContent = '📖';
+    holder.appendChild(item);
+    document.body.appendChild(holder);
+
+    window.setTimeout(() => {
+      item.remove();
+      const symbols = ['📖','✦','🤎','✨','🤎','⭐','📚','✨'];
+      const colors = ['#c27d54','#e09f6e','#fcecdb','#9e6341','#f5dfc9'];
+      symbols.forEach((symbol, index) => {
+        const petal = document.createElement('span');
+        petal.className = 'furuhonya-petal';
+        petal.textContent = symbol;
+        petal.style.setProperty('--dx', (Math.cos(index * Math.PI / 4) * 65) + 'px');
+        petal.style.setProperty('--dy', (Math.sin(index * Math.PI / 4) * 65) + 'px');
+        petal.style.setProperty('--turn', (Math.random() * 220 - 110) + 'deg');
+        petal.style.color = colors[index % colors.length];
+        petal.style.fontSize = (12 + Math.random() * 10) + 'px';
+        holder.appendChild(petal);
+      });
+      holder.classList.add('bursting');
+      window.setTimeout(() => holder.remove(), 800);
+    }, 450);
+  });
+
+  // REVEAL ANIMATION
+  const revealItems = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('show');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.1});
+    revealItems.forEach(item => observer.observe(item));
+  } else {
+    revealItems.forEach(item => item.classList.add('show'));
+  }
+
+})();
+</script>
+
+</body>
+</html>

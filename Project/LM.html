@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เอกสารประกอบการเรียนและสื่อวีดิทัศน์ (บทที่ 1-10) - OS Learning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #fae8ff 100%);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.9);
+            --text-color: #334155;
+            --dark: #183451;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-color);
+            padding: 40px 20px;
+        }
+
+        /* --- ปุ่มเมนู 3 ขีดมุมซ้ายบน --- */
+        .menu-toggle {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 900;
+            width: 50px;
+            height: 50px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid #ffffff;
+            box-shadow: 0 8px 24px rgba(148, 163, 184, 0.25);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.05);
+            background: #ffffff;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 24px;
+            height: 3px;
+            background: var(--dark);
+            border-radius: 3px;
+            transition: 0.3s;
+        }
+
+        /* --- แถบเมนูด้านข้าง (Sidebar) --- */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.35);
+            backdrop-filter: blur(4px);
+            z-index: 950;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid #ffffff;
+            box-shadow: 10px 0 30px rgba(148, 163, 184, 0.2);
+            z-index: 990;
+            padding: 24px 20px;
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+            border-bottom: 2px dashed rgba(56, 189, 248, 0.3);
+        }
+
+        .sidebar-header h3 {
+            font-size: 18px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .close-sidebar {
+            background: #f1f5f9;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            font-size: 16px;
+            color: var(--dark);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .close-sidebar:hover {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .home-btn-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--dark);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 16px rgba(24, 52, 81, 0.2);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .home-btn-menu:hover {
+            background: #0284c7;
+            transform: translateY(-2px);
+        }
+
+        .menu-section-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 10px;
+            padding-left: 6px;
+        }
+
+        .chapter-nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .chapter-nav-list a {
+            display: block;
+            padding: 10px 14px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.2s;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .chapter-nav-list a:hover {
+            background: #e0f2fe;
+            color: #0284c7;
+            padding-left: 18px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* ส่วนหัวข้อเว็บ */
+        .header-section {
+            text-align: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 40px 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(148, 163, 184, 0.15);
+        }
+
+        .header-section h1 {
+            font-size: clamp(28px, 4vw, 38px);
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .header-section p {
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        /* กล่องเนื้อหาแต่ละบท */
+        .chapter-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(148, 163, 184, 0.1);
+            scroll-margin-top: 24px;
+        }
+
+        .chapter-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px dashed rgba(56, 189, 248, 0.3);
+            padding-bottom: 12px;
+        }
+
+        /* โครงสร้าง 2 ช่องวิดีโอต่อบท */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 12px 32px rgba(110, 130, 200, 0.1), 
+                        inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center; /* จัดทุกอย่างให้อยู่กึ่งกลางการ์ด */
+        }
+
+        .video-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 40px rgba(110, 130, 200, 0.18), 
+                        inset 0 1px 1px rgba(255, 255, 255, 1);
+        }
+
+        .video-card::after {
+            content: '🔍 คลิกเพื่อขยายจอใหญ่';
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 12px;
+            color: #0284c7;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover::after {
+            opacity: 1;
+        }
+
+        .video-card.ai-special {
+            background: linear-gradient(135deg, rgba(255, 240, 245, 0.75), rgba(235, 245, 255, 0.75));
+            border: 1px solid rgba(255, 220, 235, 0.9);
+        }
+
+        .video-card.ai-special::after {
+            color: #db2777;
+        }
+
+        .video-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .video-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .badge.normal {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .badge.ai {
+            background: #fce7f3;
+            color: #db2777;
+        }
+
+        /* ปรับแก้กล่องห่อวิดีโอให้อยู่กึ่งกลางพอดี */
+        .video-frame-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            padding-top: 56.25%; /* สัดส่วน 16:9 */
+            background: #0f172a;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.15);
+            margin: 0 auto; /* จัดกึ่งกลางแนวนอน */
+            pointer-events: none;
+        }
+
+        .video-frame-wrapper iframe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* ดึงให้วิดีโออยู่กึ่งกลางเป๊ะๆ ไม่ตกหล่น */
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- Modal ขยายจอวิดีโอใหญ่ --- */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .video-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            background: #1e293b;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(15, 23, 42, 0.9);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #ffffff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            background: #ef4444;
+        }
+
+        .modal-body {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+        }
+
+        .modal-body iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- หน้าจอโหลด (Loading Screen Overlay) --- */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e0f2fe;
+            border-top: 5px solid #0284c7;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loading-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ปุ่ม 3 ขีด มุมซ้ายบน -->
+    <button class="menu-toggle" onclick="toggleSidebar()" aria-label="เปิดเมนู">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- พื้นหลังเบลอเมื่อเปิดเมนู -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- แถบเมนูนำทางด้านซ้าย -->
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>📌 เมนูนำทาง</h3>
+            <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
+        </div>
+
+        <!-- ปุ่มกลับหน้าแรกแบบมีหน้าโหลด -->
+        <a onclick="goToHome()" class="home-btn-menu">
+            <span>🏠</span> กลับสู่หน้าแรกเว็บไซต์
+        </a>
+
+        <div class="menu-section-label">เลือกดูสื่อตามบทเรียน</div>
+        <ul class="chapter-nav-list">
+            <li><a href="#chapter-1" onclick="toggleSidebar()">บทที่ 1: ระบบปฏิบัติการคอมพิวเตอร์</a></li>
+            <li><a href="#chapter-2" onclick="toggleSidebar()">บทที่ 2: โปรแกรมระบบปฏิบัติการ</a></li>
+            <li><a href="#chapter-3" onclick="toggleSidebar()">บทที่ 3: การเลือกใช้และติดตั้ง OS</a></li>
+            <li><a href="#chapter-4" onclick="toggleSidebar()">บทที่ 4: มาตรฐานปิดและมาตรฐานเปิด</a></li>
+            <li><a href="#chapter-5" onclick="toggleSidebar()">บทที่ 5: การติดตั้งไดรเวอร์</a></li>
+            <li><a href="#chapter-6" onclick="toggleSidebar()">บทที่ 6: การใช้งาน Windows 10</a></li>
+            <li><a href="#chapter-7" onclick="toggleSidebar()">บทที่ 7: การจัดการไฟล์และโฟลเดอร์</a></li>
+            <li><a href="#chapter-8" onclick="toggleSidebar()">บทที่ 8: การบำรุงรักษาคอมพิวเตอร์</a></li>
+            <li><a href="#chapter-9" onclick="toggleSidebar()">บทที่ 9: ความปลอดภัยของระบบ</a></li>
+            <li><a href="#chapter-10" onclick="toggleSidebar()">บทที่ 10: ไวรัสและการกู้คืนข้อมูล</a></li>
+        </ul>
+    </aside>
+
+    <!-- หน้าจอโหลด (Loading Screen) -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">กำลังกลับสู่หน้าแรกเว็บไซต์...</div>
+    </div>
+
+    <div class="container">
+        <!-- ส่วนหัวข้อหลัก -->
+        <div class="header-section">
+            <h1>📚 สื่อประกอบการเรียนรู้ (บทที่ 1 - 10)</h1>
+            <p>รวบรวมคลิปวิดีโอเนื้อหาบทเรียนพร้อมคลิปสรุปพิเศษจาก AI ในดีไซน์กระจกพาสเทลสุดละมุน</p>
+        </div>
+
+        <!-- รายการบทเรียน บทที่ 1 - 10 -->
+        <div id="lessons-container">
+            
+            <!-- บทที่ 1 -->
+            <div id="chapter-1" class="chapter-section">
+                <div class="chapter-title">🎯 บทที่ 1: ระบบปฏิบัติการคอมพิวเตอร์</div>
+                <div class="video-grid">
+                    <div class="video-card" onclick="openModal('https://youtu.be/dgV_Th6ONiI?si=_49JhojP1nFG5660', 'บทที่ 1: วิดีโอเนื้อหาบทเรียน')">
+                        <div class="video-header">
+                            <span class="video-label">🎬 วิดีโอเนื้อหาบทเรียน</span>
+                            <span class="badge normal">YouTube</span>
+                        </div>
+                        <div class="video-frame-wrapper">
+                            <iframe src="https://youtu.be/dgV_Th6ONiI?si=_49JhojP1nFG5660"></iframe>
+                        </div>
+                    </div>
+                    <div class="video-card ai-special" onclick="openModal('Video1.html', 'บทที่ 1: วิดีโอสรุปเนื้อหาโดย AI')">
+                        <div class="video-header">
+                            <span class="video-label">✨ วิดีโอสรุปเนื้อหาโดย AI</span>
+                            <span class="badge ai">AI Generated</span>
+                        </div>
+                        <div class="video-frame-wrapper">
+                            <iframe src="Video1.html"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- บทที่ 2 -->
+            <div id="chapter-2" class="chapter-section">
+                <div class="chapter-title">🎯 บทที่ 2: โปรแกรมระบบปฏิบัติการคอมพิวเตอร์</div>
+                <div class="video-grid">
+                    <div class="video-card" onclick="openModal('https://www.youtube.com/embed/dQw4w9WgXcQ', 'บทที่ 2: วิดีโอเนื้อหาบทเรียน')">
+                        <div class="video-header">
+                            <span class="video-label">🎬 วิดีโอเนื้อหาบทเรียน</span>
+                            <span class="badge normal">YouTube</span>
+                        </div>
+                        <div class="video-frame-wrapper">
+                            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>
+                        </div>
+                    </div>
+                    <div class="video-card ai-special" onclick="openModal('Video2.html', 'บทที่ 2: วิดีโอสรุปเนื้อหาโดย AI')">
+                        <div class="video-header">
+                            <span class="video-label">✨ วิดีโอสรุปเนื้อหาโดย AI</span>
+                            <span class="badge ai">AI Generated</span>
+                        </div>
+                        <div class="video-frame-wrapper">
+                            <iframe src="Video2.html"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- บทที่ 3 ถึง 10 -->
+            <div id="chapter-3" class="chapter-section">
+                <div class="chapter-title">🎯 บทที่ 3: การเลือกใช้และติดตั้งระบบปฏิบัติการ</div>
+                <div class="video-grid">
+                    <div class="video-card" onclick="openModal('https://youtu.be/7CjeIa7JM94?si=eiMR6XD7KTHDk1lI', 'บทที่ 3: วิดีโอเนื้อหาบทเรียน')">
+                        <div class="video-header"><span class="video-label">🎬 วิดีโอเนื้อหาบทเรียน</span><span class="badge normal">YouTube</span></div>
+                        <div class="video-frame-wrapper"><iframe src="https://youtu.be/7CjeIa7JM94?si=eiMR6XD7KTHDk1lI"></iframe></div>
+                    </div>
+                    <div class="video-card ai-special" onclick="openModal('Video3.html', 'บทที่ 3: วิดีโอสรุปเนื้อหาโดย AI')">
+                        <div class="video-header"><span class="video-label">✨ วิดีโอสรุปเนื้อหาโดย AI</span><span class="badge ai">AI Generated</span></div>
+                        <div class="video-frame-wrapper"><iframe src="Video3.html"></iframe></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chapter-4" class="chapter-section">
+                <div class="chapter-title">🎯 บทที่ 4: มาตรฐานปิดและมาตรฐานเปิด</div>
+                <div class="video-grid">
+                    <div class="video-card" onclick="openModal('https://youtu.be/HNxtMd0FPr8?si=V-L35MHrN6nljvkM', 'บทที่ 4: วิดีโอเนื้อหาบทเรียน')">
+                        <div class="video-header"><span class="video-label">🎬 วิดีโอเนื้อหาบทเรียน</span><span class="badge normal">YouTube</span></div>
+                        <div class="video-frame-wrapper"><iframe src="https://youtu.be/HNxtMd0FPr8?si=V-L35MHrN6nljvkM"></iframe></div>
+                    </div>
+                    <div class="video-card ai-special" onclick="openModal('Video4.html', 'บทที่ 4: วิดีโอสรุปเนื้อหาโดย AI')">
+                        <div class="video-header"><span class="video-label">✨ วิดีโอสรุปเนื้อหาโดย AI</span><span class="badge ai">AI Generated</span></div>
+                        <div class="video-frame-wrapper"><iframe src="Video4.html"></iframe></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chapter-5" class="chapter-section">
+                <div class="chapter-title">🎯 บทที่ 5: การติดตั้งไดรเวอร์</div>
+                <div class="video-grid">
+                    <div class="video-card" onclick="openModal('https://youtu.be/Z0eFuibiudE?si=ZtC7qk-_vMi2k9dQ', 'บทที่ 5: วิดีโอเนื้อหาบทเรียน')">
+                        <div class="video-header"><span class="video-label">🎬 วิดีโอเนื้อหาบทเรียน</span><span class="badge normal">YouTube</span></div>
+                        <div class="video-frame-wrapper"><iframe src="https://youtu.be/Z0eFuibiudE?si=ZtC7qk-_vMi2k9dQ"></iframe></div>
+                    </div>
+                    <div class="video-card ai-special" onclick="openModal('Video5.html', 'บทที่ 5: วิดีโอสรุปเนื้อหาโดย AI')">
+                        <div class="video-header"><span class="video-label">✨ วิดีโอสรุปเนื้อหาโดย AI</span><span class="badge ai">AI Generated</span></div>
+                        <div class="video-frame-wrapper"><iframe src="Video5.html"></iframe></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chapter-6" class="chapter-section">
+                <div class="chapter-title">🎯 บทที่ 6: การใช้งานโปรแกรม Windows 10</div>
+                <div class="video-grid">
+                    <div class="video-card" onclick="openModal('https://youtu.be/bEB8JNWNFgM?si=YwC9mMB1dhMntSNx', 'บทที่ 6: วิดีโอเนื้อหาบทเรียน')">
+                        <div class="video-header"><span class="video-label">🎬 วิดีโอเนื้อหาบทเรียน</span><span class="badge normal">YouTube</span></div>
+                        <div class="video-frame-wrapper"><iframe src="https://youtu.be/bEB8JNWNFgM?si=YwC9mMB1dhMntSNx"></iframe></div>
+                    </div>
+                    <div class="video-card ai-special" onclick="openModal('Video6.html', 'บทที่ 6: วิดีโอสรุปเนื้อหาโดย AI')">
+                        <div class="video-header"><span class="video-label">✨ วิดีโอสรุปเนื้อหาโดย AI</span><span class="badge ai">AI Generated</span></div>
+                        <div class="video-frame-wrapper"><iframe src="Video6.html"></iframe></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chapter-7" class="chapter-section">
+                <div class="chapter-title">🎯 บทที่ 7: การจัดการไฟล์และโฟลเดอร์</div>
+                <div class="video-grid">
+                    <div class="video-card" onclick="openModal('https://youtu.be/aGcwO2N5RTA?si=3kFYpxWXFUXh_lk-', 'บทที่ 7: วิดีโอเนื้อหาบทเรียน')">
+                        <div class="video-header"><span class="video-label">🎬 วิดีโอเนื้อหาบทเรียน</span><span class="badge normal">YouTube</span></div>
+                        <div class="video-frame-wrapper"><iframe src="https://youtu.be/aGcwO2N5RTA?si=3kFYpxWXFUXh_lk-"></iframe></div>
+                    </div>
+                    <div class="video-card ai-special" onclick="openModal('Video7.html', 'บทที่ 7: วิดีโอสรุปเนื้อหาโดย AI')">
+                        <div class="video-header"><span class="video-label">✨ วิดีโอสรุปเนื้อหาโดย AI</span><span class="badge ai">AI Generated</span></div>
+                        <div class="video-frame-wrapper"><iframe src="Video7.html"></iframe></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chapter-8" class="chapter-section">
+                <div class="chapter-title">🎯 บทที่ 8: การบำรุงรักษาคอมพิวเตอร์</div>
+                <div class="video-grid">
+                    <div class="video-card" onclick="openModal('https://youtu.be/GDGJLIAAlGU?si=uMV_7L03Ylfp8Xp4', 'บทที่ 8: วิดีโอเนื้อหาบทเรียน')">
+                        <div class="video-header"><span class="video-label">🎬 วิดีโอเนื้อหาบทเรียน</span><span class="badge normal">YouTube</span></div>
+                        <div class="video-frame-wrapper"><iframe src="https://youtu.be/GDGJLIAAlGU?si=uMV_7L03Ylfp8Xp4"></iframe></div>
+                    </div>
+                    <div class="video-card ai-special" onclick="openModal('', 'บทที่ 8: วิดีโอสรุปเนื้อหาโดย AI')">
+                        <div class="video-header"><span class="video-label">✨ วิดีโอสรุปเนื้อหาโดย AI</span><span class="badge ai">AI Generated</span></div>
+                        <div class="video-frame-wrapper"><iframe src="Video8.html"></iframe></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chapter-9" class="chapter-section">
+                <div class="chapter-title">🎯 บทที่ 9: ความปลอดภัยของระบบ</div>
+                <div class="video-grid">
+                    <div class="video-card" onclick="openModal('https://youtu.be/H8xGcyoJ21E?si=u2flAfQLPuK-HfPg', 'บทที่ 9: วิดีโอเนื้อหาบทเรียน')">
+                        <div class="video-header"><span class="video-label">🎬 วิดีโอเนื้อหาบทเรียน</span><span class="badge normal">YouTube</span></div>
+                        <div class="video-frame-wrapper"><iframe src="https://youtu.be/H8xGcyoJ21E?si=u2flAfQLPuK-HfPg"></iframe></div>
+                    </div>
+                    <div class="video-card ai-special" onclick="openModal('Video9.html', 'บทที่ 9: วิดีโอสรุปเนื้อหาโดย AI')">
+                        <div class="video-header"><span class="video-label">✨ วิดีโอสรุปเนื้อหาโดย AI</span><span class="badge ai">AI Generated</span></div>
+                        <div class="video-frame-wrapper"><iframe src="Video9.html"></iframe></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chapter-10" class="chapter-section">
+                <div class="chapter-title">🎯 บทที่ 10: ไวรัสและการกู้คืนข้อมูล</div>
+                <div class="video-grid">
+                    <div class="video-card" onclick="openModal('https://youtu.be/8HfwoZwH2Kc?si=AA0OaLgduV5hQb-6', 'บทที่ 10: วิดีโอเนื้อหาบทเรียน')">
+                        <div class="video-header"><span class="video-label">🎬 วิดีโอเนื้อหาบทเรียน</span><span class="badge normal">YouTube</span></div>
+                        <div class="video-frame-wrapper"><iframe src="https://youtu.be/8HfwoZwH2Kc?si=AA0OaLgduV5hQb-6"></iframe></div>
+                    </div>
+                    <div class="video-card ai-special" onclick="openModal('Video10.html', 'บทที่ 10: วิดีโอสรุปเนื้อหาโดย AI')">
+                        <div class="video-header"><span class="video-label">✨ วิดีโอสรุปเนื้อหาโดย AI</span><span class="badge ai">AI Generated</span></div>
+                        <div class="video-frame-wrapper"><iframe src="Video10.html"></iframe></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal สำหรับขยายจอวิดีโอใหญ่ -->
+    <div id="videoModal" class="video-modal" onclick="closeModalOnOutside(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalTitle">ชื่อบทเรียน</span>
+                <button class="close-modal" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="modalIframe" src="" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // เปิด-ปิดแถบเมนูด้านข้าง
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // ฟังก์ชันไปหน้าแรกพร้อมแสดงหน้าจอโหลด
+        function goToHome() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.add('active');
+            
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 600);
+        }
+
+        // เปิดหน้าต่างวิดีโอใหญ่
+        function openModal(url, title) {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('modalIframe');
+            const titleEl = document.getElementById('modalTitle');
+
+            iframe.src = url;
+            titleEl.textContent = title;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // ปิดหน้าต่างวิดีโอใหญ่
+        function closeModal() {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('modalIframe');
+            modal.classList.remove('active');
+            iframe.src = '';
+            document.body.style.overflow = 'auto';
+        }
+
+        // ปิด Modal เมื่อคลิกพื้นที่ว่างด้านนอก
+        function closeModalOnOutside(event) {
+            const modal = document.getElementById('videoModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="บทเรียนออนไลน์ บทที่ 4 เรื่องการเลือกใช้และการติดตั้งระบบปฏิบัติการมาตรฐานปิดและมาตรฐานเปิด">
+<title>บทที่ 4 | การเลือกใช้และการติดตั้งระบบปฏิบัติการ</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --accent: #4b9eea;
+    --accent-dark: #2a73c0;
+    --accent-light: #e4f4ee;
+    --accent-pale: #f4f9ff;
+    --text: #2b3e50;
+    --muted: #668196;
+    --border: #d9edf8;
+    --shadow: 0 15px 40px rgba(75, 158, 234, .1);
+    --yellow-soft: #fff9e7;
+    --yellow-deep: #ffdc96;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 95px;
+}
+
+body {
+    font-family: 'Prompt', sans-serif;
+    background: #fdfbf7;
+    color: var(--text);
+    line-height: 1.8;
+    overflow-x: hidden;
+}
+
+body.loading-active {
+    overflow: hidden;
+}
+
+button, a {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Reading progress */
+.progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2000;
+    width: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #4b9eea, #ffdc96);
+    transition: width .15s;
+}
+
+/* Loading Screen (หน้าจอโหลดโทนสีเดียวกับบท) */
+.loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(253, 251, 247, .95);
+    backdrop-filter: blur(15px);
+    opacity: 0;
+    visibility: hidden;
+    transition: .3s;
+}
+
+.loading-screen.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-card {
+    width: min(390px, 100%);
+    padding: 35px 28px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    text-align: center;
+    box-shadow: 0 25px 80px rgba(75, 158, 234, .15);
+    transform: translateY(12px) scale(.98);
+    transition: .3s;
+}
+
+.loading-screen.show .loading-card {
+    transform: translateY(0) scale(1);
+}
+
+.loading-logo {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 20px;
+}
+
+.loading-logo span {
+    color: var(--accent-dark);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 20px;
+    border: 5px solid var(--yellow-soft);
+    border-top-color: var(--accent);
+    border-right-color: var(--yellow-deep);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+}
+
+.loading-card h2 {
+    font-size: 19px;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.loading-card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.progress-track {
+    height: 7px;
+    background: var(--yellow-soft);
+    border-radius: 20px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.progress-bar-load {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #4b9eea, #ffdc96);
+    border-radius: 20px;
+    transition: width .15s linear;
+}
+
+.progress-percent {
+    display: block;
+    margin-top: 8px;
+    text-align: right;
+    color: var(--accent-dark);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+body.loading-active .nav,
+body.loading-active main,
+body.loading-active footer,
+body.loading-active .sidebar {
+    filter: blur(5px);
+    pointer-events: none;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Navigation */
+.nav {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: min(1100px, calc(100% - 30px));
+    min-height: 58px;
+    padding: 8px 18px;
+    transform: translateX(-50%);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, .93);
+    backdrop-filter: blur(18px);
+    box-shadow: var(--shadow);
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.menu-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 0 0 auto;
+    width: 32px;
+    height: 24px;
+    padding: 2px;
+    border: 0;
+    background: transparent;
+}
+
+.menu-toggle span {
+    width: 100%;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--text);
+}
+
+.current-chapter-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.current-chapter-badge {
+    display: grid;
+    place-items: center;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4b9eea, #ffdc96);
+    color: #fff;
+    font-size: 14px;
+    box-shadow: 0 5px 14px rgba(75, 158, 234, .25);
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nav-btn {
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    white-space: nowrap;
+    transition: .2s;
+}
+
+.nav-btn:hover {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+}
+
+/* Sidebar */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    background: rgba(43, 62, 80, .28);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    visibility: hidden;
+    transition: .3s;
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1300;
+    width: 310px;
+    max-width: 85vw;
+    height: 100vh;
+    padding: 25px 20px;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, .98);
+    box-shadow: 10px 0 35px rgba(75, 158, 234, .12);
+    transform: translateX(-110%);
+    transition: transform .35s ease;
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+
+.sidebar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.sidebar-title {
+    color: var(--accent-dark);
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.close-sidebar {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    font-size: 22px;
+}
+
+.sidebar-label {
+    margin: 18px 0 8px;
+    color: #4b9eea;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 5px 0;
+    padding: 11px 13px;
+    border-radius: 13px;
+    color: var(--text);
+    font-size: 13px;
+    transition: .2s;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    transform: translateX(3px);
+}
+
+.sidebar-link.home-link {
+    margin-bottom: 14px;
+    padding: 13px 15px;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, #f4f9ff, #e4f4ee);
+    color: var(--accent-dark);
+    font-weight: 700;
+}
+
+/* Slide layout */
+.slide {
+    position: relative;
+    min-height: 100vh;
+    padding: 120px 7vw 80px;
+    overflow: hidden;
+}
+
+.slide-inner {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+}
+
+.section-kicker {
+    margin-bottom: 12px;
+    color: var(--accent-dark);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.section-title {
+    margin-bottom: 16px;
+    color: var(--text);
+    font-size: clamp(30px, 4vw, 52px);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -1px;
+}
+
+.section-title span {
+    color: var(--accent-dark);
+}
+
+.section-desc {
+    max-width: 760px;
+    margin-bottom: 30px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.content-panel {
+    padding: 30px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, .9);
+    box-shadow: var(--shadow);
+}
+
+.highlight {
+    color: var(--accent-dark);
+    font-weight: 700;
+}
+
+.note {
+    margin-top: 22px;
+    padding: 16px 19px;
+    border-left: 4px solid var(--yellow-deep);
+    border-radius: 12px;
+    background: var(--yellow-soft);
+    color: #6a5a3a;
+    font-size: 13px;
+}
+
+/* Hero — โทนสีฟ้าอ่อนผสมเหลืองละมุนตา */
+.hero {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #f4f9ff 0%, #fff9e7 58%, #eef7fc 100%);
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 60px;
+}
+
+.chapter {
+    margin-bottom: 18px;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.hero h1 {
+    color: var(--text);
+    font-size: clamp(48px, 7vw, 88px);
+    font-weight: 800;
+    line-height: .98;
+    letter-spacing: -4px;
+}
+
+.hero h1 span {
+    color: var(--accent-dark);
+}
+
+.hero-desc {
+    max-width: 500px;
+    margin: 28px 0;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.9;
+}
+
+.start {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px 22px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--accent-dark);
+    color: white;
+    font-size: 13px;
+    transition: .25s;
+}
+
+.start:hover {
+    background: #1c528a;
+    transform: translateY(-3px);
+}
+
+/* Hero Art */
+.hero-art {
+    position: relative;
+    height: 470px;
+}
+
+.blob {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    width: 390px;
+    height: 390px;
+    border-radius: 46% 54% 62% 38% / 40% 43% 57% 60%;
+    background: linear-gradient(135deg, #ffdc96, #ffeaa7);
+    transform: rotate(-12deg);
+    animation: float 6s ease-in-out infinite;
+}
+
+.monitor {
+    position: absolute;
+    top: 90px;
+    right: 45px;
+    width: min(330px, 85%);
+    height: 225px;
+    overflow: hidden;
+    border: 12px solid #385b73;
+    border-radius: 18px;
+    background: #1b2838;
+    box-shadow: 20px 25px 0 rgba(0, 0, 0, .07);
+    transform: rotate(5deg);
+}
+
+.monitor-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background:
+        radial-gradient(circle at 30% 30%, #ffdc96, transparent 30%),
+        linear-gradient(135deg, #385b73, #2b3e50);
+    color: white;
+}
+
+.monitor-os {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -2px;
+}
+
+.monitor-text {
+    font-size: 10px;
+    letter-spacing: 2px;
+    opacity: .75;
+}
+
+.keyboard {
+    position: absolute;
+    top: 325px;
+    right: 10px;
+    width: min(300px, 80%);
+    height: 70px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 15px 25px rgba(75, 158, 234, .15);
+    transform: rotate(-5deg);
+}
+
+.sticker {
+    position: absolute;
+    z-index: 2;
+    padding: 8px 12px;
+    border-radius: 9px;
+    box-shadow: 0 8px 20px rgba(75, 158, 234, .1);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.sticker.one {
+    top: 70px;
+    left: 30px;
+    background: #ffdc96;
+    color: #5a4522;
+    transform: rotate(-12deg);
+}
+
+.sticker.two {
+    right: 0;
+    bottom: 50px;
+    background: #4b9eea;
+    color: #fff;
+    transform: rotate(8deg);
+}
+
+.sticker.three {
+    bottom: 20px;
+    left: 80px;
+    background: white;
+    color: var(--accent-dark);
+    transform: rotate(5deg);
+}
+
+.mascot-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.mascot {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 3px solid #ffdc96;
+    border-radius: 50%;
+    background: #fff;
+    filter: drop-shadow(0 10px 13px rgba(75, 158, 234, .15));
+    animation: mascotBob 4.5s ease-in-out infinite;
+}
+
+.mascot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mascot.chii {
+    top: 5px;
+    right: 0;
+    width: 118px;
+    height: 118px;
+}
+
+.mascot.hachi {
+    bottom: 60px;
+    left: 0;
+    width: 88px;
+    height: 88px;
+    animation-delay: -2s;
+}
+
+.mascot.usa {
+    right: 5px;
+    bottom: 0;
+    width: 90px;
+    height: 90px;
+    animation-delay: -1.3s;
+}
+
+.mascot-note {
+    position: absolute;
+    top: 118px;
+    right: 12px;
+    padding: 8px 13px;
+    border-radius: 15px;
+    background: white;
+    color: var(--accent-dark);
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: 0 8px 22px rgba(75, 158, 234, .12);
+    transform: rotate(5deg);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-12deg); }
+    50% { transform: translateY(-12px) rotate(-8deg); }
+}
+
+@keyframes mascotBob {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-10px) rotate(3deg); }
+}
+
+/* Cards & Layout components */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.info-card {
+    padding: 22px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: linear-gradient(145deg, #fff, #f4f9ff);
+    transition: transform .25s, box-shadow .25s;
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(75, 158, 234, .12);
+}
+
+.card-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+    background: #e4f4ee;
+    font-size: 22px;
+}
+
+.info-card h3 {
+    margin-bottom: 8px;
+    color: var(--accent-dark);
+    font-size: 16px;
+}
+
+.info-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.definition-list {
+    padding-left: 22px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.9;
+}
+
+.definition-list li {
+    margin: 8px 0;
+}
+
+.definition-list li::marker {
+    color: var(--accent);
+}
+
+.note-box {
+    margin-top: 18px;
+    padding: 15px 17px;
+    border-radius: 16px;
+    background: var(--yellow-soft);
+    border: 1px solid #fae1aa;
+    color: #6a5a3a;
+    font-size: 13px;
+    line-height: 1.85;
+}
+
+.mini-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.mini-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.mini-card strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--accent-dark);
+}
+
+.mini-card span {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+}
+
+/* Summary section */
+.summary {
+    background: linear-gradient(135deg, #f4f9ff 0%, #fff9e7 58%, #eef7fc 100%);
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 24px;
+    align-items: stretch;
+    margin-top: 30px;
+}
+
+.summary-main,
+.summary-side {
+    padding: 30px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, .88);
+    box-shadow: var(--shadow);
+}
+
+.summary-main h3 {
+    margin-bottom: 20px;
+    color: var(--text);
+    font-size: 24px;
+}
+
+.summary-point {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    margin: 15px 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.summary-point-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    font-size: 16px;
+}
+
+.summary-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    background: linear-gradient(145deg, #e4f4ee, #d5edf5);
+}
+
+.summary-os {
+    margin-bottom: 8px;
+    color: var(--accent-dark);
+    font-size: clamp(48px, 6vw, 76px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -3px;
+}
+
+.summary-side h3 {
+    margin-bottom: 12px;
+    color: var(--text);
+    font-size: 20px;
+}
+
+.summary-side p {
+    margin-bottom: 22px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.chapter-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 35px;
+}
+
+.nav-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 20px;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: white;
+    color: var(--accent-dark);
+    font-size: 13px;
+    transition: .2s;
+}
+
+.nav-button:hover {
+    background: var(--accent-light);
+    transform: translateY(-2px);
+}
+
+.nav-button.next {
+    margin-left: auto;
+    border-color: var(--accent);
+    background: var(--accent);
+    color: white;
+}
+
+.nav-button.next:hover {
+    background: var(--accent-dark);
+}
+
+.footer {
+    padding: 25px 15px;
+    color: #889bb0;
+    font-size: 11px;
+    text-align: center;
+}
+
+/* เอฟเฟกต์คลิก "ลูกสน 🌰" แตกกระจาย */
+.pinecone-click-effect {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 1px;
+    z-index: 99999;
+    pointer-events: none;
+}
+
+.pinecone-main {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 22px;
+    line-height: 1;
+    transform: translate(-50%, -50%) scale(.3);
+    animation: pineconePop .4s cubic-bezier(.2,.8,.3,1.3) forwards;
+}
+
+.pinecone-main.burst {
+    animation: pineconeBurst .25s ease-out forwards;
+}
+
+.pinecone-particle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 12px;
+    line-height: 1;
+    transform: translate(-50%, -50%);
+    animation: pineconeParticle .7s ease-out forwards;
+}
+
+.pinecone-sparkle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #f2dfa0;
+    font-size: 11px;
+    animation: pineconeSparkle .65s ease-out forwards;
+}
+
+@keyframes pineconePop {
+    0% {
+        transform: translate(-50%, -50%) scale(.2) rotate(-25deg);
+        opacity: 0;
+    }
+    65% {
+        transform: translate(-50%, -50%) scale(1.15) rotate(8deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+@keyframes pineconeBurst {
+    to {
+        transform: translate(-50%, -50%) scale(.1);
+        opacity: 0;
+    }
+}
+
+@keyframes pineconeParticle {
+    to {
+        transform: translate(calc(-50% + var(--move-x)), calc(-50% + var(--move-y))) scale(.2) rotate(160deg);
+        opacity: 0;
+    }
+}
+
+@keyframes pineconeSparkle {
+    to {
+        transform: translate(calc(-50% + var(--move-x)), calc(-50% + var(--move-y))) scale(.2) rotate(180deg);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 900px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    .hero-art {
+        width: 100%;
+        max-width: 520px;
+        height: 380px;
+        margin: auto;
+    }
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<!-- Loading Screen (หน้าจอโหลดเวลากลับหน้าแรกหรือเปลี่ยนหน้า) -->
+<div class="loading-screen" id="loadingScreen">
+    <div class="loading-card">
+        <div class="loading-logo">OS <span>LEARNING</span> 💻</div>
+        <div class="spinner"></div>
+        <h2>กำลังกลับสู่หน้าหลัก</h2>
+        <p>กรุณารอสักครู่ ระบบกำลังพาคุณกลับหน้าแรก...</p>
+        <div class="progress-track">
+            <div class="progress-bar-load" id="progressBarLoad"></div>
+        </div>
+        <span class="progress-percent" id="progressPercent">0%</span>
+    </div>
+</div>
+
+<!-- Navigation -->
+<nav class="nav" aria-label="เมนูหลัก">
+    <div class="nav-left">
+        <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="current-chapter-indicator">
+            <span class="current-chapter-badge">04</span>
+            <span>บทที่ 4: การเลือกใช้และติดตั้งระบบปฏิบัติการ</span>
+        </div>
+    </div>
+
+    <div class="nav-right">
+        <a class="nav-btn" href="#home">หน้าบทเรียน</a>
+        <a class="nav-btn" href="#types">ประเภท OS</a>
+        <a class="nav-btn" href="#windows">ติดตั้ง Windows</a>
+        <a class="nav-btn" href="#ubuntu">Ubuntu & VMware</a>
+        <a class="nav-btn" href="#summary">สรุป</a>
+    </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar" aria-label="เมนูบทเรียน">
+    <div class="sidebar-top">
+        <div class="sidebar-title">เมนูบทเรียน</div>
+        <button class="close-sidebar" id="closeSidebar" aria-label="ปิดเมนู">×</button>
+    </div>
+
+    <div class="sidebar-label">กลับไปหน้าแรก</div>
+    <a class="sidebar-link home-link nav-link-load" href="index.html">🏠 กลับหน้าหลัก</a>
+
+    <div class="sidebar-label">หัวข้อในบทที่ 4</div>
+    <a class="sidebar-link" href="#home">🚀 หน้าบทเรียน</a>
+    <a class="sidebar-link" href="#types">01 ประเภทระบบปฏิบัติการ</a>
+    <a class="sidebar-link" href="#windows">02 ติดตั้ง Windows 11</a>
+    <a class="sidebar-link" href="#ubuntu">03 ใช้งาน Ubuntu บน VMware</a>
+    <a class="sidebar-link" href="#summary">04 สรุปบทเรียน</a>
+    <a class="sidebar-link nav-link-load" href="Game4.html">🎮 เกมทดสอบความรู้ท้ายบท</a>
+</aside>
+
+<main>
+    <!-- Hero Section -->
+    <section class="slide hero" id="home">
+        <div class="slide-inner hero-grid">
+            <div class="hero-copy">
+                <div class="chapter">บทเรียนที่ 4 · OS LEARNING</div>
+                <h1>เลือกใช้<br><span>และติดตั้ง</span><br>ระบบปฏิบัติการ</h1>
+                <p class="hero-desc">
+                    เรียนรู้การเลือกใช้ระบบปฏิบัติการมาตรฐานปิดและมาตรฐานเปิด
+                    พร้อมทำความเข้าใจขั้นตอนการติดตั้ง Windows 11 และการใช้งาน Ubuntu
+                    ผ่านโปรแกรมจำลองเครื่องคอมพิวเตอร์
+                </p>
+                <a href="#types" class="start">เริ่มเรียนบทที่ 4 <span aria-hidden="true">→</span></a>
+            </div>
+
+            <div class="hero-art" aria-label="ภาพประกอบโมโมงะและระบบปฏิบัติการ">
+                <div class="blob"></div>
+                <div class="monitor">
+                    <div class="monitor-screen">
+                        <div class="monitor-os">OS 4</div>
+                        <div class="monitor-text">INSTALL & SETUP</div>
+                    </div>
+                </div>
+                <div class="keyboard"></div>
+                <div class="sticker one">WINDOWS</div>
+                <div class="sticker two">UBUNTU</div>
+                <div class="sticker three">VMWARE</div>
+
+                <div class="mascot-stage">
+                    <div class="mascot chii"><img src="โมโมงะ1.jpg" alt="โมโมงะ 1"></div>
+                    <div class="mascot hachi"><img src="โมโมงะ2.jpg" alt="โมโมงะ 2"></div>
+                    <div class="mascot usa"><img src="โมโมงะ3.jpg" alt="โมโมงะ 3"></div>
+                    <div class="mascot-note">สู้ๆ นะคะทุกคน! ♡</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 01 Types of OS -->
+    <section class="slide" id="types">
+        <div class="slide-inner">
+            <div class="section-kicker">01 · Operating System Types</div>
+            <h2 class="section-title">ประเภทของระบบปฏิบัติการ<br><span>มาตรฐานปิดและมาตรฐานเปิด</span></h2>
+            <p class="section-desc">
+                การเลือกใช้ระบบปฏิบัติการให้เหมาะสมกับงานและความต้องการของผู้ใช้
+            </p>
+
+            <div class="card-grid">
+                <article class="info-card">
+                    <div class="card-icon">🪟</div>
+                    <h3>Windows (มาตรฐานปิด)</h3>
+                    <p>ระบบปฏิบัติการมีลิขสิทธิ์ มีรุ่นสำหรับผู้ใช้ทั่วไป (Home) ธุรกิจ (Pro) และองค์กร (Enterprise/Education)</p>
+                </article>
+
+                <article class="info-card">
+                    <div class="card-icon">🐧</div>
+                    <h3>Ubuntu (มาตรฐานเปิด)</h3>
+                    <p>ระบบปฏิบัติการบนพื้นฐาน Linux ใช้งานได้ฟรี ปรับแต่งได้ง่าย เหมาะสำหรับการเรียนรู้และพัฒนา</p>
+                </article>
+
+                <article class="info-card">
+                    <div class="card-icon">🖥️</div>
+                    <h3>FreeBSD</h3>
+                    <p>ระบบปฏิบัติการเสรีแบบ Unix-like โดดเด่นด้านเสถียรภาพ เหมาะสำหรับงานเซิร์ฟเวอร์และระบบเครือข่าย</p>
+                </article>
+
+                <article class="info-card">
+                    <div class="card-icon">📦</div>
+                    <h3>VMware Workstation</h3>
+                    <p>โปรแกรมจำลองเครื่องคอมพิวเตอร์ (Virtual Machine) สำหรับทดลองติดตั้งระบบปฏิบัติการต่างๆ</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- 02 Windows Installation -->
+    <section class="slide" id="windows">
+        <div class="slide-inner">
+            <div class="section-kicker">02 · Windows 11 Installation</div>
+            <h2 class="section-title">ขั้นตอนการติดตั้ง<br><span>Windows 11</span></h2>
+            <p class="section-desc">
+                เตรียมความพร้อมและทำตามขั้นตอนการติดตั้ง Windows 11 ตั้งแต่การสร้าง USB Boot จนถึงการตั้งค่าหลังติดตั้ง
+            </p>
+
+            <div class="content-panel">
+                <h3 style="color:var(--accent-dark); margin-bottom:12px;">ขั้นตอนหลักในการติดตั้ง Windows 11</h3>
+                <ul class="definition-list">
+                    <li><strong>1. การเตรียม USB Boot:</strong> ดาวน์โหลดไฟล์ ISO และใช้โปรแกรม Rufus เขียนลง USB Flash Drive (GPT/UEFI)</li>
+                    <li><strong>2. การตั้งค่า BIOS:</strong> รีสตาร์ทเครื่อง เข้า BIOS (กด F2 หรือตามผู้ผลิต) แล้วตั้งค่าให้บูตจาก USB เป็นลำดับแรก</li>
+                    <li><strong>3. การติดตั้งระบบ:</strong> บูตเข้าหน้าติดตั้ง เลือกภาษา คลิก Install Now ยอมรับเงื่อนไข และเลือกพาร์ทิชันที่ต้องการติดตั้ง</li>
+                    <li><strong>4. การตั้งค่า OOBE:</strong> ตั้งค่าภูมิภาค เชื่อมต่ออินเทอร์เน็ต ลงชื่อเข้าใช้บัญชี Microsoft และตั้งรหัส PIN</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 03 Ubuntu & VMware -->
+    <section class="slide" id="ubuntu">
+        <div class="slide-inner">
+            <div class="section-kicker">03 · Ubuntu & VMware</div>
+            <h2 class="section-title">การใช้งาน Ubuntu<br><span>ผ่านเครื่องเสมือน VMware</span></h2>
+            <p class="section-desc">
+                ทดลองใช้งานระบบปฏิบัติการ Linux บนเครื่องเสมือนโดยไม่ต้องติดตั้งลงเครื่องจริง
+            </p>
+
+            <div class="mini-card-grid">
+                <div class="mini-card">
+                    <strong>สร้าง Virtual Machine</strong>
+                    <span>เปิด VMware เลือก Create New Virtual Machine เลือกไฟล์ ISO ของ Ubuntu และกำหนดขนาดฮาร์ดดิสก์เสมือน</span>
+                </div>
+                <div class="mini-card">
+                    <strong>การตั้งค่าภาษาไทย</strong>
+                    <span>เข้าสู่เดสก์ท็อป Ubuntu ไปที่ Settings > Region & Language แล้วเลือกติดตั้งชุดภาษาไทยเพื่อใช้งานได้อย่างสะดวก</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Summary -->
+    <section class="slide summary" id="summary">
+        <div class="slide-inner">
+            <div class="section-kicker">04 · Lesson Summary</div>
+            <h2 class="section-title">ก่อนจบบทเรียน<br><span>จำเรื่องสำคัญไว้</span></h2>
+            <p class="section-desc">
+                ทบทวนแนวคิดหลักของบทที่ 4 เรื่องการเลือกใช้และการติดตั้งระบบปฏิบัติการ
+            </p>
+
+            <div class="summary-grid">
+                <div class="summary-main">
+                    <h3>บทที่ 4 ในหนึ่งหน้าจอ</h3>
+
+                    <div class="summary-point">
+                        <span class="summary-point-icon">💻</span>
+                        <div>Windows เป็นมาตรฐานปิดที่มีหลายรุ่นให้เลือกตามลักษณะงาน ส่วน Ubuntu และ FreeBSD เป็นมาตรฐานเปิดที่ได้รับความนิยม</div>
+                    </div>
+
+                    <div class="summary-point">
+                        <span class="summary-point-icon">💿</span>
+                        <div>การติดตั้ง Windows 11 ต้องเตรียม USB Boot ด้วย Rufus ตั้งค่า BIOS และดำเนินการตามขั้นตอน OOBE</div>
+                    </div>
+
+                    <div class="summary-point">
+                        <span class="summary-point-icon">📦</span>
+                        <div>VMware ช่วยให้เราจำลองเครื่องคอมพิวเตอร์เพื่อทดลองติดตั้ง Ubuntu และตั้งค่าระบบภาษาไทยได้อย่างปลอดภัย</div>
+                    </div>
+                </div>
+
+                <div class="summary-side">
+                    <div class="summary-os">OS 4</div>
+                    <h3>เลือกใช้ระบบปฏิบัติการให้เหมาะกับงาน</h3>
+                    <p>
+                        เมื่อเข้าใจวิธีการติดตั้งและเลือกใช้งานแล้ว
+                        สามารถทดสอบความรู้เพิ่มเติมได้ที่เกมท้ายบทเรียนเลยครับ!
+                    </p>
+                    <a href="Game4.html" class="start nav-link-load" style="width:100%; text-align:center; justify-content:center;">🎮 เล่นเกมท้ายบท →</a>
+                </div>
+            </div>
+
+            <div class="chapter-nav">
+                <a class="nav-button" href="chapter3.html">← บทที่ 3</a>
+                <a class="nav-button next nav-link-load" href="index.html">กลับหน้าแรก 🏠</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    OS Learning | เว็บไซต์ประกอบการเรียนรู้รายวิชาระบบปฏิบัติการคอมพิวเตอร์
+</footer>
+
+<script>
+const menuToggle = document.getElementById("menuToggle");
+const sidebar = document.getElementById("sidebar");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+const closeSidebar = document.getElementById("closeSidebar");
+const progress = document.getElementById("progress");
+
+function openMenu() {
+    sidebar.classList.add("open");
+    sidebarOverlay.classList.add("show");
+    menuToggle.setAttribute("aria-expanded", "true");
+}
+
+function closeMenu() {
+    sidebar.classList.remove("open");
+    sidebarOverlay.classList.remove("show");
+    menuToggle.setAttribute("aria-expanded", "false");
+}
+
+menuToggle.addEventListener("click", () => {
+    if (sidebar.classList.contains("open")) {
+        closeMenu();
+    } else {
+        openMenu();
+    }
+});
+
+closeSidebar.addEventListener("click", closeMenu);
+sidebarOverlay.addEventListener("click", closeMenu);
+
+document.querySelectorAll(".sidebar-link:not(.nav-link-load)").forEach(link => {
+    link.addEventListener("click", closeMenu);
+});
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeMenu();
+});
+
+function updateProgress() {
+    const scrollTop = window.scrollY;
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const percentage = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    progress.style.width = percentage + "%";
+}
+
+window.addEventListener("scroll", updateProgress, { passive: true });
+window.addEventListener("resize", updateProgress);
+updateProgress();
+
+/* Loading Screen สำหรับปุ่มกลับหน้าแรกหรือเปลี่ยนหน้า */
+const loadingScreen = document.getElementById("loadingScreen");
+const progressBarLoad = document.getElementById("progressBarLoad");
+const progressPercent = document.getElementById("progressPercent");
+
+document.querySelectorAll(".nav-link-load").forEach(link => {
+    link.addEventListener("click", function(e) {
+        e.preventDefault();
+        const targetUrl = this.getAttribute("href");
+
+        closeMenu();
+        loadingScreen.classList.add("show");
+        document.body.classList.add("loading-active");
+
+        let currentPercent = 0;
+        const duration = 700;
+        const intervalTime = 20;
+        const step = (intervalTime / duration) * 100;
+
+        const timer = setInterval(() => {
+            currentPercent += step;
+            if (currentPercent >= 100) {
+                currentPercent = 100;
+                clearInterval(timer);
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 150);
+            }
+            progressBarLoad.style.width = `${currentPercent}%`;
+            progressPercent.textContent = `${Math.round(currentPercent)}%`;
+        }, intervalTime);
+    });
+});
+
+/* เอฟเฟกต์คลิก "ลูกสน 🌰" แตกกระจาย */
+document.addEventListener("click", event => {
+    if (event.target.closest("a, button") || event.target.closest("#loadingScreen")) return;
+
+    const effect = document.createElement("div");
+    effect.className = "pinecone-click-effect";
+    effect.style.left = event.clientX + "px";
+    effect.style.top = event.clientY + "px";
+
+    const pinecone = document.createElement("span");
+    pinecone.className = "pinecone-main";
+    pinecone.textContent = "🌰";
+    effect.appendChild(pinecone);
+    document.body.appendChild(effect);
+
+    setTimeout(() => {
+        pinecone.classList.add("burst");
+
+        for (let i = 0; i < 9; i++) {
+            const angle = (Math.PI * 2 * i) / 9;
+            const distance = 20 + Math.random() * 25;
+            const particle = document.createElement("span");
+            particle.className = "pinecone-particle";
+            particle.textContent = "🌰";
+            particle.style.setProperty("--move-x", Math.cos(angle) * distance + "px");
+            particle.style.setProperty("--move-y", Math.sin(angle) * distance + "px");
+            effect.appendChild(particle);
+        }
+
+        for (let i = 0; i < 4; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 22 + Math.random() * 25;
+            const sparkle = document.createElement("span");
+            sparkle.className = "pinecone-sparkle";
+            sparkle.textContent = "✦";
+            sparkle.style.setProperty("--move-x", Math.cos(angle) * distance + "px");
+            sparkle.style.setProperty("--move-y", Math.sin(angle) * distance + "px");
+            effect.appendChild(sparkle);
+        }
+
+        setTimeout(() => effect.remove(), 750);
+    }, 350);
+});
+</script>
+</body>
+</html>

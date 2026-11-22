@@ -1,0 +1,1572 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="บทเรียนออนไลน์ บทที่ 3 เรื่องการประมวลผลบนกลุ่มเมฆ Cloud Computing">
+<title>บทที่ 3 | การประมวลผลบนกลุ่มเมฆ</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --accent: #e9a33c;
+    --accent-dark: #c47b1d;
+    --accent-light: #fff2d6;
+    --accent-pale: #fffaf0;
+    --text: #514354;
+    --muted: #887b8b;
+    --border: #f3dfb6;
+    --shadow: 0 15px 40px rgba(140, 90, 22, .08);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 95px;
+}
+
+body {
+    font-family: 'Prompt', sans-serif;
+    background: #fffaf5;
+    color: var(--text);
+    line-height: 1.8;
+}
+
+button,
+a {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+}
+
+/* Reading progress */
+.progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2000;
+    width: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #f6c65f, #e9a33c);
+    transition: width .15s;
+}
+
+/* Navigation */
+.nav {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: min(1100px, calc(100% - 30px));
+    min-height: 58px;
+    padding: 8px 18px;
+    transform: translateX(-50%);
+    border: 1px solid #f5e7cf;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, .93);
+    backdrop-filter: blur(18px);
+    box-shadow: var(--shadow);
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.menu-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 0 0 auto;
+    width: 32px;
+    height: 24px;
+    padding: 2px;
+    border: 0;
+    background: transparent;
+}
+
+.menu-toggle span {
+    width: 100%;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--text);
+}
+
+.current-chapter-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.current-chapter-badge {
+    display: grid;
+    place-items: center;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f6c65f, #e9a33c);
+    color: white;
+    font-size: 14px;
+    box-shadow: 0 5px 14px rgba(233, 163, 60, .25);
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nav-btn {
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #687f83;
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: .2s;
+}
+
+.nav-btn:hover {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+}
+
+/* Sidebar */
+.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    background: rgba(61, 47, 36, .28);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    visibility: hidden;
+    transition: .3s;
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1300;
+    width: 310px;
+    max-width: 85vw;
+    height: 100vh;
+    padding: 25px 20px;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, .98);
+    box-shadow: 10px 0 35px rgba(140, 90, 22, .12);
+    transform: translateX(-110%);
+    transition: transform .35s ease;
+}
+
+.sidebar.open {
+    transform: translateX(0);
+}
+
+.sidebar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.sidebar-title {
+    color: var(--accent-dark);
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.close-sidebar {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    font-size: 22px;
+}
+
+.sidebar-character {
+    display: block;
+    width: 125px;
+    height: 125px;
+    margin: 0 auto 18px;
+    object-fit: contain;
+}
+
+.sidebar-label {
+    margin: 18px 0 8px;
+    color: #b58b51;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 5px 0;
+    padding: 11px 13px;
+    border-radius: 13px;
+    color: var(--text);
+    font-size: 13px;
+    text-decoration: none;
+    transition: .2s;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    transform: translateX(3px);
+}
+
+/* ปุ่มกลับหน้าแรกในเมนูสามขีด */
+.sidebar-link.home-link {
+    margin-bottom: 14px;
+    padding: 13px 15px;
+    border: 1px solid #f3dfb6;
+    background: linear-gradient(135deg, #fff8e8, #fff0cf);
+    color: #a96b20;
+    font-weight: 700;
+}
+
+.sidebar-link.home-link:hover {
+    background: #ffedc5;
+}
+
+/* General slide layout */
+.slide {
+    position: relative;
+    min-height: 100vh;
+    padding: 120px 7vw 80px;
+    overflow: hidden;
+    scroll-margin-top: 0;
+}
+
+.slide-inner {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+}
+
+.section-kicker {
+    margin-bottom: 12px;
+    color: var(--accent-dark);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.section-title {
+    margin-bottom: 16px;
+    color: var(--text);
+    font-size: clamp(30px, 4vw, 52px);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -1px;
+}
+
+.section-title span {
+    color: var(--accent-dark);
+}
+
+.section-desc {
+    max-width: 760px;
+    margin-bottom: 30px;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.content-panel {
+    padding: 30px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, .9);
+    box-shadow: var(--shadow);
+}
+
+.content-panel p {
+    margin-bottom: 14px;
+    color: #766879;
+    font-size: 14px;
+}
+
+.content-panel p:last-child {
+    margin-bottom: 0;
+}
+
+.highlight {
+    color: var(--accent-dark);
+    font-weight: 700;
+}
+
+.note {
+    margin-top: 22px;
+    padding: 16px 19px;
+    border-left: 4px solid #f2b64f;
+    border-radius: 12px;
+    background: #fff8e8;
+    color: #806a52;
+    font-size: 13px;
+}
+
+/* Hero — same two-column structure as Chapter 2 */
+.hero {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #fffaf4 0%, #fff1d9 58%, #fff7e9 100%);
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 60px;
+}
+
+.chapter {
+    margin-bottom: 18px;
+    color: var(--accent-dark);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.hero h1 {
+    color: var(--text);
+    font-size: clamp(48px, 7vw, 88px);
+    font-weight: 800;
+    line-height: .98;
+    letter-spacing: -4px;
+}
+
+.hero h1 span {
+    color: #e4a13a;
+}
+
+.hero-desc {
+    max-width: 500px;
+    margin: 28px 0;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.9;
+}
+
+.start {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 15px 22px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--text);
+    color: white;
+    font-size: 13px;
+    text-decoration: none;
+    transition: .25s;
+}
+
+.start:hover {
+    background: var(--accent-dark);
+    transform: translateY(-3px);
+}
+
+.hero-art {
+    position: relative;
+    height: 470px;
+}
+
+.blob {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    width: 390px;
+    height: 390px;
+    border-radius: 46% 54% 62% 38% / 40% 43% 57% 60%;
+    background: linear-gradient(135deg, #f9dfa0, #f4c875);
+    transform: rotate(-12deg);
+    animation: float 6s ease-in-out infinite;
+}
+
+.monitor {
+    position: absolute;
+    top: 90px;
+    right: 45px;
+    width: min(330px, 85%);
+    height: 225px;
+    overflow: hidden;
+    border: 12px solid #8e7d69;
+    border-radius: 18px;
+    background: #11172a;
+    box-shadow: 20px 25px 0 rgba(0, 0, 0, .07);
+    transform: rotate(5deg);
+}
+
+.monitor-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background:
+        radial-gradient(circle at 30% 30%, #ffe1a3, transparent 30%),
+        linear-gradient(135deg, #7a6247, #514354);
+    color: white;
+}
+
+.monitor-os {
+    font-size: 43px;
+    font-weight: 800;
+    letter-spacing: -2px;
+}
+
+.monitor-text {
+    font-size: 10px;
+    letter-spacing: 2px;
+    opacity: .75;
+}
+
+.keyboard {
+    position: absolute;
+    top: 325px;
+    right: 10px;
+    width: min(300px, 80%);
+    height: 70px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 15px 25px rgba(140, 90, 22, .1);
+    transform: rotate(-5deg);
+}
+
+.sticker {
+    position: absolute;
+    z-index: 2;
+    padding: 8px 12px;
+    border-radius: 9px;
+    box-shadow: 0 8px 20px rgba(140, 90, 22, .1);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.sticker.one {
+    top: 70px;
+    left: 30px;
+    background: #f7d27e;
+    color: #76552b;
+    transform: rotate(-12deg);
+}
+
+.sticker.two {
+    right: 0;
+    bottom: 50px;
+    background: #f3d9a6;
+    color: #76552b;
+    transform: rotate(8deg);
+}
+
+.sticker.three {
+    bottom: 20px;
+    left: 80px;
+    background: white;
+    color: #76552b;
+    transform: rotate(5deg);
+}
+
+.mascot-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.mascot {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 3px solid #f3d99c;
+    border-radius: 50%;
+    background: #fff;
+    filter: drop-shadow(0 10px 13px rgba(135, 107, 58, .15));
+    animation: mascotBob 4.5s ease-in-out infinite;
+}
+
+.mascot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.mascot.chii {
+    top: 5px;
+    right: 0;
+    width: 118px;
+    height: 118px;
+}
+
+.mascot.hachi {
+    bottom: 60px;
+    left: 0;
+    width: 88px;
+    height: 88px;
+    animation-delay: -2s;
+}
+
+.mascot.usa {
+    right: 5px;
+    bottom: 0;
+    width: 90px;
+    height: 90px;
+    animation-delay: -1.3s;
+}
+
+.mascot-note {
+    position: absolute;
+    top: 118px;
+    right: 12px;
+    padding: 8px 13px;
+    border-radius: 15px;
+    background: white;
+    color: #9b6c2a;
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: 0 8px 22px rgba(157, 108, 134, .12);
+    transform: rotate(5deg);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-12deg); }
+    50% { transform: translateY(-12px) rotate(-8deg); }
+}
+
+@keyframes mascotBob {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-10px) rotate(3deg); }
+}
+
+/* Cards */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.info-card {
+    padding: 22px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: linear-gradient(145deg, #fff, #fffaf0);
+    transition: transform .25s, box-shadow .25s;
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(190, 130, 40, .1);
+}
+
+.card-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+    background: #fff0c9;
+    font-size: 22px;
+}
+
+.info-card h3 {
+    margin-bottom: 8px;
+    color: #c98227;
+    font-size: 16px;
+}
+
+.info-card p {
+    margin: 0;
+    color: #766879;
+    font-size: 13px;
+}
+
+.bullet-list {
+    padding-left: 22px;
+    color: #766879;
+    font-size: 14px;
+}
+
+.bullet-list li {
+    margin: 8px 0;
+    padding-left: 4px;
+}
+
+.bullet-list li::marker {
+    color: var(--accent);
+}
+
+/* Cloud structure */
+.structure {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 15px;
+    margin: 22px 0;
+}
+
+.structure-box {
+    min-height: 160px;
+    padding: 22px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: #fffaf0;
+    text-align: center;
+}
+
+.structure-box h3 {
+    margin-bottom: 8px;
+    color: #c98227;
+    font-size: 17px;
+}
+
+.structure-box p {
+    margin: 0;
+    color: #766879;
+    font-size: 13px;
+}
+
+.structure-arrow {
+    color: #e9a13b;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* Deployment models */
+.model-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.model-card {
+    position: relative;
+    padding: 23px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: white;
+}
+
+.model-card::after {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #fff0c9;
+    content: "";
+}
+
+.model-card h3 {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 8px;
+    color: #c98227;
+    font-size: 17px;
+}
+
+.model-card p {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    color: #766879;
+    font-size: 13px;
+}
+
+.tag {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #fff0d8;
+    color: #b77c2a;
+    font-size: 11px;
+}
+
+/* Tables */
+.table-wrap {
+    margin-top: 15px;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: white;
+}
+
+table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th {
+    padding: 14px;
+    background: #fff3d6;
+    color: #b77c2a;
+    text-align: left;
+}
+
+td {
+    padding: 13px 14px;
+    border-top: 1px solid #f6e8cd;
+    color: #766879;
+    vertical-align: top;
+}
+
+tr:nth-child(even) td {
+    background: #fffcf5;
+}
+
+/* Google Drive steps */
+.steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+}
+
+.step {
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    background: #fff8e8;
+}
+
+.step-number {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    background: #f2ad42;
+    color: white;
+    font-weight: 700;
+}
+
+.step h3 {
+    margin-bottom: 6px;
+    color: #a96732;
+    font-size: 14px;
+}
+
+.step p {
+    margin: 0;
+    color: #766879;
+    font-size: 12px;
+}
+
+/* Summary — two-column layout */
+.summary {
+    background: linear-gradient(135deg, #fffaf4 0%, #fff1d9 58%, #fff7e9 100%);
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 24px;
+    align-items: stretch;
+}
+
+.summary-main,
+.summary-side {
+    padding: 30px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, .88);
+    box-shadow: var(--shadow);
+}
+
+.summary-main h3 {
+    margin-bottom: 20px;
+    color: var(--text);
+    font-size: 24px;
+}
+
+.summary-point {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    margin: 15px 0;
+    color: #766879;
+    font-size: 14px;
+}
+
+.summary-point:last-child {
+    margin-bottom: 0;
+}
+
+.summary-point-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    background: var(--accent-light);
+    color: var(--accent-dark);
+    font-size: 16px;
+}
+
+.summary-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    background: linear-gradient(145deg, #fff3d6, #ffead2);
+}
+
+.summary-os {
+    margin-bottom: 8px;
+    color: #d88722;
+    font-size: clamp(48px, 6vw, 76px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -3px;
+}
+
+.summary-side h3 {
+    margin-bottom: 12px;
+    color: var(--text);
+    font-size: 20px;
+}
+
+.summary-side p {
+    margin-bottom: 22px;
+    color: #887b8b;
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.summary-side .start {
+    margin-top: auto;
+}
+
+/* Chapter navigation */
+.chapter-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 35px;
+}
+
+.nav-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 20px;
+    border: 1px solid #f2d9aa;
+    border-radius: 15px;
+    background: white;
+    color: #b77c2a;
+    font-size: 13px;
+    text-decoration: none;
+    transition: .2s;
+}
+
+.nav-button:hover {
+    background: var(--accent-light);
+    transform: translateY(-2px);
+}
+
+.nav-button.next {
+    margin-left: auto;
+    border-color: #f5b64f;
+    background: #f5b64f;
+    color: white;
+}
+
+.nav-button.next:hover {
+    background: #e99a2e;
+}
+
+.footer {
+    padding: 25px 15px;
+    color: #b49aaa;
+    font-size: 11px;
+    text-align: center;
+}
+
+/* Carrot click burst */
+.carrot-particle {
+    position: fixed;
+    z-index: 9998;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+    filter: drop-shadow(0 3px 3px rgba(140, 90, 22, .15));
+    animation: carrotBurst 750ms cubic-bezier(.15, .7, .25, 1) forwards;
+}
+
+@keyframes carrotBurst {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.25) rotate(-25deg);
+    }
+    18% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.15) rotate(15deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(
+            calc(-50% + var(--carrot-x)),
+            calc(-50% + var(--carrot-y))
+        ) scale(.65) rotate(var(--carrot-rotate));
+    }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .hero-art {
+        width: 100%;
+        max-width: 520px;
+        height: 380px;
+        margin: auto;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-side {
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 700px) {
+    .nav {
+        top: 8px;
+        width: calc(100% - 16px);
+        padding: 7px 10px;
+    }
+
+    .nav-right {
+        display: none;
+    }
+
+    .current-chapter-indicator {
+        gap: 7px;
+        font-size: 11px;
+    }
+
+    .current-chapter-badge {
+        flex-basis: 34px;
+        width: 34px;
+        height: 34px;
+    }
+
+    .slide {
+        padding: 100px 20px 60px;
+    }
+
+    .hero h1 {
+        font-size: 52px;
+        letter-spacing: -2px;
+    }
+
+    .hero-art {
+        margin-bottom: -35px;
+        transform: scale(.88);
+        transform-origin: top center;
+    }
+
+    .card-grid,
+    .model-grid,
+    .steps {
+        grid-template-columns: 1fr;
+    }
+
+    .structure {
+        grid-template-columns: 1fr;
+    }
+
+    .structure-arrow {
+        text-align: center;
+        transform: rotate(90deg);
+    }
+
+    .content-panel,
+    .summary-main,
+    .summary-side {
+        padding: 22px;
+    }
+
+    .section-title {
+        font-size: 32px;
+    }
+
+    .summary-main h3 {
+        font-size: 21px;
+    }
+
+    .mascot.chii {
+        width: 82px;
+        height: 82px;
+    }
+
+    .mascot.hachi,
+    .mascot.usa {
+        width: 65px;
+        height: 65px;
+    }
+
+    .chapter-nav {
+        flex-direction: column;
+    }
+
+    .nav-button,
+    .nav-button.next {
+        justify-content: center;
+        margin-left: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<!-- Main navigation -->
+<nav class="nav" aria-label="เมนูหลัก">
+    <div class="nav-left">
+        <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="current-chapter-indicator">
+            <span class="current-chapter-badge">03</span>
+            <span>บทที่ 3: การประมวลผลบนกลุ่มเมฆ</span>
+        </div>
+    </div>
+
+    <div class="nav-right">
+        <a class="nav-btn" href="#home">หน้าบทเรียน</a>
+        <a class="nav-btn" href="#meaning">ความหมาย</a>
+        <a class="nav-btn" href="#structure">โครงสร้าง</a>
+        <a class="nav-btn" href="#drive">Google Drive</a>
+        <a class="nav-btn" href="#summary">สรุป</a>
+    </div>
+</nav>
+
+<!-- Sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar" aria-label="เมนูบทเรียน">
+    <div class="sidebar-top">
+        <div class="sidebar-title">เมนูบทเรียน</div>
+        <button class="close-sidebar" id="closeSidebar" aria-label="ปิดเมนู">×</button>
+    </div>
+
+    <div class="sidebar-label">กลับไปหน้าแรก</div>
+    <a class="sidebar-link home-link" href="index.html">🏠 กลับหน้าหลัก</a>
+
+    <div class="sidebar-label">หัวข้อในบทที่ 3</div>
+    <a class="sidebar-link" href="#home">☁️ หน้าบทเรียน</a>
+    <a class="sidebar-link" href="#meaning">01 ความหมายและประโยชน์</a>
+    <a class="sidebar-link" href="#structure">02 โครงสร้างการทำงาน</a>
+    <a class="sidebar-link" href="#deployment">03 รูปแบบการให้บริการ</a>
+    <a class="sidebar-link" href="#service">04 ประเภทบริการ Cloud</a>
+    <a class="sidebar-link" href="#drive">05 การใช้งาน Google Drive</a>
+    <a class="sidebar-link" href="#summary">06 สรุปบทเรียน</a>
+</aside>
+
+<main>
+    <!-- Hero -->
+    <section class="slide hero" id="home">
+        <div class="slide-inner hero-grid">
+            <div class="hero-copy">
+                <div class="chapter">บทเรียนที่ 3 · OS LEARNING</div>
+                <h1>การประมวลผลบน<br><span>กลุ่มเมฆ</span><br>คอมพิวเตอร์</h1>
+                <p class="hero-desc">
+                    เรียนรู้แนวคิดการใช้ทรัพยากรคอมพิวเตอร์ผ่านอินเทอร์เน็ต
+                    รูปแบบการให้บริการ และการใช้งาน Google Drive
+                    เพื่อจัดเก็บและแบ่งปันข้อมูล
+                </p>
+                <a href="#meaning" class="start">เริ่มเรียนบทที่ 3 <span aria-hidden="true">→</span></a>
+            </div>
+
+            <div class="hero-art" aria-label="ภาพประกอบ Cloud Computing และอูซางิ">
+                <div class="blob"></div>
+                <div class="monitor">
+                    <div class="monitor-screen">
+                        <div class="monitor-os">CLOUD</div>
+                        <div class="monitor-text">CLOUD COMPUTING</div>
+                    </div>
+                </div>
+                <div class="keyboard"></div>
+                <div class="sticker one">CLOUD</div>
+                <div class="sticker two">ONLINE STORAGE</div>
+                <div class="sticker three">GOOGLE DRIVE</div>
+
+                <div class="mascot-stage">
+                    <div class="mascot chii"><img src="อูซางิ1.jpg" alt="อูซางิ"></div>
+                    <div class="mascot hachi"><img src="อูซางิ2.jpg" alt="อูซางิ"></div>
+                    <div class="mascot usa"><img src="อูซางิ3.jpg" alt="อูซางิ"></div>
+                    <div class="mascot-note">มาเรียนด้วยกันนะ ♡</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 01 Meaning and benefits -->
+    <section class="slide" id="meaning">
+        <div class="slide-inner">
+            <div class="section-kicker">01 · Cloud Computing</div>
+            <h2 class="section-title">ความหมายและประโยชน์<br><span>ของ Cloud Computing</span></h2>
+            <p class="section-desc">
+                การประมวลผลบนกลุ่มเมฆ คือการใช้ทรัพยากรคอมพิวเตอร์ผ่านเครือข่ายอินเทอร์เน็ต
+                โดยไม่จำเป็นต้องติดตั้งหรือดูแลระบบทั้งหมดด้วยตนเอง
+            </p>
+
+            <div class="content-panel">
+                <p>
+                    <span class="highlight">การประมวลผลบนกลุ่มเมฆ (Cloud Computing)</span>
+                    คือ การให้บริการทรัพยากรคอมพิวเตอร์ผ่านเครือข่ายอินเทอร์เน็ต
+                    เช่น พื้นที่จัดเก็บข้อมูล เซิร์ฟเวอร์ โปรแกรม และระบบประมวลผล
+                    ผู้ใช้สามารถเข้าถึงบริการได้จากอุปกรณ์ที่เชื่อมต่ออินเทอร์เน็ต
+                </p>
+            </div>
+
+            <div class="card-grid" style="margin-top:20px">
+                <article class="info-card">
+                    <div class="card-icon">💰</div>
+                    <h3>ลดค่าใช้จ่าย</h3>
+                    <p>ลดความจำเป็นในการซื้ออุปกรณ์คอมพิวเตอร์และซอฟต์แวร์ราคาแพง รวมถึงลดค่าใช้จ่ายในการดูแลระบบ</p>
+                </article>
+
+                <article class="info-card">
+                    <div class="card-icon">🌐</div>
+                    <h3>เข้าถึงได้ทุกที่</h3>
+                    <p>ใช้ข้อมูลหรือบริการผ่านอินเทอร์เน็ตได้จากหลายอุปกรณ์และหลายสถานที่</p>
+                </article>
+
+                <article class="info-card">
+                    <div class="card-icon">📈</div>
+                    <h3>ปรับขนาดได้ยืดหยุ่น</h3>
+                    <p>เพิ่มหรือลดทรัพยากรที่ต้องใช้ได้ตามความต้องการของผู้ใช้งาน</p>
+                </article>
+
+                <article class="info-card">
+                    <div class="card-icon">🛠️</div>
+                    <h3>ดูแลระบบง่ายขึ้น</h3>
+                    <p>ผู้ให้บริการรับผิดชอบดูแลโครงสร้างพื้นฐานและระบบส่วนหนึ่งแทนผู้ใช้</p>
+                </article>
+            </div>
+
+            <div class="note">
+                💡 <strong>ตัวอย่าง:</strong> ใช้ Google Drive เก็บไฟล์ออนไลน์ หรือใช้ Google Docs ทำงานร่วมกันผ่านเว็บเบราว์เซอร์
+            </div>
+        </div>
+    </section>
+
+    <!-- 02 Structure -->
+    <section class="slide" id="structure">
+        <div class="slide-inner">
+            <div class="section-kicker">02 · System Structure</div>
+            <h2 class="section-title">โครงสร้างการทำงาน<br><span>ของ Cloud Computing</span></h2>
+            <p class="section-desc">
+                ระบบ Cloud Computing เชื่อมต่ออุปกรณ์ของผู้ใช้เข้ากับระบบของผู้ให้บริการ
+                ผ่านเครือข่ายอินเทอร์เน็ต โดยมีองค์ประกอบหลักสองส่วน
+            </p>
+
+            <div class="structure">
+                <div class="structure-box">
+                    <div class="card-icon">💻</div>
+                    <h3>Front End</h3>
+                    <p>ส่วนที่ผู้ใช้มองเห็นและใช้งาน เช่น คอมพิวเตอร์ โทรศัพท์ เว็บเบราว์เซอร์ และหน้าจอแอปพลิเคชัน</p>
+                </div>
+
+                <div class="structure-arrow" aria-hidden="true">⇄</div>
+
+                <div class="structure-box">
+                    <div class="card-icon">🖥️</div>
+                    <h3>Back End</h3>
+                    <p>ส่วนที่ทำงานอยู่เบื้องหลัง เช่น เซิร์ฟเวอร์ พื้นที่จัดเก็บข้อมูล ระบบประมวลผล และระบบเครือข่าย</p>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <article class="info-card">
+                    <div class="card-icon">⚙️</div>
+                    <h3>ระบบจัดการทรัพยากร</h3>
+                    <p>ควบคุมและจัดสรรทรัพยากร เช่น หน่วยประมวลผล หน่วยความจำ และพื้นที่จัดเก็บข้อมูล ให้เหมาะสมกับการใช้งาน</p>
+                </article>
+
+                <article class="info-card">
+                    <div class="card-icon">🔐</div>
+                    <h3>ระบบรักษาความปลอดภัย</h3>
+                    <p>ช่วยควบคุมการเข้าถึง ตรวจสอบการใช้งาน และสนับสนุนการสำรองข้อมูลเพื่อป้องกันข้อมูลสูญหาย</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- 03 Deployment models -->
+    <section class="slide" id="deployment">
+        <div class="slide-inner">
+            <div class="section-kicker">03 · Deployment Models</div>
+            <h2 class="section-title">รูปแบบการให้บริการ<br><span>Cloud Computing</span></h2>
+            <p class="section-desc">
+                รูปแบบการให้บริการแบ่งตามลักษณะการใช้งานและการจัดการระบบได้ 4 รูปแบบ
+            </p>
+
+            <div class="model-grid">
+                <article class="model-card">
+                    <h3>Public Cloud</h3>
+                    <p>บริการคลาวด์ที่เปิดให้ผู้ใช้ทั่วไปหรือองค์กรเช่าใช้งานผ่านผู้ให้บริการ โดยใช้โครงสร้างพื้นฐานร่วมกัน</p>
+                    <span class="tag">คลาวด์สาธารณะ</span>
+                </article>
+
+                <article class="model-card">
+                    <h3>Private Cloud</h3>
+                    <p>คลาวด์ที่จัดไว้สำหรับองค์กรเดียว ช่วยให้องค์กรควบคุมการใช้งานและการจัดการระบบได้มากขึ้น</p>
+                    <span class="tag">คลาวด์ส่วนตัว</span>
+                </article>
+
+                <article class="model-card">
+                    <h3>Community Cloud</h3>
+                    <p>คลาวด์ที่หลายองค์กรซึ่งมีความต้องการหรือข้อกำหนดใกล้เคียงกันใช้ร่วมกัน</p>
+                    <span class="tag">คลาวด์ชุมชน</span>
+                </article>
+
+                <article class="model-card">
+                    <h3>Hybrid Cloud</h3>
+                    <p>การผสมผสานคลาวด์ตั้งแต่สองรูปแบบขึ้นไป เช่น Public Cloud ร่วมกับ Private Cloud</p>
+                    <span class="tag">คลาวด์แบบผสม</span>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- 04 Service types -->
+    <section class="slide" id="service">
+        <div class="slide-inner">
+            <div class="section-kicker">04 · Cloud Service Types</div>
+            <h2 class="section-title">ประเภทบริการของ<br><span>Cloud Computing</span></h2>
+            <p class="section-desc">บริการหลัก 3 รูปแบบ ได้แก่ SaaS, PaaS และ IaaS</p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ประเภทบริการ</th>
+                            <th>ลักษณะการให้บริการ</th>
+                            <th>ตัวอย่าง</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>SaaS</strong><br>Software as a Service</td>
+                            <td>ให้ผู้ใช้ใช้งานโปรแกรมผ่านอินเทอร์เน็ต โดยไม่ต้องติดตั้งหรือดูแลระบบเบื้องหลังเอง</td>
+                            <td>Google Docs, Microsoft 365, Gmail, Google Drive, OneDrive, Dropbox</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PaaS</strong><br>Platform as a Service</td>
+                            <td>ให้แพลตฟอร์มและเครื่องมือสำหรับพัฒนา ทดสอบ และติดตั้งแอปพลิเคชัน</td>
+                            <td>Google App Engine, Microsoft Azure App Service, AWS Elastic Beanstalk</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IaaS</strong><br>Infrastructure as a Service</td>
+                            <td>ให้เช่าทรัพยากรโครงสร้างพื้นฐาน เช่น เครื่องเสมือน เครือข่าย พื้นที่จัดเก็บ และระบบประมวลผล</td>
+                            <td>Amazon Web Services (AWS), Microsoft Azure, Google Compute Engine</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="note">
+                📝 <strong>จำง่าย ๆ:</strong> SaaS คือใช้โปรแกรม, PaaS คือใช้แพลตฟอร์มพัฒนาโปรแกรม และ IaaS คือเช่าทรัพยากรโครงสร้างพื้นฐาน
+            </div>
+        </div>
+    </section>
+
+    <!-- 05 Google Drive -->
+    <section class="slide" id="drive">
+        <div class="slide-inner">
+            <div class="section-kicker">05 · Google Drive</div>
+            <h2 class="section-title">การใช้งาน<br><span>Google Drive</span></h2>
+            <p class="section-desc">
+                ตัวอย่างบริการจัดเก็บและแบ่งปันไฟล์บนคลาวด์ ช่วยให้ผู้ใช้จัดการไฟล์ออนไลน์
+                และทำงานร่วมกับผู้อื่นได้
+            </p>
+
+            <div class="content-panel">
+                <p>
+                    <span class="highlight">Google Drive</span> เป็นบริการจัดเก็บไฟล์ออนไลน์
+                    ผู้ใช้สามารถอัปโหลด ดาวน์โหลด จัดระเบียบ และแบ่งปันไฟล์กับผู้อื่นได้
+                    โดยบัญชี Google ทั่วไปมีพื้นที่จัดเก็บฟรี 15 GB ซึ่งใช้ร่วมกับบริการของ Google บางรายการ
+                </p>
+            </div>
+
+            <h3 style="margin:25px 0 12px;color:#c98227;font-size:18px;">ขั้นตอนการใช้งานเบื้องต้น</h3>
+
+            <div class="steps">
+                <article class="step">
+                    <div class="step-number">1</div>
+                    <h3>เข้าสู่ระบบ</h3>
+                    <p>เปิด Google Drive ผ่านเว็บเบราว์เซอร์ แล้วเข้าสู่ระบบด้วยบัญชี Google</p>
+                </article>
+
+                <article class="step">
+                    <div class="step-number">2</div>
+                    <h3>อัปโหลดไฟล์</h3>
+                    <p>เลือก “ใหม่” หรือ “New” แล้วเลือกอัปโหลดไฟล์หรือโฟลเดอร์จากอุปกรณ์</p>
+                </article>
+
+                <article class="step">
+                    <div class="step-number">3</div>
+                    <h3>แบ่งปันไฟล์</h3>
+                    <p>เลือกไฟล์ กด “แชร์” แล้วกำหนดผู้ที่เข้าถึงไฟล์และสิทธิ์การใช้งาน</p>
+                </article>
+            </div>
+
+            <h3 style="margin:25px 0 12px;color:#c98227;font-size:18px;">การตั้งค่าการแบ่งปัน</h3>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ตัวเลือก</th>
+                            <th>ความหมาย</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Restricted</strong><br>จำกัด</td>
+                            <td>เฉพาะผู้ที่ได้รับอนุญาตเท่านั้นจึงจะเปิดไฟล์ได้</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Anyone with the link</strong><br>ทุกคนที่มีลิงก์</td>
+                            <td>ผู้ที่มีลิงก์สามารถเข้าถึงไฟล์ได้ตามสิทธิ์ที่กำหนด ควรตรวจสอบการตั้งค่าก่อนส่งลิงก์</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 style="margin:25px 0 12px;color:#c98227;font-size:18px;">สิทธิ์ในการเข้าถึงไฟล์</h3>
+
+            <div class="card-grid">
+                <article class="info-card">
+                    <div class="card-icon">👁️</div>
+                    <h3>Viewer — ผู้ดู</h3>
+                    <p>สามารถเปิดดูไฟล์ได้ แต่ไม่สามารถแก้ไขเนื้อหาได้</p>
+                </article>
+
+                <article class="info-card">
+                    <div class="card-icon">💬</div>
+                    <h3>Commenter — ผู้แสดงความคิดเห็น</h3>
+                    <p>สามารถดูไฟล์และแสดงความคิดเห็นได้ แต่ไม่สามารถแก้ไขเนื้อหาหลัก</p>
+                </article>
+
+                <article class="info-card">
+                    <div class="card-icon">✏️</div>
+                    <h3>Editor — ผู้แก้ไข</h3>
+                    <p>สามารถแก้ไขเนื้อหาและทำงานร่วมกับผู้ใช้อื่นได้ตามสิทธิ์ที่ได้รับ</p>
+                </article>
+
+                <article class="info-card">
+                    <div class="card-icon">🔒</div>
+                    <h3>ข้อควรระวัง</h3>
+                    <p>ไม่ควรตั้งค่าแชร์เป็น “ทุกคนที่มีลิงก์” สำหรับไฟล์ที่มีข้อมูลส่วนตัวหรือข้อมูลสำคัญ</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Summary -->
+    <section class="slide summary" id="summary">
+        <div class="slide-inner">
+            <div class="section-kicker">06 · Lesson Summary</div>
+            <h2 class="section-title">ก่อนจบบทเรียน<br><span>จำเรื่องสำคัญไว้</span></h2>
+            <p class="section-desc">
+                ทบทวนแนวคิดหลักของบทเรียนที่ 3 เรื่องการประมวลผลบนกลุ่มเมฆ
+            </p>
+
+            <div class="summary-grid">
+                <div class="summary-main">
+                    <h3>บทที่ 3 ในหนึ่งหน้าจอ</h3>
+
+                    <div class="summary-point">
+                        <span class="summary-point-icon">☁️</span>
+                        <div>Cloud Computing คือการให้บริการทรัพยากรคอมพิวเตอร์ผ่านอินเทอร์เน็ต ช่วยให้เข้าถึงบริการได้สะดวกและปรับทรัพยากรได้ตามต้องการ</div>
+                    </div>
+
+                    <div class="summary-point">
+                        <span class="summary-point-icon">🖥️</span>
+                        <div>โครงสร้างหลักประกอบด้วย Front End ซึ่งเป็นส่วนที่ผู้ใช้ใช้งาน และ Back End ซึ่งเป็นระบบที่ทำงานอยู่เบื้องหลัง</div>
+                    </div>
+
+                    <div class="summary-point">
+                        <span class="summary-point-icon">🏢</span>
+                        <div>รูปแบบคลาวด์มี Public, Private, Community และ Hybrid Cloud ส่วนประเภทบริการหลักคือ SaaS, PaaS และ IaaS</div>
+                    </div>
+
+                    <div class="summary-point">
+                        <span class="summary-point-icon">📁</span>
+                        <div>Google Drive ใช้จัดเก็บและแบ่งปันไฟล์ออนไลน์ โดยควรกำหนดสิทธิ์การเข้าถึงให้เหมาะสมกับผู้รับ</div>
+                    </div>
+                </div>
+
+                <div class="summary-side">
+                    <div class="summary-os">CLOUD</div>
+                    <h3>เรียนรู้ได้ทุกที่ผ่านระบบคลาวด์</h3>
+                    <p>
+                        เมื่อเข้าใจแนวคิด รูปแบบบริการ และวิธีใช้งาน Google Drive แล้ว
+                        ก็สามารถนำความรู้ไปใช้จัดเก็บและแบ่งปันข้อมูลได้อย่างเหมาะสม
+                    </p>
+                    <a href="index.html" class="start">กลับหน้าแรก <span aria-hidden="true">↑</span></a>
+                </div>
+            </div>
+
+            <div class="chapter-nav">
+                <a class="nav-button" href="chapter2.html">← บทที่ 2</a>
+                <a class="nav-button next" href="chapter4.html">บทที่ 4 →</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    OS Learning | เว็บไซต์ประกอบการเรียนรู้รายวิชาระบบปฏิบัติการคอมพิวเตอร์
+</footer>
+
+<script>
+const menuToggle = document.getElementById("menuToggle");
+const sidebar = document.getElementById("sidebar");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+const closeSidebar = document.getElementById("closeSidebar");
+const progress = document.getElementById("progress");
+
+function openMenu() {
+    sidebar.classList.add("open");
+    sidebarOverlay.classList.add("show");
+    menuToggle.setAttribute("aria-expanded", "true");
+}
+
+function closeMenu() {
+    sidebar.classList.remove("open");
+    sidebarOverlay.classList.remove("show");
+    menuToggle.setAttribute("aria-expanded", "false");
+}
+
+menuToggle.addEventListener("click", () => {
+    if (sidebar.classList.contains("open")) {
+        closeMenu();
+    } else {
+        openMenu();
+    }
+});
+
+closeSidebar.addEventListener("click", closeMenu);
+sidebarOverlay.addEventListener("click", closeMenu);
+
+document.querySelectorAll(".sidebar-link").forEach(link => {
+    link.addEventListener("click", closeMenu);
+});
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeMenu();
+});
+
+function updateProgress() {
+    const scrollTop = window.scrollY;
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const percentage = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    progress.style.width = percentage + "%";
+}
+
+window.addEventListener("scroll", updateProgress, { passive: true });
+window.addEventListener("resize", updateProgress);
+updateProgress();
+
+/* แครอทน่ารักแตกกระจายเมื่อคลิกพื้นที่ว่าง */
+document.addEventListener("click", event => {
+    if (event.target.closest("a, button")) return;
+
+    const carrotCount = 9;
+
+    for (let i = 0; i < carrotCount; i++) {
+        const carrot = document.createElement("span");
+        carrot.className = "carrot-particle";
+        carrot.textContent = "🥕";
+
+        const angle = (Math.PI * 2 * i / carrotCount) + (Math.random() * 0.35);
+        const distance = 45 + Math.random() * 55;
+        const moveX = Math.cos(angle) * distance;
+        const moveY = Math.sin(angle) * distance;
+
+        carrot.style.left = `${event.clientX}px`;
+        carrot.style.top = `${event.clientY}px`;
+        carrot.style.fontSize = `${14 + Math.random() * 10}px`;
+        carrot.style.setProperty("--carrot-x", `${moveX}px`);
+        carrot.style.setProperty("--carrot-y", `${moveY}px`);
+        carrot.style.setProperty("--carrot-rotate", `${Math.random() * 220 - 110}deg`);
+
+        document.body.appendChild(carrot);
+        carrot.addEventListener("animationend", () => carrot.remove());
+    }
+});
+</script>
+</body>
+</html>

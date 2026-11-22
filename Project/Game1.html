@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="OS Learning">
+<meta name="theme-color" content="#06162e">
+<meta name="format-detection" content="telephone=no">
+<title>OS Learning</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap');
+:root{--cyan:#39d8ff;--blue:#168ee8;--navy:#071a35;--panel:#0b2850;--line:#2c80b9;--white:#effaff;--muted:#a9cbe2;--gold:#ffd76b}
+*{box-sizing:border-box}body{margin:0;background:#06162e;color:var(--white);font-family:'Kanit',Tahoma,sans-serif;min-height:100vh}
+button{font:inherit;cursor:pointer;color:inherit}.app{max-width:1320px;margin:auto;padding:16px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 4px 16px}.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#63e7ff,#1377ed);color:#06264c;font-weight:900;font-size:25px;box-shadow:0 0 28px #24baff55}.brand h1{font-size:23px;line-height:1;margin:0;letter-spacing:.3px}.brand h1 span{color:var(--cyan)}.brand small{display:block;color:#8eb9d8;font-size:11px;letter-spacing:2px;margin-top:5px}.top-right{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1px solid #245d8d;background:#0a2548;padding:8px 13px;border-radius:12px;font-size:13px;color:#c9e9ff}.chip b{color:var(--cyan)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:14px}.main-panel,.side-panel{border:1px solid #1c5685;background:linear-gradient(145deg,#0b2b52eF,#071c39f7);border-radius:20px;overflow:hidden;box-shadow:0 16px 45px #0004}.stage-head{padding:15px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(90deg,#123e6b,#0a2445);border-bottom:1px solid #205b88}.stage-name{font-size:17px;font-weight:600}.stage-name small{display:block;color:#9ccbe9;font-size:11px;font-weight:400}.stage-progress{height:7px;width:140px;border-radius:10px;background:#173b5b;overflow:hidden;margin-top:7px}.stage-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#4be7ff,#2889ff);transition:width .25s}
+.canvas-wrap{position:relative;padding:10px;background:radial-gradient(ellipse at 50% 0%,#10365a,#06182f)}canvas{display:block;width:100%;height:auto;aspect-ratio:900/540;border-radius:13px;border:1px solid #205783;box-shadow:0 0 25px #007bd51c;touch-action:none}
+.hud{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 13px}.hud-item{flex:1;min-width:95px;background:#081f3d;border:1px solid #174a77;border-radius:11px;padding:9px 11px;font-size:12px;color:#9bc6e4}.hud-item b{display:block;color:#f4fbff;font-size:15px;font-weight:600}.hearts{color:#ff648e!important;letter-spacing:2px}.side-panel{padding:17px}.side-panel h2{font-size:16px;margin:0 0 12px}.avatar{display:flex;gap:12px;align-items:center;padding-bottom:14px;border-bottom:1px solid #1c4d76}.portrait{width:58px;height:58px;border-radius:16px;background:linear-gradient(140deg,#5be2ff,#1266b7);display:grid;place-items:center;font-size:33px;box-shadow:inset 0 0 0 2px #9df3ff55}.avatar b{display:block;font-size:14px}.avatar small{color:#9bc6e4;font-size:11px}.xp{height:6px;background:#183b5c;border-radius:8px;margin-top:7px;overflow:hidden}.xp span{display:block;width:15%;height:100%;background:linear-gradient(90deg,#ffdc77,#ff9b43)}
+.objectives{padding:15px 0;border-bottom:1px solid #1c4d76}.objective{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:#b8d6eb;line-height:1.55;margin:10px 0}.objective i{font-style:normal;display:grid;place-items:center;flex:0 0 23px;height:23px;background:#103d65;border:1px solid #2a79aa;border-radius:7px;color:var(--cyan)}.objective.done i{background:#0c614f;border-color:#27d6a5;color:#a5ffe4}.legend{padding:14px 0;border-bottom:1px solid #1c4d76}.legend-row{display:flex;align-items:center;gap:8px;color:#a9cbe2;font-size:12px;margin:9px 0}.dot{width:12px;height:12px;border-radius:4px;display:inline-block}.side-actions{display:grid;gap:8px;margin-top:15px}.btn{border:1px solid #267bb0;border-radius:11px;padding:10px 13px;background:#0c3762;color:#c8eeff;font-weight:600}.btn:hover{filter:brightness(1.2)}.btn.primary{background:linear-gradient(110deg,#24b9ee,#176be5);border-color:#55d9ff;color:#fff;box-shadow:0 5px 18px #008dff2e}.btn.gold{background:linear-gradient(110deg,#ffe99a,#ffb84a);border:0;color:#4d3100}.footnote{text-align:center;color:#6e9bbc;font-size:11px;padding:15px 0 5px}
+.overlay{position:fixed;inset:0;z-index:10;display:none;align-items:center;justify-content:center;padding:16px;background:#031126d9;backdrop-filter:blur(9px)}.overlay.show{display:flex}.modal{width:min(590px,100%);border:1px solid #318bc1;border-radius:22px;background:linear-gradient(145deg,#10345d,#071a36);padding:26px;box-shadow:0 0 70px #009dff25;max-height:92vh;overflow:auto}.modal.center{text-align:center}.kicker{color:#55e1ff;font-size:11px;letter-spacing:2px;font-weight:700}.modal h2{font-size:25px;line-height:1.4;margin:10px 0}.modal p{color:#b0d0e7;line-height:1.8;font-size:14px}.modal-actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:20px}.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.answer{text-align:left;padding:13px;background:#0a2b51;border:1px solid #245c89;border-radius:12px;font-size:13px;line-height:1.5}.answer:hover{background:#124779;border-color:#43c9f8}.answer.correct{background:#075543;border-color:#35e3ac}.answer.wrong{background:#612d4c;border-color:#ff7298}.answer:disabled{cursor:default}.explain{display:none;background:#082443;border:1px solid #1b5d87;border-radius:12px;padding:12px;margin-top:13px;font-size:13px;line-height:1.7;color:#b9dced}.explain.show{display:block}.bossbar{margin:8px 0 15px}.bossbar label{display:flex;justify-content:space-between;color:#ff9ab3;font-size:12px}.bossbar div{height:9px;background:#4c2445;border-radius:10px;overflow:hidden;margin-top:6px}.bossbar span{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ff7c9e,#d83268);transition:width .3s}
+.mobile-controls{display:none;grid-template-columns:repeat(3,54px);justify-content:center;gap:6px;padding:4px 0 14px}.mobile-controls button{height:45px;border-radius:12px;background:#103d66;border:1px solid #2b82b6;font-size:19px}.mobile-controls .blank{visibility:hidden}
+/* กันการเลือก/คัดลอกข้อความและเมนู callout เวลากดค้างบนมือถือ */
+.mobile-controls,.mobile-controls button,.canvas-wrap,canvas,.hud,.stage-head,.side-actions,.btn{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.mobile-controls button{touch-action:none;outline:none}
+.passive{margin:14px 0 0;padding:9px 11px;border-radius:11px;background:#0a2b51;border:1px solid #2a79aa;font-size:12px;color:#b8d6eb;line-height:1.55}.passive b{color:#ffd76b}
+/* iOS / Safari */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior:none;touch-action:manipulation}
+body{min-height:100vh;min-height:100dvh;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+button{-webkit-appearance:none;appearance:none;touch-action:manipulation;font-family:inherit}
+.overlay{-webkit-backdrop-filter:blur(9px);padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom))}
+.modal{max-height:92vh;max-height:92dvh;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.mobile-controls{padding-bottom:max(14px,env(safe-area-inset-bottom))}
+/* เลือกตัวละคร */
+.skins{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:16px}.skin{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;background:#0a2b51;border:1px solid #245c89;border-radius:14px;font-size:12px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}.skin:hover{background:#124779}.skin.on{border-color:#ffd76b;box-shadow:0 0 0 2px #ffd76b55}.skin canvas{width:72px;height:72px;aspect-ratio:auto;border:0;box-shadow:none}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.side-panel{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.avatar{grid-column:1/-1}.side-actions{align-self:center}.top-right .chip{font-size:11px;padding:7px 9px}}
+@media(max-width:600px){.app{padding:9px}.brand h1{font-size:18px}.logo{width:40px;height:40px}.top{align-items:flex-start}.top-right{max-width:140px}.side-panel{display:block}.answers{grid-template-columns:1fr}.stage-head{align-items:flex-start}.stage-progress{width:100px}.mobile-controls{display:grid}.modal{padding:20px}.hud-item{min-width:75px}.hud-item b{font-size:13px}}
+.back-btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none;border:1px solid #55d9ff;background:linear-gradient(110deg,#24b9ee,#176be5);color:#fff;padding:8px 14px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 5px 18px #008dff2e;-webkit-tap-highlight-color:transparent}.back-btn:hover{filter:brightness(1.15)}
+@media(pointer:coarse),(hover:none){.mobile-controls{display:grid}}
+@media(pointer:coarse) and (orientation:landscape) and (max-height:500px){.layout{grid-template-columns:minmax(0,1fr) 220px}.mobile-controls{position:fixed;left:max(10px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));z-index:5;padding:0;opacity:.88}.mobile-controls button{height:40px}}
+</style>
+</head>
+<body>
+<div class="app">
+ <header class="top">
+  <div class="brand"><div class="logo">OS</div><div><h1>OS <span>LEARNING</span></h1><small>THE COMPUTER WORLD</small></div></div>
+  <div class="top-right"><a class="back-btn" href="Lesson 1.html">← ย้อนกลับ</a><div class="chip">💠 ชิป <b id="topChips">0</b></div><div class="chip">⭐ คะแนน <b id="topScore">0</b></div></div>
+ </header>
+ <div class="layout">
+  <section class="main-panel">
+   <div class="stage-head"><div class="stage-name"><span id="stageTitle">ด่าน 1: เมืองระบบปฏิบัติการ</span><small id="stageSubtitle">สำรวจพื้นที่และเก็บชิปข้อมูลให้ครบ</small></div><div><div style="font-size:11px;color:#a9cbe2;text-align:right" id="stageCount">STAGE 1 / 5</div><div class="stage-progress"><span id="stageBar"></span></div></div></div>
+   <div class="canvas-wrap"><canvas id="game" width="900" height="540"></canvas></div>
+   <div class="hud">
+    <div class="hud-item">❤️ พลังชีวิต<b class="hearts" id="lives">♥ ♥ ♥</b></div>
+    <div class="hud-item">💎 ชิปในด่าน<b id="chipCount">0 / 4</b></div>
+    <div class="hud-item">👾 ศัตรู<b id="enemyCount">2</b></div>
+    <div class="hud-item">⚡ พลังพิเศษ<b id="power">พร้อมใช้</b></div>
+   </div>
+   <div class="mobile-controls">
+    <button class="blank">•</button><button data-key="ArrowUp">↑</button><button class="blank">•</button>
+    <button data-key="ArrowLeft">←</button><button data-key="Space">✦</button><button data-key="ArrowRight">→</button>
+    <button class="blank">•</button><button data-key="ArrowDown">↓</button><button class="blank">•</button>
+   </div>
+  </section>
+  <aside class="side-panel">
+   <div class="avatar"><div class="portrait" id="portrait">🧑🏻‍💻</div><div><b>ผู้พิทักษ์ข้อมูล</b><small>LEVEL <span id="playerLevel">1</span> • นักสำรวจมือใหม่</small><div class="xp"><span id="xpbar"></span></div></div></div>
+   <div class="passive" id="passiveBox"></div>
+   <div class="objectives"><h2>🎯 ภารกิจของด่าน</h2>
+    <div class="objective" id="objChip"><i>◇</i><span>เก็บชิปข้อมูลให้ครบทุกชิ้น</span></div>
+    <div class="objective" id="objExit"><i>↗</i><span>ค้นหาประตูทางออก</span></div>
+    <div class="objective" id="objQuiz"><i>?</i><span>ตอบคำถามเพื่อปลดล็อกด่าน</span></div>
+   </div>
+   <div class="legend"><h2>🗺️ วิธีควบคุม</h2><div class="legend-row"><span class="dot" style="background:#45dfff"></span> WASD / ลูกศร — เคลื่อนที่</div><div class="legend-row"><span class="dot" style="background:#ffe16a"></span> Space — พลัง EMP ผลักศัตรู</div><div class="legend-row"><span class="dot" style="background:#ff779e"></span> หลีกเลี่ยงศัตรูและกับดัก</div><div class="legend-row"><span class="dot" style="background:#8effd3"></span> ชิปครบแล้วจึงเปิดประตูได้</div></div>
+   <div class="side-actions"><button class="btn primary" id="pauseBtn">Ⅱ พักเกม</button><button class="btn" id="restartBtn">↻ เริ่มเกมใหม่</button><button class="btn" id="skinBtn">🎭 เปลี่ยนตัวละคร</button><button class="btn" id="helpBtn">ⓘ วิธีเล่น</button></div>
+  </aside>
+ </div>
+ <div class="footnote">OS Learning • เรียนรู้ระบบปฏิบัติการ ซอฟต์แวร์ หน่วยความจำ และบุคลากรคอมพิวเตอร์</div>
+</div>
+<div class="overlay show" id="overlay"><div class="modal center" id="modal">
+ <div style="font-size:58px">🌐</div><div class="kicker">WELCOME TO THE COMPUTER WORLD</div><h2>โลกคอมพิวเตอร์กำลังรอคุณอยู่</h2><p>ฝ่าด่านไซเบอร์ 5 ด่าน เก็บชิปความรู้ หลบศัตรู ใช้พลัง EMP และเอาชนะบอสด้วยความรู้ด้านคอมพิวเตอร์!</p><div class="modal-actions"><button class="btn primary" id="startBtn">▶ เริ่มเกม</button><button class="btn" id="howBtn">วิธีเล่น</button><button class="btn" id="skinBtn2">🎭 เลือกตัวละคร</button></div>
+ </div></div>
+<script>
+if(window.CanvasRenderingContext2D&&!CanvasRenderingContext2D.prototype.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){r=Math.min(typeof r==='number'?r:((r&&r[0])||0),w/2,h/2);this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath()}}
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id);
+const W=900,H=540,keys={};let running=false,paused=true,raf=0,last=0,stage=0,score=0,lives=3,xp=0,player,items,enemies,bullets,particles,gate,quizOpen=false,empCooldown=0,toast='',toastTime=0,invuln=0,bossHP=0,effects=[],screenShake=0,frameNo=0;
+const stages=[
+ {name:'เมืองระบบปฏิบัติการ',sub:'เรียนรู้หน้าที่ของ OS',chips:4,quiz:{q:'ระบบปฏิบัติการ (OS) มีหน้าที่หลักอะไร?',a:['ควบคุมและจัดการการทำงานของคอมพิวเตอร์','ตกแต่งรูปภาพเท่านั้น','พิมพ์เอกสารอย่างเดียว','ใช้ฟังเพลงเท่านั้น'],c:0,e:'OS จัดการทรัพยากรของคอมพิวเตอร์และเป็นตัวกลางระหว่างผู้ใช้กับฮาร์ดแวร์'},walls:[[180,90,35,180],[300,250,210,30],[520,100,35,180],[660,300,35,170]],boss:false},
+ {name:'เขาวงกตหน่วยความจำ',sub:'ROM, RAM และอุปกรณ์เก็บข้อมูล',chips:5,quiz:{q:'หน่วยความจำใดเก็บข้อมูลได้แม้ปิดเครื่อง?',a:['RAM','ROM','Cache เท่านั้น','Register'],c:1,e:'ROM เก็บข้อมูลไว้ได้เมื่อปิดเครื่อง ส่วน RAM เป็นหน่วยความจำชั่วคราว'},walls:[[130,120,230,28],[130,120,30,230],[300,270,250,28],[520,80,30,220],[680,230,30,220]],boss:false},
+ {name:'โรงงานซอฟต์แวร์',sub:'แยกซอฟต์แวร์ระบบและซอฟต์แวร์ประยุกต์',chips:5,quiz:{q:'ข้อใดเป็นซอฟต์แวร์ประยุกต์?',a:['Windows 11','BIOS','Microsoft Word','Driver'],c:2,e:'Microsoft Word เป็นซอฟต์แวร์ประยุกต์ที่ใช้สร้างและแก้ไขเอกสาร'},walls:[[210,70,30,190],[210,340,30,130],[380,160,210,30],[590,160,30,210],[700,60,30,160]],boss:false},
+ {name:'หอคอยนักแปลภาษา',sub:'Compiler และ Interpreter',chips:6,quiz:{q:'Compiler ทำงานอย่างไรโดยทั่วไป?',a:['แปลโปรแกรมทั้งหมดก่อนนำไปรัน','ใช้เก็บไฟล์','ทำหน้าที่เป็นจอภาพ','แปลเฉพาะรูปภาพ'],c:0,e:'Compiler แปลซอร์สโค้ดเป็นโปรแกรมหรือรหัสที่นำไปทำงานได้ก่อนการรัน'},walls:[[160,100,30,300],[300,100,250,30],[300,250,30,220],[480,250,220,30],[700,100,30,180]],boss:false},
+ {name:'ป้อมปราการข้อมูล',sub:'บอสสุดท้าย: ผู้พิทักษ์หน่วยความจำ',chips:6,quiz:{q:'บุคลากรใดวิเคราะห์ความต้องการและออกแบบระบบ?',a:['User','Operator','Programmer','System Analyst and Designer'],c:3,e:'System Analyst and Designer วิเคราะห์ความต้องการและออกแบบระบบให้เหมาะกับผู้ใช้'},walls:[[150,90,30,150],[150,350,30,120],[300,180,30,180],[450,80,30,150],[600,300,30,170]],boss:true}
+];
+const extraQ=[
+ [['ข้อใดเป็นตัวอย่างของระบบปฏิบัติการ?',['Microsoft Excel','Linux','Google Chrome','Photoshop'],1,'Linux เป็นระบบปฏิบัติการ ส่วนที่เหลือเป็นซอฟต์แวร์ประยุกต์'],
+  ['OS ทำหน้าที่เป็นตัวกลางระหว่างอะไรกับอะไร?',['ผู้ใช้กับฮาร์ดแวร์','จอภาพกับเมาส์','อินเทอร์เน็ตกับเครื่องพิมพ์','คีย์บอร์ดกับลำโพง'],0,'OS เชื่อมการทำงานระหว่างผู้ใช้ โปรแกรม และฮาร์ดแวร์'],
+  ['ข้อใดเป็นหน้าที่ของ OS?',['จัดการหน่วยความจำและไฟล์','ออกแบบโลโก้','ตัดต่อวิดีโอ','เขียนจดหมายโดยเฉพาะ'],0,'OS จัดการทรัพยากร เช่น หน่วยความจำ ไฟล์ และอุปกรณ์ต่าง ๆ'],
+  ['ระบบปฏิบัติการที่ใช้ในสมาร์ตโฟนและพัฒนาโดย Google คือข้อใด?',['iOS','Android','macOS','Windows 11'],1,'Android พัฒนาโดย Google ส่วน iOS เป็นของ Apple'],
+  ['GUI คืออะไร?',['ส่วนติดต่อผู้ใช้แบบกราฟิก','ชนิดของหน่วยความจำ','ภาษาโปรแกรม','อุปกรณ์เครือข่าย'],0,'GUI (Graphical User Interface) คือส่วนติดต่อผู้ใช้แบบกราฟิก ใช้ไอคอนและหน้าต่าง']],
+ [['RAM คืออะไร?',['หน่วยความจำหลักที่เก็บข้อมูลชั่วคราว','หน่วยความจำที่ข้อมูลไม่หายเมื่อปิดเครื่อง','อุปกรณ์แสดงผล','อุปกรณ์รับข้อมูล'],0,'RAM เก็บข้อมูลและโปรแกรมที่กำลังทำงาน และข้อมูลจะหายเมื่อปิดเครื่อง'],
+  ['อุปกรณ์ใดเป็นหน่วยความจำสำรอง?',['RAM','Hard disk','Cache','Register'],1,'Hard disk ใช้เก็บข้อมูลถาวรจึงเป็นหน่วยความจำสำรอง'],
+  ['หน่วยความจำใดอยู่ใน CPU และเร็วที่สุด?',['Register','Hard disk','Flash drive','DVD'],0,'Register อยู่ใน CPU และเข้าถึงได้เร็วที่สุด'],
+  ['1 Byte เท่ากับกี่บิต?',['4','8','16','1,024'],1,'1 Byte เท่ากับ 8 บิต'],
+  ['1 KB เท่ากับกี่ไบต์ (ตามระบบคอมพิวเตอร์)?',['100','1,000','1,024','8'],2,'ในระบบคอมพิวเตอร์ 1 KB เท่ากับ 1,024 ไบต์']],
+ [['ข้อใดเป็นซอฟต์แวร์ระบบ?',['Microsoft Excel','Windows','Photoshop','LINE'],1,'Windows เป็นระบบปฏิบัติการ จึงเป็นซอฟต์แวร์ระบบ'],
+  ['Driver ทำหน้าที่อะไร?',['ช่วยให้ OS สื่อสารกับอุปกรณ์ฮาร์ดแวร์','ตกแต่งรูปภาพ','เก็บไฟล์เอกสาร','เพิ่มความเร็วอินเทอร์เน็ต'],0,'Driver เป็นตัวกลางให้ระบบปฏิบัติการใช้งานอุปกรณ์ได้'],
+  ['โปรแกรมแอนตี้ไวรัสจัดเป็นซอฟต์แวร์ประเภทใด?',['ซอฟต์แวร์ยูทิลิตี้','ภาษาเครื่อง','ฮาร์ดแวร์','หน่วยความจำ'],0,'ยูทิลิตี้เป็นซอฟต์แวร์ที่ช่วยดูแลรักษาและป้องกันระบบ'],
+  ['ข้อใดเป็นซอฟต์แวร์ประยุกต์สำหรับตารางคำนวณ?',['Microsoft Excel','BIOS','Linux','Driver'],0,'Microsoft Excel ใช้สร้างและคำนวณตารางข้อมูล'],
+  ['BIOS จัดเป็นซอฟต์แวร์ประเภทใด?',['ซอฟต์แวร์ระบบ (เฟิร์มแวร์)','ซอฟต์แวร์ตกแต่งภาพ','โปรแกรมเล่นเพลง','โปรแกรมเกม'],0,'BIOS เป็นเฟิร์มแวร์ในกลุ่มซอฟต์แวร์ระบบ ทำงานตอนเปิดเครื่อง']],
+ [['Interpreter ทำงานอย่างไร?',['แปลและทำงานทีละคำสั่ง','แปลทั้งโปรแกรมก่อนแล้วจบ','เก็บไฟล์เท่านั้น','ใช้ป้อนข้อมูล'],0,'Interpreter แปลซอร์สโค้ดและสั่งทำงานทีละคำสั่ง'],
+  ['ภาษาที่คอมพิวเตอร์เข้าใจโดยตรงคือข้อใด?',['ภาษาเครื่อง','ภาษาอังกฤษ','ภาษาไทย','ภาษา HTML เท่านั้น'],0,'ภาษาเครื่องเป็นรหัสเลขฐานสองที่ CPU เข้าใจโดยตรง'],
+  ['Assembler ทำหน้าที่แปลอะไร?',['ภาษาแอสเซมบลีเป็นภาษาเครื่อง','ภาษาอังกฤษเป็นภาษาไทย','ภาพเป็นเสียง','ไฟล์เป็นข้อความ'],0,'Assembler แปลภาษาแอสเซมบลีให้เป็นภาษาเครื่อง'],
+  ['ข้อใดเป็นภาษาระดับสูง?',['Python','ภาษาเครื่อง','รหัสเลขฐานสองล้วน','Machine code'],0,'Python เป็นภาษาระดับสูงที่มนุษย์อ่านเข้าใจง่าย'],
+  ['ข้อดีของโปรแกรมที่ผ่านการคอมไพล์แล้วโดยทั่วไปคือข้อใด?',['มักรันได้เร็วกว่า','ไม่ต้องมีซอร์สโค้ด','แปลทีละบรรทัดเสมอ','ใช้กับภาษาโปรแกรมไม่ได้'],0,'เมื่อคอมไพล์แล้วโปรแกรมพร้อมรัน จึงมักทำงานได้เร็ว']],
+ [['Programmer มีหน้าที่อะไร?',['เขียนโปรแกรมตามที่ออกแบบ','ผู้ใช้งานระบบทั่วไป','ดูแลฮาร์ดแวร์เท่านั้น','ขายอุปกรณ์'],0,'Programmer เขียนและทดสอบโปรแกรมตามแบบที่นักวิเคราะห์ออกแบบ'],
+  ['ผู้ที่ใช้งานระบบสารสนเทศเพื่อทำงานเรียกว่าอะไร?',['User','Programmer','Database Administrator','System Analyst'],0,'User คือผู้ใช้งานระบบ'],
+  ['DBA ย่อมาจากอะไร?',['Database Administrator','Data Backup Application','Digital Base Analyst','Disk Boot Agent'],0,'DBA คือ Database Administrator ผู้ดูแลระบบฐานข้อมูล'],
+  ['ใครดูแลการใช้งานและความปลอดภัยของฐานข้อมูล?',['ผู้ดูแลฐานข้อมูล (DBA)','ช่างพิมพ์','พนักงานขาย','ผู้ออกแบบโลโก้'],0,'DBA ควบคุมการเข้าถึง สำรองข้อมูล และรักษาความปลอดภัยของฐานข้อมูล'],
+  ['Operator มีหน้าที่อะไร?',['ควบคุมและดูแลการทำงานของเครื่องคอมพิวเตอร์','ออกแบบระบบ','สร้างภาษาโปรแกรม','วิเคราะห์ต้นทุนเท่านั้น'],0,'Operator ดูแลการใช้งานเครื่องและอุปกรณ์ให้ทำงานได้ต่อเนื่อง']]
+];
+const quizBank=stages.map((st,i)=>[st.quiz,...extraQ[i].map(([q,a,c,e])=>({q,a,c,e}))]);
+const usedQ=stages.map(()=>[]);
+function pickQuiz(si){const bank=quizBank[si];let pool=bank.map((_,i)=>i).filter(i=>!usedQ[si].includes(i));if(!pool.length){const lastIdx=usedQ[si][usedQ[si].length-1];usedQ[si]=[];pool=bank.map((_,i)=>i).filter(i=>i!==lastIdx)}
+ const idx=pool[Math.floor(Math.random()*pool.length)];usedQ[si].push(idx);const src=bank[idx];
+ const order=src.a.map((_,i)=>i);for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}
+ return{q:src.q,a:order.map(i=>src.a[i]),c:order.indexOf(src.c),e:src.e}}
+const SKINS=[
+ {id:'explorer',name:'นักสำรวจ',emoji:'🧑🏻‍💻',body:'#1b9df0',edge:'#a6f5ff',glow:'#37dfff',pn:'แม่เหล็กชิป',desc:'ดูดชิปข้อมูลที่อยู่ใกล้เข้าหาตัว และเก็บได้ไกลขึ้น',magnet:80},
+ {id:'robot',name:'หุ่นยนต์',emoji:'🤖',body:'#8aa7c4',edge:'#d6ecff',glow:'#6fd8ff',pn:'เกราะพลังงาน',desc:'กันความเสียหายได้ 1 ครั้งในทุกด่าน (เกราะฟื้นเมื่อเริ่มด่านใหม่)',shield:true},
+ {id:'cat',name:'แมวไซเบอร์',emoji:'🐱',body:'#8b5cf6',edge:'#d9c6ff',glow:'#b48cff',pn:'ว่องไวดั่งแมว',desc:'เดินเร็วขึ้น 15% หลบศัตรูได้คล่องกว่าเดิม',spd:1.15},
+ {id:'ninja',name:'นินจา',emoji:'🥷',body:'#26344f',edge:'#7aa2d6',glow:'#4f86d9',pn:'ซ่อนเงา',desc:'ศัตรูจะเห็นและไล่ตามได้เฉพาะในระยะใกล้เท่านั้น (ระยะมองเห็นลดลง 35%)',stealth:170},
+ {id:'astro',name:'นักบินอวกาศ',emoji:'🧑‍🚀',body:'#e8f4ff',edge:'#9bdcff',glow:'#9bdcff',pn:'พลังจักรวาล',desc:'EMP ชาร์จเร็วขึ้น (4 วิ) และคลื่นครอบคลุมพื้นที่กว้างขึ้น',empCd:240,empR:235}
+];
+let skinIdx=0,skinWasPaused=true;
+try{const sv=parseInt(localStorage.getItem('osl_skin'));if(sv>=0&&sv<SKINS.length)skinIdx=sv}catch(_){}
+function drawChar(g,sk,r){
+ const TAU=Math.PI*2;g.save();g.shadowColor=sk.glow;g.shadowBlur=18;g.fillStyle=sk.body;g.strokeStyle=sk.edge;g.lineWidth=3;g.lineJoin='round';
+ const circle=()=>{g.beginPath();g.arc(0,0,r,0,TAU);g.fill();g.stroke();g.shadowBlur=0};
+ const eyes=(y,w)=>{g.fillStyle='#f2fdff';g.beginPath();g.arc(-5,y,w,0,TAU);g.arc(5,y,w,0,TAU);g.fill();g.fillStyle='#07335c';g.beginPath();g.arc(-5,y,w*.43,0,TAU);g.arc(5,y,w*.43,0,TAU);g.fill()};
+ if(sk.id==='robot'){
+  g.beginPath();g.moveTo(0,-r);g.lineTo(0,-r-8);g.stroke();g.fillStyle='#ff6b8a';g.beginPath();g.arc(0,-r-10,3.5,0,TAU);g.fill();
+  g.fillStyle=sk.body;g.beginPath();g.roundRect(-r,-r+1,r*2,r*2-2,7);g.fill();g.stroke();g.shadowBlur=0;
+  g.fillStyle='#06223f';g.beginPath();g.roundRect(-10,-8,20,10,4);g.fill();g.fillStyle='#5dfbff';g.fillRect(-7,-5,5,4);g.fillRect(2,-5,5,4);
+  g.strokeStyle='#4a6f93';g.lineWidth=2;g.beginPath();g.moveTo(-6,7);g.lineTo(6,7);g.stroke();
+ }else if(sk.id==='cat'){
+  g.beginPath();g.moveTo(-r+1,-3);g.lineTo(-r+1,-r-8);g.lineTo(-3,-r+2);g.closePath();g.fill();g.stroke();
+  g.beginPath();g.moveTo(r-1,-3);g.lineTo(r-1,-r-8);g.lineTo(3,-r+2);g.closePath();g.fill();g.stroke();
+  circle();eyes(-3,3.5);g.fillStyle='#ff8fb5';g.beginPath();g.arc(0,3,2,0,TAU);g.fill();
+  g.strokeStyle='#e9ddff';g.lineWidth=1.5;[-1,1].forEach(k=>{g.beginPath();g.moveTo(k*7,4);g.lineTo(k*17,2);g.moveTo(k*7,6);g.lineTo(k*17,8);g.stroke()});
+ }else if(sk.id==='ninja'){
+  circle();g.save();g.beginPath();g.arc(0,0,r-1,0,TAU);g.clip();g.fillStyle='#f3d3ae';g.fillRect(-r,-3,r*2,9);g.fillStyle='#ff4f6d';g.fillRect(-r,-9,r*2,6);g.restore();
+  g.fillStyle='#0b1220';g.beginPath();g.arc(-5,1,2.4,0,TAU);g.arc(5,1,2.4,0,TAU);g.fill();
+  g.strokeStyle='#ff4f6d';g.lineWidth=3;g.beginPath();g.moveTo(r-2,-6);g.lineTo(r+7,-1);g.moveTo(r-2,-6);g.lineTo(r+6,-10);g.stroke();
+ }else if(sk.id==='astro'){
+  circle();g.fillStyle='#143d6b';g.beginPath();g.ellipse(0,-1,10.5,8.5,0,0,TAU);g.fill();g.strokeStyle='#9bdcff';g.lineWidth=2;g.stroke();
+  g.fillStyle='#ffffff99';g.beginPath();g.ellipse(-4,-4,3,2,-.5,0,TAU);g.fill();
+ }else{
+  circle();eyes(-4,3.5);g.strokeStyle='#8deeff';g.lineWidth=2;g.beginPath();g.arc(0,3,5,.2,Math.PI-.2);g.stroke();
+ }
+ g.restore();
+}
+function applySkin(){$('portrait').textContent=SKINS[skinIdx].emoji;{const k=SKINS[skinIdx];$('passiveBox').innerHTML='✨ พาสซีฟ: <b>'+k.pn+'</b><br>'+k.desc}try{localStorage.setItem('osl_skin',skinIdx)}catch(_){}}
+function openSkins(){skinWasPaused=paused;if(running)paused=true;
+ showModal(`<div class="kicker">CHARACTER SELECT</div><h2>🎭 เลือกตัวละคร</h2><p id="skinDesc"></p><div class="skins">${SKINS.map((k,i)=>`<button class="skin${i===skinIdx?' on':''}" data-i="${i}"><canvas width="72" height="72"></canvas><span>${k.name}</span><small style="color:#ffd76b;font-size:10px">${k.pn}</small></button>`).join('')}</div><div class="modal-actions"><button class="btn primary" id="skinDone">ตกลง</button></div>`);
+ const m=$('modal');const show=i=>{$('skinDesc').innerHTML='<b style="color:#ffd76b">'+SKINS[i].pn+'</b> — '+SKINS[i].desc};show(skinIdx);
+ m.querySelectorAll('.skin').forEach((b,i)=>{const c=b.querySelector('canvas').getContext('2d');c.translate(36,40);drawChar(c,SKINS[i],15);
+  b.onclick=()=>{skinIdx=i;m.querySelectorAll('.skin').forEach(x=>x.classList.remove('on'));b.classList.add('on');applySkin();show(i)}});
+ $('skinDone').onclick=closeSkins}
+function closeSkins(){if(!running){showModal(welcomeHTML);bindWelcome();return}
+ $('overlay').classList.remove('show');if(!skinWasPaused){paused=false;last=performance.now()}else draw()}
+const MON={virus:{b:'#4a1478',g:'#c13dff',n:10},bug:{b:'#6b1020',g:'#ff3b3b',n:8},ghoul:{b:'#10343a',g:'#38ffb0',n:12},boss:{b:'#3d0a2a',g:'#ff2d68',n:16}};
+function drawMonster(g,e,t){
+ const m=MON[e.kind]||MON.virus,r=e.r,TAU=Math.PI*2,boss=e.boss,pul=1+Math.sin(t/220+e.phase)*.05;
+ g.save();g.translate(e.x,e.y);g.scale(pul,pul);if(e.stun>0)g.globalAlpha=.5;g.shadowColor=m.g;g.shadowBlur=boss?26:16;
+ // หนามหมุน
+ const rot=t/(boss?1500:1000)*(e.kind==='bug'?-1:1);g.fillStyle=m.g;
+ for(let i=0;i<m.n;i++){const a=rot+i*TAU/m.n,L=r*(1.2+.08*Math.sin(t/140+i*1.7)),w=.2;g.beginPath();g.moveTo(Math.cos(a-w)*r*.9,Math.sin(a-w)*r*.9);g.lineTo(Math.cos(a)*L,Math.sin(a)*L);g.lineTo(Math.cos(a+w)*r*.9,Math.sin(a+w)*r*.9);g.closePath();g.fill()}
+ // ลำตัว
+ const gr=g.createRadialGradient(0,-r*.3,r*.1,0,0,r);gr.addColorStop(0,m.b);gr.addColorStop(1,'#07020d');
+ g.fillStyle=gr;g.strokeStyle=m.g;g.lineWidth=boss?3.5:2.5;g.beginPath();g.arc(0,0,r,0,TAU);g.fill();g.stroke();g.shadowBlur=0;
+ // รอยแตกเรืองแสง
+ if(boss||e.kind==='ghoul'){g.strokeStyle=m.g;g.globalAlpha*=.7;g.lineWidth=1.5;g.beginPath();g.moveTo(-r*.9,r*.15);g.lineTo(-r*.6,r*.3);g.lineTo(-r*.55,r*.05);g.moveTo(r*.9,-r*.1);g.lineTo(r*.62,.05*r);g.lineTo(r*.66,r*.32);g.moveTo(r*.2,r*.98);g.lineTo(r*.1,r*.75);g.lineTo(r*.3,r*.68);g.stroke();g.globalAlpha=e.stun>0?.5:1}
+ // ตาแดงดุร้าย + คิ้วขมวด
+ for(const k of [-1,1]){g.save();g.translate(k*r*.38,-r*.1);g.rotate(-k*.45);g.shadowColor='#ff1a1a';g.shadowBlur=12;g.fillStyle='#ff2a2a';g.beginPath();g.ellipse(0,0,r*.27,r*.16,0,0,TAU);g.fill();g.shadowBlur=0;g.fillStyle='#120006';g.beginPath();g.ellipse(0,0,r*.05,r*.15,0,0,TAU);g.fill();g.restore();
+  g.strokeStyle='#0a0210';g.lineWidth=boss?5:3.5;g.lineCap='round';g.beginPath();g.moveTo(k*r*.74,-r*.52);g.lineTo(k*r*.12,-r*.3);g.stroke()}
+ if(boss){g.shadowColor='#ffd44d';g.shadowBlur=14;g.fillStyle='#ffe14d';g.beginPath();g.arc(0,-r*.55,r*.17,0,TAU);g.fill();g.shadowBlur=0;g.fillStyle='#b00020';g.beginPath();g.ellipse(0,-r*.55,r*.04,r*.14,0,0,TAU);g.fill()}
+ // ปากเขี้ยว
+ const my=r*.4,mw=r*.55;g.fillStyle='#1a0008';g.beginPath();g.moveTo(-mw,my-r*.08);g.quadraticCurveTo(0,my+r*.38,mw,my-r*.08);g.quadraticCurveTo(0,my-r*.2,-mw,my-r*.08);g.fill();
+ g.fillStyle='#f4f0e8';const tw=mw/5;
+ for(let i=0;i<5;i++){const x=-mw+(i+.5)*(2*mw/5);g.beginPath();g.moveTo(x-tw,my-r*.12);g.lineTo(x+tw,my-r*.12);g.lineTo(x,my+r*(i%2?.1:.17));g.closePath();g.fill()}
+ for(let i=1;i<4;i++){const x=-mw+(i+.5)*(2*mw/5);g.beginPath();g.moveTo(x-tw*.8,my+r*.14);g.lineTo(x+tw*.8,my+r*.14);g.lineTo(x,my+r*.03);g.closePath();g.fill()}
+ g.restore();
+ if(boss){g.save();g.translate(e.x,e.y);g.fillStyle='#ff9ec8';g.font='bold 11px Kanit';g.textAlign='center';g.fillText('CYBER CORE',0,-r*1.35-14);g.strokeStyle='#ff4b91';g.lineWidth=3;g.beginPath();g.arc(0,0,r+10,t*.002,t*.002+Math.PI*1.5);g.stroke();g.fillStyle='#ff719f';g.fillRect(-22,-r*1.35-10,44,4);g.fillStyle='#5efff1';g.fillRect(-22,-r*1.35-10,44*Math.max(0,bossHP/8),4);g.restore()}
+}
+function rand(a,b){return Math.random()*(b-a)+a}function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function initStage(){const s=stages[stage];player={x:65,y:270,r:15,speed:3.0,face:0,shield:true};items=[];enemies=[];bullets=[];particles=[];effects=[];screenShake=0;gate={x:835,y:270};empCooldown=0;invuln=0;bossHP=s.boss?8:0;
+ let tries=0;while(items.length<s.chips&&tries++<200){let x=rand(65,820),y=rand(65,475);if(!blocked(x,y,14)&&Math.hypot(x-player.x,y-player.y)>100&&Math.hypot(x-gate.x,y-gate.y)>60&&items.every(i=>Math.hypot(i.x-x,i.y-y)>45))items.push({x,y,r:10,phase:rand(0,6.28),got:false})}
+ const n=s.boss?3:stage+2;for(let i=0;i<n;i++){const er=s.boss&&i===0?29:16;let x=rand(260,790),y=rand(70,470),tt=0;while(blocked(x,y,er+4)&&tt++<300){x=rand(260,790);y=rand(70,470)}enemies.push({x,y,r:er,kind:(s.boss&&i===0)?'boss':['virus','bug','ghoul'][(i+stage)%3],side:Math.random()<.5?1:-1,stuck:0,escape:0,escAng:0,speed:rand(.75,1.2)+stage*.13,phase:rand(0,6.28),boss:s.boss&&i===0,stun:0,shoot:rand(65,110),attack:0,attackMode:0,windup:0,charge:0})}
+ updateHUD();draw();}
+function blocked(x,y,r){if(x-r<12||y-r<12||x+r>W-12||y+r>H-12)return true;for(const [wx,wy,ww,wh] of stages[stage].walls){let cx=Math.max(wx,Math.min(x,wx+ww)),cy=Math.max(wy,Math.min(y,wy+wh));if((x-cx)**2+(y-cy)**2<(r+2)**2)return true}return false}
+
+function freeEnemy(e){if(!blocked(e.x,e.y,e.r))return;for(let t=0;t<120;t++){const x=rand(40,860),y=rand(40,500);if(!blocked(x,y,e.r)&&Math.hypot(x-player.x,y-player.y)>150){e.x=x;e.y=y;return}}}
+function stepEnemy(e,ang,sp){for(const o of [0,.5,-.5,1,-1,1.5,-1.5,2.2,-2.2]){const a=ang+o*e.side,vx=Math.cos(a)*sp,vy=Math.sin(a)*sp;if(!blocked(e.x+vx,e.y+vy,e.r)){e.x+=vx;e.y+=vy;return true}}return false}
+function moveEnemy(e,d,ang,dt){
+ freeEnemy(e);const chase=d<(SKINS[skinIdx].stealth||260),sp=e.speed*(chase?1:.6)*dt;
+ if(e.escape>0){e.escape-=dt;if(!stepEnemy(e,e.escAng,e.speed*dt))e.escAng=rand(0,6.283);return}
+ const px=e.x,py=e.y;let ok;
+ if(chase)ok=stepEnemy(e,ang,sp);else{e.phase+=.018*dt;ok=stepEnemy(e,e.phase,sp);if(!ok)e.phase+=Math.PI*.6}
+ const moved=Math.hypot(e.x-px,e.y-py);
+ if(!ok||moved<sp*.4){e.stuck+=dt;if(e.stuck>20){e.stuck=0;e.side*=-1;e.escape=40;e.escAng=chase?ang+(Math.random()<.5?1:-1)*rand(1.2,2.2):rand(0,6.283)}}else e.stuck=Math.max(0,e.stuck-dt);
+}
+function takeHit(){if(SKINS[skinIdx].shield&&player.shield){player.shield=false;burst(player.x,player.y,'#7df9ff',26);setToast('🛡️ เกราะดูดซับความเสียหาย!');return false}lives--;return true}
+function updateHUD(){ $('topChips').textContent=score/5|0;$('topScore').textContent=score;$('lives').textContent='♥ '.repeat(Math.max(0,lives))+'♡ '.repeat(Math.max(0,3-lives));$('chipCount').textContent=(stages[stage].chips-items.length)+' / '+stages[stage].chips;$('enemyCount').textContent=enemies.length;$('power').textContent=empCooldown<=0?'พร้อมใช้':Math.ceil(empCooldown/60)+' วิ';$('stageTitle').textContent='ด่าน '+(stage+1)+': '+stages[stage].name;$('stageSubtitle').textContent=stages[stage].sub;$('stageCount').textContent='STAGE '+(stage+1)+' / '+stages.length;$('stageBar').style.width=(stage/stages.length*100)+'%';$('playerLevel').textContent=1+Math.floor(xp/100);$('xpbar').style.width=(xp%100)+'%';$('objChip').classList.toggle('done',items.length===0);$('objExit').classList.toggle('done',items.length===0);$('objQuiz').classList.toggle('done',false)}
+function setToast(t){toast=t;toastTime=140}
+function burst(x,y,color,n=12){for(let i=0;i<n;i++)particles.push({x,y,vx:rand(-2.6,2.6),vy:rand(-2.6,2.6),life:rand(18,38),max:38,color,r:rand(2,4)})}
+function move(dx,dy){if(!dx&&!dy)return;let nx=player.x+dx,ny=player.y+dy;if(!blocked(nx,player.y,player.r))player.x=nx;if(!blocked(player.x,ny,player.r))player.y=ny;player.face=Math.atan2(dy,dx)}
+function emp(){if(!running||paused||quizOpen||empCooldown>0)return;const sk=SKINS[skinIdx];empCooldown=sk.empCd||360;burst(player.x,player.y,'#59eaff',42);effects.push({type:'pulse',x:player.x,y:player.y,r:8,life:24,max:24});screenShake=7;enemies.forEach(e=>{if(dist(player,e)<(sk.empR||190)){e.stun=105;let a=Math.atan2(e.y-player.y,e.x-player.x);for(let k=0;k<11;k++){const nx=e.x+Math.cos(a)*5,ny=e.y+Math.sin(a)*5;if(blocked(nx,ny,e.r))break;e.x=nx;e.y=ny}if(e.boss){bossHP=Math.max(0,bossHP-1);burst(e.x,e.y,'#ff8ac8',18);setToast('EMP โจมตีบอส! HP '+bossHP+'/8');if(bossHP<=0){burst(e.x,e.y,'#ffcb68',45);enemies=enemies.filter(x=>x!==e);score+=50;xp+=50;setToast('บอสถูกกำจัด! +50 คะแนน')}}}});bullets=[];updateHUD();}
+function update(dt){if(paused||quizOpen)return;empCooldown=Math.max(0,empCooldown-dt);invuln=Math.max(0,invuln-dt);
+ let dx=0,dy=0;if(keys.ArrowLeft||keys.a||keys.A)dx--;if(keys.ArrowRight||keys.d||keys.D)dx++;if(keys.ArrowUp||keys.w||keys.W)dy--;if(keys.ArrowDown||keys.s||keys.S)dy++;if(dx&&dy){dx*=.707;dy*=.707}const sm=SKINS[skinIdx].spd||1;move(dx*player.speed*sm*dt,dy*player.speed*sm*dt);
+ items=items.filter(it=>{it.phase+=.08*dt;const sk=SKINS[skinIdx],dd=Math.hypot(player.x-it.x,player.y-it.y);if(sk.magnet&&dd<sk.magnet&&dd>1){it.x+=(player.x-it.x)/dd*2.4*dt;it.y+=(player.y-it.y)/dd*2.4*dt}if(dd<player.r+it.r+5+(sk.magnet?10:0)){score+=5;xp+=5;burst(it.x,it.y,'#5ceaff',10);setToast('+5 ชิปข้อมูล');updateHUD();return false}return true});
+ enemies.forEach(e=>{if(e.stun>0){e.stun-=dt;return}let d=dist(player,e),ang=Math.atan2(player.y-e.y,player.x-e.x);moveEnemy(e,d,ang,dt);
+ if(e.boss){
+   e.shoot-=dt;
+   if(e.charge>0){let vx=Math.cos(e.chargeAng)*4.4*dt,vy=Math.sin(e.chargeAng)*4.4*dt;if(!blocked(e.x+vx,e.y,e.r))e.x+=vx;if(!blocked(e.x,e.y+vy,e.r))e.y+=vy;e.charge-=dt;if(Math.random()<.35)burst(e.x,e.y,'#ff5e9c',2);}
+   else if(e.windup>0){e.windup-=dt;if(e.windup<=0){
+     if(e.attackMode===0){for(let k=-1;k<=1;k++){let a=ang+k*.18;bullets.push({x:e.x,y:e.y,vx:Math.cos(a)*3.4,vy:Math.sin(a)*3.4,r:7,kind:'aim'})}setToast('บอส: ยิงกระสุนล็อกเป้า!')}
+     else if(e.attackMode===1){for(let k=0;k<12;k++){let a=(Math.PI*2*k/12)+performance.now()*.0005;bullets.push({x:e.x,y:e.y,vx:Math.cos(a)*2.4,vy:Math.sin(a)*2.4,r:6,kind:'radial'})}setToast('บอส: คลื่นกระสุนวงแหวน!')}
+     else {e.chargeAng=ang;e.charge=42;setToast('บอส: พุ่งชน! หลบออกด้านข้าง');screenShake=5}
+   }}
+   else if(e.shoot<=0&&d<500){e.shoot=rand(100,145);e.attackMode=(e.attackMode+1)%3;e.windup=e.attackMode===2?38:25;effects.push({type:e.attackMode===2?'chargeWarning':'bossWarning',x:e.x,y:e.y,tx:player.x,ty:player.y,life:e.windup,max:e.windup});}
+ }
+ if(d<player.r+e.r&&invuln<=0){invuln=100;screenShake=10;if(takeHit()){player.x=65;player.y=270;burst(player.x,player.y,'#ff739c',24);setToast('โดนศัตรู! เสียพลังชีวิต');updateHUD();if(lives<=0){gameOver(false)}}else{e.stun=70}}
+ });
+ bullets=bullets.filter(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt;if(Math.hypot(player.x-b.x,player.y-b.y)<player.r+b.r&&invuln<=0){invuln=90;screenShake=8;if(takeHit()){burst(player.x,player.y,'#ff739c',12);setToast('โดนกระสุนบอส!');updateHUD();if(lives<=0)gameOver(false)}return false}return b.x>0&&b.x<W&&b.y>0&&b.y<H});
+ effects=effects.filter(f=>{f.life-=dt;if(f.type==='pulse')f.r+=8*dt;return f.life>0});screenShake=Math.max(0,screenShake-dt*.45);frameNo+=dt;
+ particles=particles.filter(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;return p.life>0});
+ if(items.length===0&&Math.hypot(player.x-gate.x,player.y-gate.y)<48)openQuiz();
+ if(toastTime>0)toastTime-=dt;updateHUD();
+}
+function rounded(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill)ctx.fill();if(stroke)ctx.stroke()}
+function draw(){const s=stages[stage]||stages[0];ctx.save();if(screenShake>0)ctx.translate(rand(-screenShake,screenShake),rand(-screenShake,screenShake));ctx.clearRect(0,0,W,H);let bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#0b2c50');bg.addColorStop(.55,'#071e3b');bg.addColorStop(1,'#09294b');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+ // floor tiles with highlights
+ for(let y=15;y<H;y+=45)for(let x=15;x<W;x+=45){let alt=((x/45|0)+(y/45|0))%2;ctx.fillStyle=alt?'#10375a':'#0d3153';ctx.fillRect(x,y,43,43);ctx.strokeStyle='#1b4b70';ctx.lineWidth=1;ctx.strokeRect(x,y,43,43);ctx.fillStyle='#27618a';ctx.fillRect(x+4,y+4,2,2)}
+ // ambient circuitry
+ ctx.strokeStyle='#1e5b80';ctx.globalAlpha=.45;for(let i=0;i<7;i++){let y=35+i*77;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(90,y);ctx.lineTo(112,y+20);ctx.lineTo(170,y+20);ctx.stroke();ctx.beginPath();ctx.arc(170,y+20,3,0,Math.PI*2);ctx.stroke()}ctx.globalAlpha=1;
+ // moving neon ambience
+ ctx.save();ctx.globalAlpha=.13;ctx.strokeStyle='#49dfff';ctx.lineWidth=1;for(let i=0;i<9;i++){let yy=((frameNo*1.1+i*73)%H);ctx.beginPath();ctx.moveTo(0,yy);ctx.lineTo(W,yy-28);ctx.stroke()}ctx.restore();
+ // walls
+ s.walls.forEach(([x,y,w,h],i)=>{ctx.shadowColor='#08a9ff55';ctx.shadowBlur=10;let g=ctx.createLinearGradient(x,y,x+w,y+h);g.addColorStop(0,'#1d6390');g.addColorStop(1,'#103458');ctx.fillStyle=g;ctx.strokeStyle='#39cfff';ctx.lineWidth=2;rounded(x,y,w,h,7,true,true);ctx.shadowBlur=0;ctx.fillStyle='#72dfff';ctx.globalAlpha=.45;ctx.fillRect(x+7,y+6,w-14,3);ctx.globalAlpha=1;for(let k=0;k<Math.floor(w/25);k++){ctx.fillStyle='#397ca1';ctx.fillRect(x+8+k*24,y+h-8,12,2)}});
+ // gate
+ let glow=8+Math.sin(performance.now()/180)*4;ctx.save();ctx.shadowColor=items.length?'#ffb837':'#3efbd2';ctx.shadowBlur=glow*2;ctx.strokeStyle=items.length?'#ffbf4d':'#62ffe0';ctx.lineWidth=4;rounded(gate.x-22,gate.y-40,44,80,10,false,true);ctx.fillStyle=items.length?'#ffbf4d':'#62ffe0';ctx.fillRect(gate.x-14,gate.y-31,28,62);ctx.fillStyle='#082544';ctx.fillRect(gate.x-8,gate.y-25,16,50);ctx.restore();ctx.fillStyle='#c8f5ff';ctx.font='bold 12px Kanit';ctx.textAlign='center';ctx.fillText(items.length?'LOCKED':'EXIT',gate.x,gate.y+56);
+ // chip crystals
+ items.forEach(it=>{ctx.save();ctx.translate(it.x,it.y+Math.sin(it.phase)*4);ctx.rotate(Math.PI/4);ctx.shadowColor='#49eaff';ctx.shadowBlur=17;ctx.fillStyle='#bafaff';ctx.fillRect(-8,-8,16,16);ctx.strokeStyle='#32dfff';ctx.lineWidth=2;ctx.strokeRect(-8,-8,16,16);ctx.fillStyle='#31aaff';ctx.fillRect(-4,-4,8,8);ctx.restore()});
+ // boss telegraphs + ability effects
+ effects.forEach(f=>{ctx.save();let alpha=Math.max(.15,f.life/f.max);if(f.type==='pulse'){ctx.globalAlpha=alpha;ctx.strokeStyle='#67f4ff';ctx.lineWidth=5;ctx.shadowColor='#31eaff';ctx.shadowBlur=22;ctx.beginPath();ctx.arc(f.x,f.y,f.r,0,Math.PI*2);ctx.stroke()}else if(f.type==='bossWarning'){ctx.globalAlpha=.35+Math.sin(performance.now()/45)*.2;ctx.strokeStyle='#ff5c9b';ctx.lineWidth=3;ctx.setLineDash([8,8]);ctx.beginPath();ctx.moveTo(f.x,f.y);ctx.lineTo(f.tx,f.ty);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#ff5c9b';ctx.beginPath();ctx.arc(f.tx,f.ty,19,0,Math.PI*2);ctx.stroke()}else if(f.type==='chargeWarning'){ctx.globalAlpha=.4;ctx.strokeStyle='#ff557f';ctx.lineWidth=24;ctx.beginPath();ctx.moveTo(f.x,f.y);ctx.lineTo(f.tx,f.ty);ctx.stroke();ctx.globalAlpha=.9;ctx.strokeStyle='#ffd2e0';ctx.lineWidth=2;ctx.setLineDash([7,6]);ctx.beginPath();ctx.moveTo(f.x,f.y);ctx.lineTo(f.tx,f.ty);ctx.stroke();ctx.setLineDash([])}ctx.restore()});
+ // bullets
+ bullets.forEach(b=>{ctx.save();ctx.shadowColor=b.kind==='radial'?'#ffb84d':'#ff5d9a';ctx.shadowBlur=18;let gg=ctx.createRadialGradient(b.x-2,b.y-2,1,b.x,b.y,b.r+3);gg.addColorStop(0,'#fff');gg.addColorStop(.35,b.kind==='radial'?'#ffd46e':'#ffb0ce');gg.addColorStop(1,b.kind==='radial'?'#ff8b25':'#ff347c');ctx.fillStyle=gg;ctx.beginPath();ctx.arc(b.x,b.y,b.r+1,0,Math.PI*2);ctx.fill();ctx.restore()});
+ // enemies
+ enemies.forEach(e=>drawMonster(ctx,e,performance.now()));
+ // player
+ ctx.save();ctx.translate(player.x,player.y);ctx.rotate(player.face*.15);if(invuln>0&&Math.floor(invuln/7)%2===0)ctx.globalAlpha=.35;drawChar(ctx,SKINS[skinIdx],player.r);if(player.shield&&SKINS[skinIdx].shield){ctx.globalAlpha=.6+Math.sin(performance.now()/150)*.2;ctx.strokeStyle='#7df9ff';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(0,0,player.r+7,0,Math.PI*2);ctx.stroke()}ctx.restore();
+ particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/p.max);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1});
+ // danger vignette
+ {let md=1e9;enemies.forEach(e=>{md=Math.min(md,dist(player,e)-e.r)});if(md<150){const a=Math.min(.45,(150-md)/150*.5)*(.75+.25*Math.sin(performance.now()/90));const vg=ctx.createRadialGradient(W/2,H/2,H*.35,W/2,H/2,H*.85);vg.addColorStop(0,'rgba(255,0,0,0)');vg.addColorStop(1,'rgba(255,20,60,'+a.toFixed(3)+')');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H)}}
+ // minimap
+ ctx.fillStyle='#06172acc';rounded(730,18,150,88,9,true,false);ctx.strokeStyle='#2d80ac';ctx.strokeRect(730,18,150,88);ctx.fillStyle='#91d8ff';ctx.font='10px Kanit';ctx.textAlign='left';ctx.fillText('MINI MAP',740,32);let sx=130/900,sy=58/540;items.forEach(i=>{ctx.fillStyle='#4cecff';ctx.fillRect(740+i.x*sx,39+i.y*sy,3,3)});enemies.forEach(e=>{ctx.fillStyle='#ff669f';ctx.fillRect(740+e.x*sx,39+e.y*sy,4,4)});ctx.fillStyle='#fff';ctx.fillRect(738+player.x*sx,37+player.y*sy,5,5);ctx.fillStyle='#ffcf61';ctx.fillRect(738+gate.x*sx,37+gate.y*sy,5,5);
+ if(toastTime>0){ctx.fillStyle='#04172ddf';rounded(280,475,340,38,12,true,false);ctx.strokeStyle='#32c8f6';ctx.strokeRect(280,475,340,38);ctx.fillStyle='#e8fbff';ctx.font='bold 15px Kanit';ctx.textAlign='center';ctx.fillText(toast,450,499)}
+ if(s.boss&&enemies.some(e=>e.boss)){ctx.save();ctx.fillStyle='#07172dd9';rounded(250,16,400,42,12,true,false);ctx.strokeStyle='#ff5d9b';ctx.strokeRect(250,16,400,42);ctx.fillStyle='#ff8ab7';ctx.font='bold 12px Kanit';ctx.textAlign='left';ctx.fillText('CYBER CORE GUARDIAN',266,32);ctx.fillStyle='#421d3b';rounded(266,38,368,10,5,true,false);let hpgrad=ctx.createLinearGradient(266,0,634,0);hpgrad.addColorStop(0,'#ff7eac');hpgrad.addColorStop(1,'#ff2d68');ctx.fillStyle=hpgrad;rounded(266,38,368*Math.max(0,bossHP/8),10,5,true,false);ctx.restore()}
+ if(paused&&!quizOpen&&running){ctx.fillStyle='#04142b99';ctx.fillRect(0,0,W,H);ctx.fillStyle='#e7faff';ctx.font='bold 28px Kanit';ctx.textAlign='center';ctx.fillText('พักเกม',450,260);ctx.font='14px Kanit';ctx.fillStyle='#9bdfff';ctx.fillText('กดปุ่มเล่นต่อเพื่อกลับเข้าสู่ภารกิจ',450,290)}
+ ctx.restore();
+}
+function loop(now){if(!running)return;let dt=Math.min((now-last)/16.67||1,2);last=now;update(dt);draw();raf=requestAnimationFrame(loop)}
+function showModal(html){$('modal').innerHTML=html;$('overlay').classList.add('show')}
+function startGame(){cancelAnimationFrame(raf);stage=0;score=0;lives=3;xp=0;running=true;paused=false;quizOpen=false;initStage();$('overlay').classList.remove('show');last=performance.now();raf=requestAnimationFrame(loop)}
+function openQuiz(){if(quizOpen)return;quizOpen=true;paused=true;const q=pickQuiz(stage);showModal(`<div class="kicker">KNOWLEDGE GATE • STAGE ${stage+1}</div><h2>🔐 ${q.q}</h2><p>ตอบถูกเพื่อเปิดประตูและไปยังด่านถัดไป</p><div class="answers">${q.a.map((a,i)=>`<button class="answer" data-i="${i}">${['A','B','C','D'][i]}. ${a}</button>`).join('')}</div><div class="explain" id="explain"></div><div class="modal-actions"><button class="btn primary" id="continue" style="display:none">ไปต่อ →</button></div>`);const modal=$('modal');let answered=false;Object.keys(keys).forEach(k=>keys[k]=false);modal.querySelectorAll('.answer').forEach(b=>b.onclick=()=>{if(answered)return;answered=true;let i=+b.dataset.i;modal.querySelectorAll('.answer').forEach((x,j)=>{x.disabled=true;if(j===q.c)x.classList.add('correct');else if(i===j)x.classList.add('wrong')});let exp=modal.querySelector('#explain');if(i===q.c){score+=25;xp+=25;exp.innerHTML='✓ ตอบถูก! +25 คะแนน<br>'+q.e;setToast('ปลดล็อกประตูสำเร็จ!')}else{lives--;updateHUD();exp.innerHTML='คำตอบที่ถูกคือ '+['A','B','C','D'][q.c]+'<br>'+q.e;if(lives<=0){modal.querySelector('#continue').textContent='ดูผลลัพธ์';modal.querySelector('#continue').onclick=()=>gameOver(false)}}exp.classList.add('show');updateHUD();modal.querySelector('#continue').style.display='inline-block';if(lives>0)modal.querySelector('#continue').onclick=()=>{if(stage===stages.length-1){gameOver(true);return}stage++;quizOpen=false;modal.dataset.answered='';$('overlay').classList.remove('show');initStage();paused=false;last=performance.now()};});}
+function gameOver(win){running=false;paused=true;quizOpen=false;const rank=score>=160?'S':score>=110?'A':score>=65?'B':'C';showModal(`<div class="center"><div style="font-size:60px">${win?'🏆':'💥'}</div><div class="kicker">${win?'MISSION COMPLETE':'GAME OVER'}</div><h2>${win?'คุณพิชิตโลกคอมพิวเตอร์สำเร็จ!':'พลังชีวิตหมดแล้ว'}</h2><p>คะแนนรวม <strong style="color:#5be5ff;font-size:25px">${score}</strong><br>แรงก์ของคุณ: <strong style="color:#ffd76b;font-size:23px">${rank}</strong><br>${win?'คุณผ่านครบทั้ง 5 ด่านแล้ว!':'ลองอีกครั้งและใช้ EMP เพื่อผลักศัตรูออกไป'}</p><div class="modal-actions"><button class="btn primary" id="again">↻ เล่นอีกครั้ง</button><button class="btn" id="closeResult">ปิดหน้าต่าง</button></div></div>`);$('again').onclick=startGame;$('closeResult').onclick=()=>{$('overlay').classList.remove('show');running=true;paused=true;last=performance.now();raf=requestAnimationFrame(loop)}}
+function help(){showModal(`<div class="kicker">HOW TO PLAY</div><h2>📘 วิธีเล่น</h2><p>1. เดินด้วย W A S D หรือปุ่มลูกศร<br>2. เก็บชิปสีฟ้าทุกชิ้นในด่าน<br>3. เดินไปที่ประตู EXIT เพื่อทำแบบทดสอบ<br>4. ตอบถูกเพื่อรับคะแนนและปลดล็อกด่าน<br>5. กด Space เพื่อปล่อยคลื่น EMP สตันศัตรู และทำดาเมจบอสถ้าอยู่ใกล้<br>6. บอสมี 3 ท่า: ยิงกระสุนล็อกเป้า, ยิงกระสุนวงแหวน และพุ่งชน สังเกตเส้นเตือนสีแดงแล้วหลบให้ทัน</p><div class="modal-actions"><button class="btn primary" id="backHelp">เข้าใจแล้ว</button></div>`);$('backHelp').onclick=()=>{$('overlay').classList.remove('show');if(!running)startGame();else{paused=false;last=performance.now()}}}
+const welcomeHTML=$('modal').innerHTML;
+function bindWelcome(){$('startBtn').onclick=startGame;$('howBtn').onclick=help;$('skinBtn2').onclick=openSkins}
+bindWelcome();$('skinBtn').onclick=openSkins;$('helpBtn').onclick=help;$('restartBtn').onclick=startGame;applySkin();
+$('pauseBtn').onclick=()=>{if(!running)return;paused=!paused;$('pauseBtn').textContent=paused?'▶ เล่นต่อ':'Ⅱ พักเกม';if(paused)draw();else last=performance.now()};
+document.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key))e.preventDefault();keys[e.key]=true;if(e.code==='Space')emp()});
+document.addEventListener('keyup',e=>keys[e.key]=false);
+document.querySelectorAll('[data-key]').forEach(b=>{let k=b.dataset.key;
+ const down=e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(_){}keys[k]=true;if(k==='Space')emp()},
+       up=e=>{e.preventDefault();keys[k]=false};
+ b.addEventListener('pointerdown',down);b.addEventListener('pointerup',up);b.addEventListener('pointerleave',up);b.addEventListener('pointercancel',up);b.addEventListener('lostpointercapture',up);
+ b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
+});
+// กันเมนูคัดลอก/เลือกข้อความ/ลากเวลากดค้างบนมือถือ
+['contextmenu','selectstart','dragstart'].forEach(ev=>{
+ [document.querySelector('.mobile-controls'),canvas].forEach(el=>el.addEventListener(ev,e=>e.preventDefault()));
+});
+// iOS: กันพินช์ซูม และหยุดเกมอัตโนมัติเมื่อสลับแอป/ล็อกจอ
+document.addEventListener('gesturestart',e=>e.preventDefault());
+document.addEventListener('visibilitychange',()=>{if(document.hidden){Object.keys(keys).forEach(k=>keys[k]=false);if(running&&!paused&&!quizOpen){paused=true;$('pauseBtn').textContent='▶ เล่นต่อ'}}});
+initStage();
+</script>
+</body>
+</html>

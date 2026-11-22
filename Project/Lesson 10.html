@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="บทเรียนออนไลน์เรื่องระบบปฏิบัติการคอมพิวเตอร์ บทที่ 10 ไวรัสคอมพิวเตอร์ การสำรอง และกู้คืนข้อมูล - ธีม Usagi">
+<title>บทที่ 10 | ไวรัสคอมพิวเตอร์ การสำรอง และกู้คืนข้อมูล (Usagi Theme)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --blue: #ff758c; --blue2: #ff7eb3; --dark: #4a2e35; --cream: #fff5f7;
+  --yellow: #ffb199; --pink: #ff6584; --green: #69c7a0; --purple: #b19cff;
+  --text: #4a3539; --muted: #8c7379; --white: #fff;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 95px; }
+body { margin: 0; font-family: 'Prompt', sans-serif; background: #fffafb; color: var(--text); overflow-x: hidden; position: relative; }
+body.lock-scroll, body.loading-active { overflow: hidden; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+
+.progress { position: fixed; top: 0; left: 0; height: 4px; width: 0; background: linear-gradient(90deg, #ff758c, #ff7eb3); z-index: 9999; transition: width 0.15s; }
+
+/* Floating Hearts Background Animation */
+.floating-hearts {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+.heart {
+  position: absolute;
+  bottom: -20px;
+  font-size: 16px;
+  color: #ff4d6d;
+  opacity: 0.6;
+  animation: floatUp 6s linear infinite;
+}
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(0.6) rotate(0deg); opacity: 0; }
+  20% { opacity: 0.8; }
+  100% { transform: translateY(-105vh) scale(1.2) rotate(360deg); opacity: 0; }
+}
+
+.nav { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); width: min(1100px, calc(100% - 30px)); min-height: 58px; background: rgba(255,255,255,.93); backdrop-filter: blur(18px); border: 1px solid #ffd6de; border-radius: 18px; display: flex; align-items: center; justify-content: space-between; padding: 8px 18px; z-index: 1000; box-shadow: 0 12px 35px rgba(255,117,140,.12); gap: 12px; }
+
+.menu-toggle { display: flex; flex-direction: column; justify-content: space-between; width: 28px; height: 22px; background: transparent; border: none; cursor: pointer; padding: 0; z-index: 1100; }
+.menu-toggle span { width: 100%; height: 3px; background: var(--dark); border-radius: 2px; transition: .3s; }
+
+.sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #fff; box-shadow: 5px 0 25px rgba(255,117,140,.15); z-index: 1200; transition: .3s ease; padding: 30px 20px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; }
+.sidebar.active { left: 0; }
+.sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.sidebar-title { font-weight: 700; font-size: 18px; color: var(--dark); }
+.close-btn { background: transparent; border: none; font-size: 24px; cursor: pointer; color: var(--muted); }
+.sidebar-menu { display: flex; flex-direction: column; gap: 10px; }
+.sidebar-menu a { padding: 12px 15px; border-radius: 12px; background: #fff0f3; color: var(--text); font-weight: 500; transition: .2s; display: flex; align-items: center; gap: 10px; }
+.sidebar-menu a:hover { background: var(--blue); color: #fff; }
+.sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(74,46,53,.3); backdrop-filter: blur(4px); z-index: 1150; opacity: 0; visibility: hidden; transition: .3s; }
+.sidebar-overlay.active { opacity: 1; visibility: visible; }
+
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; white-space: nowrap; }
+.logo-box { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--blue); color: #fff; font-size: 13px; }
+.nav-right { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+.nav-btn { border: 0; background: transparent; padding: 8px 10px; border-radius: 10px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.nav-btn:hover, .nav-btn:focus-visible { background: #ffe6ec; color: var(--blue); }
+
+/* LOADING SCREEN */
+.loading-screen { position: fixed; inset: 0; z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(255,245,247,.94); backdrop-filter: blur(15px); opacity: 0; visibility: hidden; transition: .3s; font-family: 'Anuphan', sans-serif; }
+.loading-screen.show { opacity: 1; visibility: visible; }
+.loading-card { width: min(390px, 100%); padding: 35px 28px; background: #fff; border: 1px solid #ffd6de; border-radius: 23px; text-align: center; box-shadow: 0 25px 80px rgba(255,117,140,.16); transform: translateY(12px) scale(.98); transition: .3s; }
+.loading-screen.show .loading-card { transform: translateY(0) scale(1); }
+.loading-logo { font-size: 27px; font-weight: 800; color: var(--dark); margin-bottom: 24px; }
+.loading-logo span { color: var(--blue); }
+.spinner { width: 56px; height: 56px; margin: 0 auto 22px; border: 5px solid #ffe6ec; border-top-color: var(--blue); border-right-color: var(--yellow); border-radius: 50%; animation: spin .8s linear infinite; }
+.loading-card h2 { font-size: 21px; color: var(--dark); margin-bottom: 8px; }
+.loading-card p { font-size: 14px; color: var(--muted); line-height: 1.8; }
+.progress-track { height: 7px; background: #ffe6ec; border-radius: 20px; margin-top: 23px; overflow: hidden; }
+.progress-bar-load { height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--yellow)); border-radius: 20px; transition: width .15s linear; }
+.progress-percent { display: block; margin-top: 9px; text-align: right; color: var(--blue); font-size: 12px; font-weight: 700; }
+body.loading-active .nav, body.loading-active .slide, body.loading-active footer, body.loading-active .sidebar { filter: blur(5px); pointer-events: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.slide { min-height: 100vh; padding: 120px 7vw 80px; position: relative; overflow: hidden; z-index: 2; }
+.inner { max-width: 1180px; margin: auto; }
+.hero { background: var(--cream); display: flex; align-items: center; }
+.hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+.chapter { font-size: 13px; font-weight: 700; letter-spacing: 2px; color: var(--blue); margin-bottom: 18px; }
+.hero h1 { margin: 0; font-size: clamp(40px, 6vw, 80px); line-height: 1.05; letter-spacing: -3px; color: var(--dark); }
+.hero h1 span { color: var(--blue); }
+.hero-desc { max-width: 500px; margin: 28px 0; font-size: 16px; color: var(--muted); line-height: 1.9; }
+.start { display: inline-flex; align-items: center; gap: 14px; background: var(--dark); color: #fff; padding: 15px 20px; border-radius: 14px; font-size: 13px; transition: .25s; border: 0; }
+.start:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(74,46,53,0.25); }
+.hero-art { position: relative; height: 470px; }
+.blob { position: absolute; width: 390px; height: 390px; right: 20px; top: 30px; background: #ffb199; border-radius: 46% 54% 62% 38% / 40% 43% 57% 60%; transform: rotate(-12deg); animation: float 6s ease-in-out infinite; }
+.monitor { position: absolute; width: min(330px, 85%); height: 225px; right: 45px; top: 90px; background: #4a2e35; border: 12px solid #8c5d68; border-radius: 18px; transform: rotate(5deg); box-shadow: 20px 25px 0 rgba(74,46,53,0.12); }
+.monitor-screen { height: 100%; background: radial-gradient(circle at 30% 30%, #ff7eb3, transparent 25%), linear-gradient(135deg, #5a353f, #2b181c); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
+.monitor-os { font-size: 45px; font-weight: 800; letter-spacing: -2px; }
+.monitor-text { font-size: 9px; letter-spacing: 2px; opacity: .6; }
+.keyboard { position: absolute; width: min(300px, 80%); height: 70px; right: 10px; top: 325px; background: #fff; border-radius: 10px; transform: rotate(-5deg); box-shadow: 0 15px 25px rgba(74,46,53,0.18); }
+.sticker { position: absolute; padding: 8px 12px; border-radius: 9px; font-size: 11px; font-weight: 600; box-shadow: 0 8px 20px rgba(74,46,53,0.18); color: #fff; }
+.sticker.one { background: var(--pink); left: 30px; top: 70px; transform: rotate(-12deg); }
+.sticker.two { background: var(--green); right: 0; bottom: 50px; transform: rotate(8deg); }
+.sticker.three { background: #fff; color: var(--dark); left: 80px; bottom: 20px; transform: rotate(5deg); }
+@keyframes float { 0%, 100% { transform: rotate(-12deg) translateY(0); } 50% { transform: rotate(-9deg) translateY(-12px); } }
+
+.eyebrow { color: var(--blue); font-size: 12px; font-weight: 700; letter-spacing: 2px; margin-bottom: 12px; }
+.big-title { font-size: clamp(38px, 6vw, 72px); line-height: 1.12; margin: 0 0 20px; letter-spacing: -2px; }
+.sub { color: var(--muted); max-width: 720px; line-height: 1.9; }
+
+.topics { background: #fff; }
+.topic-layout { margin-top: 55px; display: grid; grid-template-columns: 1.3fr .7fr; gap: 20px; }
+.topic-main { min-height: 350px; border-radius: 30px; background: var(--blue); color: #fff; padding: 40px; position: relative; overflow: hidden; }
+.topic-main h2 { font-size: clamp(28px, 3vw, 40px); margin: 0; line-height: 1.2; position: relative; z-index: 1; }
+.topic-main p { max-width: 480px; color: #fff0f3; line-height: 1.85; position: relative; z-index: 1; }
+.topic-number { position: absolute; right: -20px; bottom: -55px; font-size: 230px; font-weight: 800; opacity: .08; }
+.topic-side { display: grid; gap: 20px; }
+.topic-card { border-radius: 24px; padding: 28px; min-height: 165px; position: relative; overflow: hidden; }
+.topic-card:nth-child(1) { background: #ffe3e8; }
+.topic-card:nth-child(2) { background: #fff3db; }
+.topic-card h3 { margin: 0 0 10px; font-size: 24px; }
+.topic-card p { line-height: 1.8; font-size: 14px; }
+
+.concept { background: var(--dark); color: #fff; }
+.concept .big-title { color: #fff; }
+.concept .sub { color: #f5d6dc; }
+.system { margin-top: 55px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.system-box { min-height: 220px; border-radius: 24px; padding: 25px; position: relative; overflow: hidden; transition: .25s; color: #fff; }
+.system-box:hover { transform: translateY(-8px); }
+.system-box:nth-child(1) { background: #ff758c; }
+.system-box:nth-child(2) { background: #ff6584; }
+.system-box:nth-child(3) { background: #ffb199; }
+.system-box:nth-child(4) { background: #69c7a0; }
+.system-box .num { font-size: 12px; opacity: .7; }
+.system-box h3 { font-size: 21px; margin-top: 45px; margin-bottom: 5px; }
+.system-box p { font-size: 12px; opacity: .9; line-height: 1.8; }
+.system-box .symbol { position: absolute; right: 18px; top: 12px; font-size: 50px; opacity: .25; }
+
+.content { background: #fff; }
+.content-intro { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 45px; }
+.content-tag { display: inline-block; padding: 8px 12px; background: #ffe6ec; color: var(--blue); border-radius: 10px; font-size: 11px; font-weight: 600; }
+.content-block { margin: 30px 0; border-radius: 30px; overflow: hidden; display: grid; grid-template-columns: .8fr 1.2fr; min-height: 300px; }
+.content-visual { display: flex; align-items: center; justify-content: center; font-size: clamp(60px, 8vw, 100px); background: #ffeef2; min-height: 220px; }
+.content-text { padding: clamp(24px, 4vw, 45px); background: #fffafc; }
+.content-text h3 { font-size: clamp(23px, 3vw, 30px); margin: 0 0 15px; line-height: 1.35; }
+.content-text p { color: var(--muted); font-size: 14px; line-height: 2; }
+.content-block:nth-of-type(even) .content-visual { background: #ffe3e8; }
+.content-block:nth-of-type(3n) .content-visual { background: #fff3db; }
+
+.definition-list { padding-left: 22px; line-height: 1.9; color: var(--muted); }
+.definition-list li { margin: 8px 0; }
+.mini-card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+.mini-card { background: #fff; border: 1px solid #ffd6de; border-radius: 15px; padding: 16px; }
+.mini-card strong { display: block; margin-bottom: 6px; color: var(--text); }
+.mini-card span { font-size: 13px; line-height: 1.7; color: var(--muted); }
+
+.summary { background: var(--blue); color: #fff; }
+.summary .sub { color: #fff0f3; }
+.summary-grid { margin-top: 50px; display: grid; grid-template-columns: 1.2fr .8fr; gap: 20px; }
+.summary-main { background: #fff; color: var(--text); border-radius: 28px; padding: 35px; }
+.summary-main h3 { font-size: 26px; margin-top: 0; }
+.summary-points { display: grid; gap: 10px; }
+.summary-point { padding: 15px; border-radius: 14px; background: #fffafc; font-size: 13px; line-height: 1.8; }
+.summary-side { border-radius: 28px; background: #4a2e35; padding: 35px; display: flex; flex-direction: column; justify-content: center; line-height: 1.8; }
+.summary-side .big { font-size: 65px; font-weight: 800; line-height: 1; color: var(--yellow); }
+
+.footer { background: #2b181c; color: #d4b8be; text-align: center; padding: 35px 20px; font-size: 11px; line-height: 1.9; position: relative; z-index: 2; }
+
+/* Usagi Mascot Floating Corner & Footer */
+.floating-mascot-corner { position: fixed; right: 25px; bottom: 25px; width: 65px; height: 65px; background: #fff; border-radius: 50%; box-shadow: 0 10px 25px rgba(255,117,140,0.3); border: 3px solid #ffd5ec; display: flex; align-items: center; justify-content: center; z-index: 1000; cursor: pointer; }
+.floating-mascot-corner img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.floating-mascot-corner:hover img { transform: scale(1.18) rotate(10deg); }
+.corner-bubble { position: absolute; right: 75px; bottom: 10px; background: #fff; padding: 6px 12px; border-radius: 14px; font-size: 12px; font-weight: 700; color: #ff6584; box-shadow: 0 5px 15px rgba(255,117,140,.2); border: 2px solid #ffd5ec; white-space: nowrap; pointer-events: none; }
+
+.footer-mascots { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
+.footer-mascots img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #ff7eb3; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.3); animation: mascotFloat 3.5s ease-in-out infinite; cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.footer-mascots img:hover { transform: scale(1.25) rotate(12deg); }
+.footer-mascots img:nth-child(2) { animation-delay: 0.2s; }
+.footer-mascots img:nth-child(3) { animation-delay: 0.4s; }
+.footer-mascots img:nth-child(4) { animation-delay: 0.6s; }
+@keyframes mascotFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+.reveal { opacity: 0; transform: translateY(25px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.show { opacity: 1; transform: none; }
+
+@media(max-width:900px) {
+  .hero-grid, .topic-layout, .summary-grid { grid-template-columns: 1fr; }
+  .hero-art { height: 380px; max-width: 520px; width: 100%; margin: auto; }
+  .system { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .content-block { grid-template-columns: 1fr; }
+}
+@media(max-width:600px) {
+  .nav { top: 8px; width: calc(100% - 16px); padding: 7px 10px; }
+  .nav-right { display: none; }
+  .slide { padding: 100px 20px 60px; }
+  .hero h1 { font-size: 42px; letter-spacing: -1.5px; }
+  .hero-grid { gap: 15px; }
+  .hero-art { transform: scale(.88); transform-origin: top center; margin-bottom: -35px; }
+  .big-title { font-size: 36px; letter-spacing: -1px; }
+  .system, .mini-card-grid { grid-template-columns: 1fr; }
+  .topic-main { padding: 28px; }
+  .topic-card { padding: 24px; }
+  .summary-main, .summary-side { padding: 25px; }
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<!-- เอฟเฟกต์หัวใจสีแดงลอยขึ้นพื้นหลัง -->
+<div class="floating-hearts" id="floatingHearts"></div>
+
+<!-- น้อง Usagi ลอยมุมขวาล่าง -->
+<div class="floating-mascot-corner" title="สวัสดีค่ะน้องอุซางิ!">
+  <img src="https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=150&auto=format&fit=crop&q=80" alt="Usagi Mascot">
+  <div class="corner-bubble">สู้วๆ นะคะ! 🐰✨</div>
+</div>
+
+<!-- หน้าจอโหลดดิ้ง (Loading Screen) -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-card">
+    <div class="loading-logo">OS <span>LEARNING</span></div>
+    <div class="spinner"></div>
+    <h2 id="loadingTitle">กำลังโหลดบทเรียน</h2>
+    <p id="loadingDesc">กรุณารอสักครู่ ระบบกำลังพาคุณกลับสู่หน้าแรก...</p>
+    <div class="progress-track">
+      <div class="progress-bar-load" id="progressBarLoad"></div>
+    </div>
+    <span class="progress-percent" id="progressPercent">0%</span>
+  </div>
+</div>
+
+<!-- แถบ Sidebar (เมนูด้านข้าง) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">เมนูการเรียนรู้ (Usagi)</div>
+    <button class="close-btn" id="closeSidebar">&times;</button>
+  </div>
+  <div class="sidebar-menu">
+    <a href="index.html" class="nav-link-load">🏠 หน้าแรก (Index)</a>
+    <a href="#home" class="sidebar-link">🚀 หน้าหลักบทที่ 10</a>
+    <a href="#topics" class="sidebar-link">📌 หัวข้อในบทนี้</a>
+    <a href="#concept" class="sidebar-link">⚙️ ไวรัสคอมพิวเตอร์</a>
+    <a href="#content" class="sidebar-link">📚 เนื้อหาและการป้องกัน</a>
+    <a href="#backup" class="sidebar-link">💾 การสำรองและกู้คืนข้อมูล</a>
+    <a href="#summary" class="sidebar-link">📝 สรุปบทเรียน</a>
+  </div>
+</aside>
+
+<nav class="nav" aria-label="เมนูหลัก">
+  <div style="display:flex; align-items:center; gap:15px;">
+    <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <a class="logo nav-link-load" href="index.html" aria-label="กลับไปหน้าแรก"><span class="logo-box">OS</span><span>OS Learning</span></a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-btn" href="#topics">หัวข้อ</a>
+    <a class="nav-btn" href="#concept">ไวรัสคอมพิวเตอร์</a>
+    <a class="nav-btn" href="#content">การป้องกัน</a>
+    <a class="nav-btn" href="#backup">สำรองและกู้คืน</a>
+    <a class="nav-btn" href="#summary">สรุป</a>
+  </div>
+</nav>
+
+<section class="slide hero" id="home">
+  <div class="inner hero-grid">
+    <div class="reveal">
+      <div class="chapter">บทเรียนที่ 10 · USAGI THEME</div>
+      <h1>ไวรัสคอมพิวเตอร์<br><span>การสำรอง</span> และกู้คืนข้อมูล</h1>
+      <p class="hero-desc">ศึกษาภัยคุกคามจากไวรัสคอมพิวเตอร์และมัลแวร์รูปแบบต่างๆ แนวทางการป้องกันความปลอดภัยด้วยเครื่องมือใน Windows และวิธีการสำรองรวมถึงกู้คืนข้อมูลอย่างถูกวิธีในบรรยากาศสุดน่ารัก</p>
+      <a href="#topics" class="start">เริ่มเรียนบทที่ 10 <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="hero-art reveal" aria-label="ภาพประกอบบทที่ 10">
+      <div class="blob"></div>
+      <div class="monitor"><div class="monitor-screen"><div class="monitor-os">OS</div><div class="monitor-text">SECURITY & BACKUP</div></div></div>
+      <div class="keyboard"></div>
+      <div class="sticker one">VIRUS</div>
+      <div class="sticker two">BACKUP</div>
+      <div class="sticker three">RECOVERY</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide topics" id="topics">
+  <div class="inner">
+    <div class="reveal">
+      <div class="eyebrow">01 · TOPICS</div>
+      <h2 class="big-title">บทนี้เราจะ<br><span style="color:var(--blue)">เรียนรู้อะไร?</span></h2>
+      <p class="sub">ทำความเข้าใจประเภทของไวรัสคอมพิวเตอร์ วิธีการแพร่กระจาย การใช้งานโปรแกรมป้องกัน และกระบวนการสำรองพร้อมกู้คืนข้อมูลในระบบปฏิบัติการ</p>
+    </div>
+    <div class="topic-layout reveal">
+      <div class="topic-main">
+        <div class="eyebrow" style="color:#fff0f3">10.1</div>
+        <h2>ไวรัสคอมพิวเตอร์</h2>
+        <p>ความหมาย ประเภทของไวรัสและมัลแวร์ แนวทางการป้องกัน และการใช้งานโปรแกรมสแกนไวรัสใน Windows 11</p>
+        <div class="topic-number">10</div>
+      </div>
+      <div class="topic-side">
+        <div class="topic-card">
+          <div class="eyebrow">10.2</div>
+          <h3>การสำรองและกู้คืนข้อมูล</h3>
+          <p>ความสำคัญ วิธีการสำรองข้อมูล (System Image Backup) และการกู้คืนระบบ (System Restore)</p>
+        </div>
+        <div class="topic-card">
+          <div class="eyebrow">10.3</div>
+          <h3>ความปลอดภัยขั้นสูง</h3>
+          <p>การป้องกันมัลแวร์เรียกค่าไถ่ (Ransomware) และการใช้งานเครื่องมือเสริม</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide concept" id="concept">
+  <div class="inner">
+    <div class="reveal">
+      <div class="eyebrow" style="color:#ffb199">02 · VIRUS TYPES</div>
+      <h2 class="big-title">ประเภทสำคัญของ<br><span style="color:#ffb199">ไวรัสคอมพิวเตอร์</span></h2>
+      <p class="sub">ไวรัสและมัลแวร์มีลักษณะการทำงานและช่องทางการแพร่ระบาดที่แตกต่างกัน ผู้ใช้งานจึงควรทำความรู้จักเพื่อรับมือได้อย่างถูกต้อง</p>
+    </div>
+    <div class="system reveal">
+      <div class="system-box">
+        <div class="num">01</div>
+        <div class="symbol">🥾</div>
+        <h3>Boot Sector Virus</h3>
+        <p>แพร่กระจายตอนบูตเครื่อง ฝังตัวในบูตเซกเตอร์ฮาร์ดดิสก์ มักติดจากแผ่นหรือสื่อที่ค้างอยู่</p>
+      </div>
+      <div class="system-box">
+        <div class="num">02</div>
+        <div class="symbol">📁</div>
+        <h3>File / Program Virus</h3>
+        <p>แทรกมากับโปรแกรมหรือไฟล์สกุลต่างๆ เช่น .exe, .dll, .sys เมื่อเปิดใช้งานจะเริ่มทำงานทันที</p>
+      </div>
+      <div class="system-box">
+        <div class="num">03</div>
+        <div class="symbol">🐴</div>
+        <h3>Trojan Horse</h3>
+        <p>หลอกว่าเป็นโปรแกรมทั่วไปเพื่อขโมยข้อมูลหรือเจาะระบบ แต่ไม่สามารถกระจายตัวเองได้</p>
+      </div>
+      <div class="system-box">
+        <div class="num">04</div>
+        <div class="symbol">🐛</div>
+        <h3>Internet Worm</h3>
+        <p>หนอนอินเทอร์เน็ตที่กระจายตัวผ่านเครือข่ายอินเทอร์เน็ตได้อย่างรวดเร็วและทำลายล้างสูง</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide content" id="content">
+  <div class="inner">
+    <div class="content-intro reveal">
+      <div>
+        <div class="eyebrow">03 · LESSON CONTENT</div>
+        <h2 class="big-title">เนื้อหาสาระบทที่ 10</h2>
+        <p class="sub">รายละเอียดเชิงลึกเกี่ยวกับไวรัสคอมพิวเตอร์และการรักษาความปลอดภัยระบบ</p>
+      </div>
+      <span class="content-tag">LESSON 10</span>
+    </div>
+
+    <article class="content-block reveal">
+      <div class="content-visual" aria-hidden="true">🦠</div>
+      <div class="content-text">
+        <div class="content-tag">10.1.1 & 10.1.2</div>
+        <h3>ลักษณะและประเภทเพิ่มเติมของไวรัส</h3>
+        <p>ไวรัสคอมพิวเตอร์มีพฤติกรรมคล้ายเชื้อโรค อาศัยไฟล์โฮสต์ (Host) ในการแพร่กระจาย และอาจสร้างความเสียหายต่อข้อมูล โปรแกรม หรือระบบปฏิบัติการ นอกจากนี้ยังมีไวรัสประเภทอื่นๆ ได้แก่:</p>
+        <div class="mini-card-grid">
+          <div class="mini-card"><strong>Polymorphic Virus</strong><span>ไวรัสที่มีความสามารถในการเปลี่ยนรูปแบบตัวเองได้เมื่อสร้างสำเนา เพื่อหลบเลี่ยงการตรวจจับ</span></div>
+          <div class="mini-card"><strong>Stealth Virus</strong><span>ไวรัสที่มีความสามารถในการพรางตัว เช่น อำพรางขนาดไฟล์ไม่ให้ผิดปกติเมื่อตรวจสอบ</span></div>
+          <div class="mini-card"><strong>Macro Virus</strong><span>ไวรัสที่แทรกมากับไฟล์เอกสารสำนักงาน เช่น Word, Excel และ PowerPoint</span></div>
+          <div class="mini-card"><strong>มัลแวร์อื่นๆ (Malware)</strong><span>เช่น Ransomware (เรียกค่าไถ่), Spyware, Bot, Rootkit และ Keylogger</span></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="content-block reveal">
+      <div class="content-visual" aria-hidden="true">🛡️</div>
+      <div class="content-text">
+        <div class="content-tag">10.1.3 & 10.1.4</div>
+        <h3>การป้องกันและการใช้เครื่องมือใน Windows 11</h3>
+        <ul class="definition-list">
+          <li><strong>การปฏิบัติตัวเพื่อป้องกัน:</strong> ติดตั้งโปรแกรมสแกนไวรัส, ดาวน์โหลดซอฟต์แวร์จากแหล่งน่าเชื่อถือและถูกกฎหมาย, อัปเดตระบบปฏิบัติการสม่ำเสมอ และระมัดระวังการเปิดไฟล์แปลกปลอมจากอีเมลหรือสื่อบันทึก</li>
+          <li><strong>การปิด AutoPlay/AutoRun:</strong> ป้องกันไวรัสที่เปิดใช้งานอัตโนมัติเมื่อเสียบแฟลชไดรฟ์ (ตั้งค่าผ่าน Settings > Bluetooth & devices > AutoPlay)</li>
+          <li><strong>การสแกนด้วย Microsoft Defender:</strong> สามารถเลือกสแกนแบบ Quick scan, Full scan, Custom scan หรือ Offline scan เพื่อความสะอาดปลอดภัยของระบบ</li>
+          <li><strong>การป้องกัน Ransomware:</strong> เปิดใช้งาน Ransomware protection และกำหนด Protected folders เพื่อป้องกันไฟล์สำคัญถูกเข้ารหัสเรียกค่าไถ่</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="slide content" id="backup" style="background:#fff6f8;">
+  <div class="inner">
+    <div class="reveal">
+      <div class="eyebrow">04 · BACKUP & RECOVERY</div>
+      <h2 class="big-title">การสำรองและกู้คืนข้อมูล<br><span style="color:var(--blue)">System Backup & Restore</span></h2>
+      <p class="sub">แนวทางปฏิบัติเพื่อป้องกันความเสียหายและการสูญหายของข้อมูลในคอมพิวเตอร์</p>
+    </div>
+
+    <article class="content-block reveal" style="margin-top:40px;">
+      <div class="content-visual" aria-hidden="true">💾</div>
+      <div class="content-text">
+        <div class="content-tag">10.2</div>
+        <h3>การสำรองข้อมูล (Backup) และกู้คืนระบบ (Recovery)</h3>
+        <p>การสำรองข้อมูลคือการคัดลอกข้อมูลไปยังสถานที่อื่นแยกจากต้นฉบับ เพื่อป้องกันความเสียหายจากซอฟต์แวร์ขัดข้องหรือมัลแวร์โจมตี โดยมีเครื่องมือสำคัญใน Windows ดังนี้:</p>
+        <div class="mini-card-grid">
+          <div class="mini-card"><strong>System Image Backup</strong><span>การสร้างไฟล์อิมเมจสำรองข้อมูลทั้งไดรฟ์ C: (รวมระบบปฏิบัติการ แอปพลิเคชัน และการตั้งค่า) เก็บไว้เป็นก้อนเดียวผ่าน Control Panel > Backup and Restore (Windows 7)</span></div>
+          <div class="mini-card"><strong>System Restore (Restore Point)</strong><span>การสร้างจุดคืนค่าระบบเพื่อให้สามารถย้อนเวลากลับไปยังสภาวะก่อนที่เครื่องจะมีปัญหา โดยไฟล์เอกสารส่วนตัวจะไม่ถูกลบ</span></div>
+        </div>
+        <div style="margin-top:15px; font-size:13px; color:var(--muted); line-height:1.8;">
+- <strong>ขั้นตอนการสร้าง Restore Point:</strong> ค้นหา Create a restore point ใน Search > เปิด System protection เป็น On > กำหนดพื้นที่ฮาร์ดดิสก์ประมาณ 5-10% > คลิก Create และใส่คำอธิบาย
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="slide summary" id="summary">
+  <div class="inner">
+    <div class="reveal">
+      <div class="eyebrow" style="color:#fff0f3">05 · LESSON SUMMARY</div>
+      <h2 class="big-title">ก่อนจบบทเรียน<br><span style="color:var(--yellow)">จำเรื่องสำคัญไว้</span></h2>
+    </div>
+    <div class="summary-grid reveal">
+      <div class="summary-main">
+        <h3>บทที่ 10 ในหนึ่งหน้าจอ</h3>
+        <div class="summary-points">
+          <div class="summary-point"><b>01</b> ไวรัสและมัลแวร์สร้างความเสียหายต่อระบบและข้อมูล ผู้ใช้ต้องระมัดระวังในการดาวน์โหลดและเปิดไฟล์</div>
+          <div class="summary-point"><b>02</b> สามารถใช้เครื่องมือใน Windows 11 เช่น Microsoft Defender, ปิด AutoPlay และตั้งค่าป้องกัน Ransomware ได้</div>
+          <div class="summary-point"><b>03</b> การทำ System Image Backup และ System Restore ช่วยให้สามารถกู้คืนระบบและข้อมูลกลับมาใช้งานได้อย่างปลอดภัย</div>
+        </div>
+      </div>
+      <div class="summary-side">
+        <div class="big">OS</div>
+        <p>ความปลอดภัยและการสำรองข้อมูลคือหัวใจสำคัญในการใช้งานคอมพิวเตอร์อย่างยั่งยืน</p>
+        <a class="start nav-link-load" href="index.html" style="background:#fff; color:#4a2e35; margin-top:15px; text-align:center; justify-content:center;">กลับหน้าแรก ↑</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <!-- มาสคอตใน Footer เพิ่มความน่ารัก -->
+  <div class="footer-mascots">
+    <img src="https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=150&auto=format&fit=crop&q=80" alt="Mascot 1">
+    <img src="https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=150&auto=format&fit=crop&q=80" alt="Mascot 2">
+    <img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=150&auto=format&fit=crop&q=80" alt="Mascot 3">
+    <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=150&auto=format&fit=crop&q=80" alt="Mascot 4">
+  </div>
+  เว็บไซต์ประกอบการเรียนรู้รายวิชาระบบปฏิบัติการคอมพิวเตอร์ (Usagi Theme)<br>ผู้สอน: ครูกุสุมา ปิ่นสุภา
+</footer>
+
+<script>
+(() => {
+  // สร้างหัวใจลอยขึ้นด้านบนแบบสุ่มอัตโนมัติ
+  const heartsContainer = document.getElementById('floatingHearts');
+  const heartSymbols = ['❤️', '💖', '💗', '💓', '✨'];
+  
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+    heart.style.fontSize = (Math.random() * 10 + 12) + 'px';
+    heartsContainer.appendChild(heart);
+    
+    setTimeout(() => {
+      heart.remove();
+    }, 7000);
+  }
+  setInterval(createHeart, 450);
+
+  const progress = document.getElementById('progress');
+  function updateProgress() {
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
+    progress.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const closeSidebar = document.getElementById('closeSidebar');
+  const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+  function toggleMenu() {
+    sidebar.classList.toggle('active');
+    sidebarOverlay.classList.toggle('active');
+  }
+
+  menuToggle.addEventListener('click', toggleMenu);
+  closeSidebar.addEventListener('click', toggleMenu);
+  sidebarOverlay.addEventListener('click', toggleMenu);
+
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    });
+  });
+
+  const loadingScreen = document.getElementById('loadingScreen');
+  const progressBarLoad = document.getElementById('progressBarLoad');
+  const progressPercent = document.getElementById('progressPercent');
+  const navLinksLoad = document.querySelectorAll('.nav-link-load');
+
+  navLinksLoad.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetUrl = this.getAttribute('href');
+
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+
+      document.body.classList.add('loading-active');
+      loadingScreen.classList.add('show');
+
+      let currentPercent = 0;
+      const interval = setInterval(() => {
+        currentPercent += Math.floor(Math.random() * 8) + 5;
+        if (currentPercent >= 100) {
+          currentPercent = 100;
+          clearInterval(interval);
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 200);
+        }
+        progressBarLoad.style.width = currentPercent + '%';
+        progressPercent.textContent = currentPercent + '%';
+      }, 40);
+    });
+  });
+
+  const revealItems = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    revealItems.forEach(item => observer.observe(item));
+  } else {
+    revealItems.forEach(item => item.classList.add('show'));
+  }
+})();
+</script>
+</body>
+</html>

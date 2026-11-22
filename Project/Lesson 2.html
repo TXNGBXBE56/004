@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="บทเรียนออนไลน์เรื่องระบบปฏิบัติการคอมพิวเตอร์">
+<title>บทที่ 2 | โปรแกรมระบบปฏิบัติการคอมพิวเตอร์</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700;800&display=swap');
+
+:root{
+  --blue:#d982ad;--blue2:#efb5cf;--dark:#514354;--cream:#fff7fb;
+  --yellow:#f5d77d;--pink:#f3b8d1;--green:#b9d9cf;--purple:#cdbce9;
+  --text:#514354;--muted:#887b8b;--white:#fff;
+  --rose:#e99abd;--soft-pink:#fde8f1;--lilac:#eee7f8;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:95px}
+body{margin:0;font-family:'Prompt',sans-serif;background:#fff9fc;color:var(--text);overflow-x:hidden}
+body.lock-scroll,body.loading-active{overflow:hidden}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+.progress{position:fixed;top:0;left:0;height:4px;width:0;background:var(--pink);z-index:9999;transition:width .15s}
+
+.nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);width:min(1100px,calc(100% - 30px));min-height:58px;background:#ffffffed;backdrop-filter:blur(18px);border:1px solid #fff;border-radius:18px;display:flex;align-items:center;justify-content:space-between;padding:8px 18px;z-index:1000;box-shadow:0 15px 40px #102b3212;gap:12px}
+
+/* สไตล์ปุ่ม 3 ขีด (ปุ่มสลับเมนู) */
+.menu-toggle{display:flex;flex-direction:column;justify-content:space-between;width:28px;height:22px;background:transparent;border:none;cursor:pointer;padding:0;z-index:1100}
+.menu-toggle span{width:100%;height:3px;background:var(--dark);border-radius:2px;transition:.3s}
+
+/* สไตล์ Sidebar (เมนูด้านข้าง) */
+.sidebar{position:fixed;top:0;left:-300px;width:280px;height:100%;background:#fff;box-shadow:5px 0 25px rgba(16,43,50,.15);z-index:1200;transition:.3s ease;padding:30px 20px;display:flex;flex-direction:column;gap:15px;overflow-y:auto}
+.sidebar.active{left:0}
+.sidebar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sidebar-title{font-weight:700;font-size:18px;color:var(--dark)}
+.close-btn{background:transparent;border:none;font-size:24px;cursor:pointer;color:var(--muted)}
+.sidebar-menu{display:flex;flex-direction:column;gap:10px}
+.sidebar-menu a{padding:12px 15px;border-radius:12px;background:var(--cream);color:var(--text);font-weight:500;transition:.2s;display:flex;align-items:center;gap:10px}
+.sidebar-menu a:hover{background:var(--blue);color:#fff}
+.sidebar-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(16,43,50,.4);backdrop-filter:blur(4px);z-index:1150;opacity:0;visibility:hidden;transition:.3s}
+.sidebar-overlay.active{opacity:1;visibility:visible}
+
+/* ป้ายแสดงชื่อบทแทนโลโก้เดิม (สไตล์บทที่ 1) */
+.current-chapter-indicator{display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px;color:var(--dark);white-space:nowrap;}
+.current-chapter-badge{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--blue);color:#fff;font-size:13px;}
+
+.nav-right{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.nav-btn{border:0;background:transparent;padding:8px 10px;border-radius:10px;font-size:12px;color:#557176;white-space:nowrap}
+.nav-btn:hover,.nav-btn:focus-visible{background:#fde8f1;color:var(--blue)}
+
+/* ================= LOADING SCREEN ================= */
+.loading-screen{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(242,251,248,.94);backdrop-filter:blur(15px);opacity:0;visibility:hidden;transition:.3s;font-family:'Anuphan',sans-serif}
+.loading-screen.show{opacity:1;visibility:visible}
+.loading-card{width:min(390px,100%);padding:35px 28px;background:#fff;border:1px solid #f2d8e5;border-radius:23px;text-align:center;box-shadow:0 25px 80px rgba(16,43,50,.16);transform:translateY(12px) scale(.98);transition:.3s}
+.loading-screen.show .loading-card{transform:translateY(0) scale(1)}
+.loading-logo{font-size:27px;font-weight:800;color:var(--dark);margin-bottom:24px}
+.loading-logo span{color:var(--blue)}
+.spinner{width:56px;height:56px;margin:0 auto 22px;border:5px solid #fde8f1;border-top-color:var(--blue);border-right-color:var(--purple);border-radius:50%;animation:spin .8s linear infinite}
+.loading-card h2{font-size:21px;color:var(--dark);margin-bottom:8px}
+.loading-card p{font-size:14px;color:var(--muted);line-height:1.8}
+.progress-track{height:7px;background:#fde8f1;border-radius:20px;margin-top:23px;overflow:hidden}
+.progress-bar-load{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:20px;transition:width .15s linear}
+.progress-percent{display:block;margin-top:9px;text-align:right;color:var(--blue);font-size:12px;font-weight:700}
+body.loading-active .nav,body.loading-active .slide,body.loading-active footer,body.loading-active .sidebar{filter:blur(5px);pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.slide{min-height:100vh;padding:120px 7vw 80px;position:relative;overflow:hidden}
+.inner{max-width:1180px;margin:auto}
+.hero{background:var(--cream);display:flex;align-items:center}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.chapter{font-size:13px;font-weight:700;letter-spacing:2px;color:var(--blue);margin-bottom:18px}
+.hero h1{margin:0;font-size:clamp(48px,7vw,96px);line-height:.98;letter-spacing:-4px;color:var(--dark)}
+.hero h1 span{color:var(--blue)}
+.hero-desc{max-width:500px;margin:28px 0;font-size:16px;color:var(--muted);line-height:1.9}
+.start{display:inline-flex;align-items:center;gap:14px;background:var(--dark);color:#fff;padding:15px 20px;border-radius:14px;font-size:13px;transition:.25s;border:0}
+.start:hover{transform:translateY(-3px);box-shadow:0 15px 30px #102b3225}
+.hero-art{position:relative;height:470px}
+.blob{position:absolute;width:390px;height:390px;right:20px;top:30px;background:var(--yellow);border-radius:46% 54% 62% 38% / 40% 43% 57% 60%;transform:rotate(-12deg);animation:float 6s ease-in-out infinite}
+.monitor{position:absolute;width:min(330px,85%);height:225px;right:45px;top:90px;background:#11172a;border:12px solid #80677b;border-radius:18px;transform:rotate(5deg);box-shadow:20px 25px 0 #00000012}
+.monitor-screen{height:100%;background:radial-gradient(circle at 30% 30%,#e99abd,transparent 25%),linear-gradient(135deg,#674f69,#3f3548);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
+.monitor-os{font-size:55px;font-weight:800;letter-spacing:-4px}.monitor-text{font-size:10px;letter-spacing:3px;opacity:.6}
+.keyboard{position:absolute;width:min(300px,80%);height:70px;right:10px;top:325px;background:#fff;border-radius:10px;transform:rotate(-5deg);box-shadow:0 15px 25px #102b3218}
+.sticker{position:absolute;padding:8px 12px;border-radius:9px;font-size:11px;font-weight:600;box-shadow:0 8px 20px #102b3218}
+.sticker.one{background:var(--pink);left:30px;top:70px;transform:rotate(-12deg)}.sticker.two{background:var(--green);right:0;bottom:50px;transform:rotate(8deg)}.sticker.three{background:#fff;left:80px;bottom:20px;transform:rotate(5deg)}
+@keyframes float{0%,100%{transform:rotate(-12deg) translateY(0)}50%{transform:rotate(-9deg) translateY(-12px)}}
+.eyebrow{color:var(--blue);font-size:12px;font-weight:700;letter-spacing:2px;margin-bottom:12px}
+.big-title{font-size:clamp(38px,6vw,72px);line-height:1.12;margin:0 0 20px;letter-spacing:-2px}
+.sub{color:var(--muted);max-width:720px;line-height:1.9}
+.topics{background:#fff}
+.topic-layout{margin-top:55px;display:grid;grid-template-columns:1.3fr .7fr;gap:20px}
+.topic-main{min-height:350px;border-radius:30px;background:var(--blue);color:#fff;padding:40px;position:relative;overflow:hidden}
+.topic-main h2{font-size:clamp(28px,3vw,40px);margin:0;line-height:1.2;position:relative;z-index:1}
+.topic-main p{max-width:480px;color:#fbeaf2;line-height:1.85;position:relative;z-index:1}
+.topic-number{position:absolute;right:-20px;bottom:-55px;font-size:230px;font-weight:800;opacity:.08}
+.topic-side{display:grid;gap:20px}.topic-card{border-radius:24px;padding:28px;min-height:165px;position:relative;overflow:hidden}.topic-card:nth-child(1){background:#fce8f1}.topic-card:nth-child(2){background:#f8dce9}.topic-card h3{margin:0 0 10px;font-size:24px}.topic-card p{line-height:1.8;font-size:14px}
+.concept{background:var(--dark);color:#fff}.concept .big-title{color:#fff}.concept .sub{color:#d9cbd8}
+.system{margin-top:55px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.system-box{min-height:220px;border-radius:24px;padding:25px;position:relative;overflow:hidden;transition:.25s}.system-box:hover{transform:translateY(-8px)}.system-box:nth-child(1){background:#d982ad}.system-box:nth-child(2){background:#cdbce9}.system-box:nth-child(3){background:#f3b8d1}.system-box:nth-child(4){background:#b9d9cf}.system-box .num{font-size:12px;opacity:.7}.system-box h3{font-size:23px;margin-top:55px;margin-bottom:5px}.system-box p{font-size:12px;opacity:.9;line-height:1.8}.system-box .symbol{position:absolute;right:18px;top:12px;font-size:50px;opacity:.25}
+.competency{background:#f7f1fb}.competency-grid{margin-top:50px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.comp{background:#fff;border-radius:24px;padding:28px;min-height:260px;border:1px solid #f0dce8;transition:.25s}.comp:hover{transform:translateY(-7px) rotate(-1deg);box-shadow:0 20px 40px #322b6312}.comp-icon{font-size:36px}.comp h3{font-size:20px;margin:30px 0 8px}.comp p{color:var(--muted);font-size:13px;line-height:1.8}
+.objectives{background:#fff8f3}.objective-layout{margin-top:50px;display:grid;grid-template-columns:.8fr 1.2fr;gap:50px;align-items:center}.target{width:300px;height:300px;margin:auto;border-radius:50%;border:2px solid #e9a9c6;display:grid;place-items:center;position:relative}.target:before,.target:after{content:"";position:absolute;border-radius:50%;border:2px solid #e9a9c6}.target:before{width:220px;height:220px}.target:after{width:140px;height:140px;background:var(--yellow)}.target-center{position:relative;z-index:2;font-size:35px}.objective-list{display:grid;gap:12px}.objective{display:flex;gap:16px;align-items:center;background:#fff;padding:17px 20px;border-radius:16px;line-height:1.7}.objective b{flex:0 0 34px;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#fce8f1}
+.outcomes{background:#f4edf9}.outcome-wrap{margin-top:50px;display:flex;align-items:stretch;gap:16px}.outcome{flex:1;padding:30px 25px;background:#fff;border-radius:26px;position:relative}.outcome-number{font-size:60px;font-weight:800;color:#dcefe8}.outcome h3{margin-top:0;font-size:21px}.outcome p{font-size:13px;color:var(--muted);line-height:1.8}
+.content{background:#fff}.content-intro{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:45px}.content-tag{display:inline-block;padding:8px 12px;background:#fde8f1;color:var(--blue);border-radius:10px;font-size:11px;font-weight:600}
+.content-block{margin:30px 0;border-radius:30px;overflow:hidden;display:grid;grid-template-columns:.8fr 1.2fr;min-height:300px}.content-visual{display:flex;align-items:center;justify-content:center;font-size:clamp(60px,8vw,100px);background:#fce5ef;min-height:220px}.content-text{padding:clamp(24px,4vw,45px);background:#f8f9fc}.content-text h3{font-size:clamp(23px,3vw,30px);margin:0 0 15px;line-height:1.35}.content-text p{color:#687f83;font-size:14px;line-height:2}.content-block:nth-of-type(even) .content-visual{background:#f8dce9}.content-block:nth-of-type(3n) .content-visual{background:#fff2d7}
+.definition-list{padding-left:22px;line-height:1.9;color:#687f83}.definition-list li{margin:8px 0}.mini-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}.mini-card{background:#fff;border:1px solid #f1e1ea;border-radius:15px;padding:16px}.mini-card strong{display:block;margin-bottom:6px;color:var(--text)}.mini-card span{font-size:13px;line-height:1.7;color:var(--muted)}
+.responsibility{background:#514354;color:#fff}.responsibility .sub{color:#d9cbd8}.os-wheel{margin:50px auto 0;width:min(650px,90vw);height:430px;position:relative;display:flex;align-items:center;justify-content:center}.os-core{width:170px;height:170px;border-radius:50%;background:var(--blue);display:grid;place-items:center;text-align:center;font-weight:700;font-size:24px;box-shadow:0 0 0 20px #d982ad20,0 0 80px #d982ad55;z-index:2}.orbit{position:absolute;width:100%;height:100%;border:1px dashed #ffffff25;border-radius:50%}.orbit-item{position:absolute;background:#202941;border:1px solid #ffffff15;padding:12px 16px;border-radius:14px;font-size:11px;max-width:180px;text-align:center}.orbit-item:nth-child(2){top:10px;left:50%;transform:translateX(-50%)}.orbit-item:nth-child(3){right:0;top:50%;transform:translateY(-50%)}.orbit-item:nth-child(4){bottom:10px;left:50%;transform:translateX(-50%)}.orbit-item:nth-child(5){left:0;top:50%;transform:translateY(-50%)}.orbit-item:nth-child(6){top:70px;left:70px}
+.examples{background:#fff9fc}.device-grid{margin-top:50px;display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.device{min-height:220px;border-radius:24px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;transition:.25s}.device:hover{transform:translateY(-8px) rotate(1deg)}.device:nth-child(1){background:#fce5ef}.device:nth-child(2){background:#f8dce9}.device:nth-child(3){background:#fff2d7}.device:nth-child(4){background:#e4f3ed}.device:nth-child(5){background:#eee7f8}.device-icon{font-size:50px}.device h3{margin:0;font-size:19px}.device p{margin:4px 0 0;font-size:12px;color:#657086;line-height:1.7}
+.summary{background:var(--blue);color:#fff}.summary .sub{color:#f9e3ee}.summary-grid{margin-top:50px;display:grid;grid-template-columns:1.2fr .8fr;gap:20px}.summary-main{background:#fff;color:var(--text);border-radius:28px;padding:35px}.summary-main h3{font-size:26px;margin-top:0}.summary-points{display:grid;gap:10px}.summary-point{padding:15px;border-radius:14px;background:#f4f6fa;font-size:13px;line-height:1.8}.summary-side{border-radius:28px;background:#805d79;padding:35px;display:flex;flex-direction:column;justify-content:center;line-height:1.8}.summary-side .big{font-size:65px;font-weight:800;line-height:1;color:var(--yellow)}.answer:hover:not(:disabled),.answer:focus-visible{background:#d982ad;border-color:#087f8c}.answer:disabled{cursor:default;opacity:.95}
+.footer{background:#453849;color:#8791a8;text-align:center;padding:35px 20px;font-size:11px;line-height:1.9}.reveal{opacity:0;transform:translateY(25px);transition:opacity .7s ease,transform .7s ease}.reveal.show{opacity:1;transform:none}
+@media(max-width:900px){.hero-grid,.topic-layout,.objective-layout,.summary-grid{grid-template-columns:1fr}.hero-art{height:380px;max-width:520px;width:100%;margin:auto}.system,.competency-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.device-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.content-block{grid-template-columns:1fr}.outcome-wrap{flex-direction:column}.topic-main{min-height:300px}}
+@media(max-width:600px){.nav{top:8px;width:calc(100% - 16px);padding:7px 10px}.nav-right{display:none}.slide{padding:100px 20px 60px}.hero h1{font-size:52px;letter-spacing:-2px}.hero-grid{gap:15px}.hero-art{transform:scale(.88);transform-origin:top center;margin-bottom:-35px}.big-title{font-size:43px;letter-spacing:-1.5px}.system,.competency-grid,.device-grid,.mini-card-grid{grid-template-columns:1fr}.topic-main{padding:28px}.topic-card{padding:24px}.target{width:240px;height:240px}.target:before{width:175px;height:175px}.target:after{width:110px;height:110px}.os-wheel{height:350px;transform:scale(.83);width:115%;margin-left:-7.5%}.orbit-item{font-size:10px;padding:9px 10px;max-width:140px}.content-intro{align-items:start;flex-direction:column}.summary-main,.summary-side{padding:25px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+
+
+
+/* ================= CHIIKAWA WHITE & PINK THEME ================= */
+body{
+  background-image:
+    radial-gradient(circle at 8% 12%, #fce7f0 0 2px, transparent 3px),
+    radial-gradient(circle at 92% 30%, #eadff6 0 3px, transparent 4px);
+  background-size: 90px 90px, 130px 130px;
+}
+.nav{border-color:#f7e2ec;box-shadow:0 15px 40px #9d6c8618}
+.current-chapter-badge{background:linear-gradient(135deg,#e99abd,#d982ad);box-shadow:0 5px 14px #d982ad40}
+.hero{background:linear-gradient(135deg,#fff8fc 0%,#fceaf2 58%,#f1eafa 100%)}
+.hero:before,.hero:after{
+  content:"";position:absolute;border-radius:50%;pointer-events:none;
+  background:#fff;opacity:.55
+}
+.hero:before{width:220px;height:220px;right:-65px;top:5%}
+.hero:after{width:130px;height:130px;left:-45px;bottom:8%}
+.blob{background:linear-gradient(135deg,#f6c9dc,#e8d9f5);box-shadow:0 25px 65px #d99bbd30}
+.monitor{border-color:#866d83;box-shadow:20px 25px 0 #9d6c8618}
+.monitor-screen{background:radial-gradient(circle at 30% 30%,#f3c5dc,transparent 30%),linear-gradient(135deg,#745d79,#453849)}
+.sticker.one{background:#f5c7dc;color:#69485f}
+.sticker.two{background:#d9c9ee;color:#594b68}
+.sticker.three{color:#765d70}
+.topic-main{background:linear-gradient(135deg,#d982ad,#bd8ebd)}
+.topic-card:nth-child(1){background:#fff0d6}
+.topic-card:nth-child(2){background:#f8dce9}
+.system-box:nth-child(1){background:#d982ad}
+.system-box:nth-child(2){background:#cdbce9}
+.system-box:nth-child(3){background:#f3b8d1;color:#60465b}
+.system-box:nth-child(4){background:#b9d9cf;color:#435c54}
+.comp{border-color:#f2dce8}
+.comp:hover{box-shadow:0 20px 40px #9d6c8618}
+.target{border-color:#e9b4ce}
+.target:before,.target:after{border-color:#e9b4ce}
+.target:after{background:#f5c9dc}
+.objective b{background:#fde8f1;color:#a65f85}
+.outcome-number{color:#f1d8e5}
+.content-visual{background:#fce5ef}
+.content-block:nth-of-type(even) .content-visual{background:#f3eafa}
+.content-block:nth-of-type(3n) .content-visual{background:#fff0d6}
+.content-tag{background:#fde8f1;color:#b56e91}
+.os-core{background:linear-gradient(135deg,#d982ad,#a77fac);box-shadow:0 0 0 20px #d982ad20,0 0 80px #d982ad55}
+.orbit-item{background:#66536a;border-color:#ffffff22}
+.device:nth-child(1){background:#fce5ef}
+.device:nth-child(2){background:#f3eafa}
+.device:nth-child(3){background:#fff0d6}
+.device:nth-child(4){background:#e4f3ed}
+.device:nth-child(5){background:#eee7f8}
+.summary{background:linear-gradient(135deg,#d982ad,#a77fac)}
+.summary-side{background:#805d79}
+.summary-side .big{color:#ffe7b5}
+.answer:hover:not(:disabled),.answer:focus-visible{background:#d982ad;border-color:#d982ad}
+.loading-screen{background:rgba(255,247,251,.95)}
+.loading-card{border-color:#f2d8e5}
+.spinner{border-color:#fde8f1;border-top-color:#d982ad;border-right-color:#cdbce9}
+.progress-track{background:#fde8f1}
+.footer{background:#453849}
+/* Character stickers: add your transparent PNG files in the Images folder */
+.mascot-stage{position:absolute;inset:0;pointer-events:none;z-index:3}
+.mascot{
+  position:absolute;display:grid;place-items:center;
+  overflow:hidden;border-radius:50%;background:#fff;
+  border:3px solid #f4c9dc;box-sizing:border-box;
+  filter:drop-shadow(0 10px 13px #87657b25);
+  animation:mascotBob 4.5s ease-in-out infinite;
+}
+.mascot img{display:block;width:100%;height:100%;object-fit:contain;border-radius:50%}
+.mascot.chii{width:118px;height:118px;right:0;top:5px;animation-delay:-.7s}
+.mascot.hachi{width:88px;height:88px;left:0;bottom:60px;animation-delay:-2s}
+.mascot.usa{width:90px;height:90px;right:5px;bottom:0;animation-delay:-1.3s}
+.mascot-fallback{display:none;width:100%;height:100%;place-items:center;border-radius:50%;background:#fff;border:3px solid #f4c9dc;font-size:43px}
+.mascot-note{
+  position:absolute;right:12px;top:118px;padding:8px 13px;
+  border-radius:15px;background:#fff;color:#9d6381;
+  font-size:11px;font-weight:600;box-shadow:0 8px 22px #9d6c8620;
+  transform:rotate(5deg)
+}
+.mascot-mini{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:7px 11px;border-radius:30px;background:#fff;
+  border:1px solid #f3dce8;color:#9c6b86;font-size:11px;
+  box-shadow:0 5px 14px #9d6c8610
+}
+.mascot-mini:before{content:"♡";color:#e99abd;font-size:15px}
+@keyframes mascotBob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+@media(max-width:600px){
+ .mascot.chii{width:82px;height:82px;right:0;top:0}
+ .mascot.hachi{width:65px;height:65px;left:0;bottom:35px}
+ .mascot.usa{width:65px;height:65px}
+ .mascot-note{right:0;top:83px;font-size:9px}
+}
+
+/* Pink bow burst click effect */
+.pink-effect{
+  position:fixed;z-index:9998;width:1px;height:1px;
+  pointer-events:none;transform:translate(-50%,-50%);
+}
+.pink-click{
+  position:absolute;left:0;top:0;
+  transform:translate(-50%,-50%) scale(.15) rotate(-24deg);
+  font-size:21px;line-height:1;
+  filter:drop-shadow(0 3px 5px #d982ad66);
+  animation:bowBloom .48s cubic-bezier(.18,.8,.25,1.25) forwards;
+}
+@keyframes bowBloom{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.1) rotate(-35deg)}
+  65%{opacity:1;transform:translate(-50%,-50%) scale(1.28) rotate(12deg)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}
+}
+.pink-particle{
+  position:absolute;left:0;top:0;opacity:0;
+  transform:translate(-50%,-50%) scale(.15);
+  line-height:1;filter:drop-shadow(0 2px 3px #d982ad44);
+}
+.pink-effect.bursting .pink-particle{
+  animation:bowBurst .95s cubic-bezier(.12,.72,.22,1) forwards;
+}
+@keyframes bowBurst{
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(0) scale(.1)}
+  15%{opacity:1}
+  72%{opacity:1}
+  100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--turn)) scale(.72)}
+}
+@media(prefers-reduced-motion:reduce){
+  .pink-click,.pink-particle{animation:none!important}
+}
+
+</style>
+</head>
+<body>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<!-- HTML หน้าจอโหลดดิ้ง (Loading Screen) -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-card">
+    <div class="loading-logo">บทที่ 2 <span>LEARNING</span></div>
+    <div class="spinner"></div>
+    <h2 id="loadingTitle">กำลังโหลดบทเรียน</h2>
+    <p id="loadingDesc">กรุณารอสักครู่ ระบบกำลังพาคุณกลับสู่หน้าแรก...</p>
+    <div class="progress-track">
+      <div class="progress-bar-load" id="progressBarLoad"></div>
+    </div>
+    <span class="progress-percent" id="progressPercent">0%</span>
+  </div>
+</div>
+
+<!-- แถบ Sidebar (เมนูด้านข้าง) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">เมนูการเรียนรู้</div>
+    <button class="close-btn" id="closeSidebar">&times;</button>
+  </div>
+  <div class="sidebar-menu">
+    <a href="index.html" class="nav-link-load">🏠 หน้าแรก (Index)</a>
+    <a href="#home">🚀 หน้าหลักบทที่ 2</a>
+    <a href="#topics">📌 หัวข้อในบทนี้</a>
+    <a href="#concept">⚙️ ระบบจัดการโปรเซส</a>
+    <a href="#objectives">🎯 ขั้นตอนการเปิดเครื่อง (Boot)</a>
+    <a href="#content">📚 เนื้อหาสาระ</a>
+    <a href="#summary">📝 สรุปบทเรียน</a>
+  </div>
+</aside>
+
+<nav class="nav" aria-label="เมนูหลัก">
+  <div style="display:flex; align-items:center; gap:12px;">
+    <!-- ปุ่ม 3 ขีด -->
+    <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <!-- แสดงชื่อบทที่เปิดอยู่แทนโลโก้เดิม (สไตล์บทที่ 1) -->
+    <div class="current-chapter-indicator">
+      <span class="current-chapter-badge">02</span>
+      <span>บทที่ 2: โปรแกรมระบบปฏิบัติการ</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <a class="nav-btn" href="#topics">หัวข้อ</a>
+    <a class="nav-btn" href="#concept">องค์ประกอบ</a>
+    <a class="nav-btn" href="#content">เนื้อหา</a>
+    <a class="nav-btn" href="#summary">สรุป</a>
+  </div>
+</nav>
+
+<section class="slide hero" id="home">
+  <div class="inner hero-grid"><div class="reveal"><div class="chapter">บทเรียนที่ 2 · OS LEARNING</div><h1>โปรแกรม<br><span>ระบบปฏิบัติการ</span><br>คอมพิวเตอร์</h1><p class="hero-desc">เรียนรู้หลักการทำงาน หน้าที่ ประเภท มาตรฐาน และวิวัฒนาการของระบบปฏิบัติการ Windows พร้อมตัวอย่างและแบบทบทวนท้ายบท</p><a href="#topics" class="start">เริ่มเรียนบทที่ 2 <span aria-hidden="true">→</span></a></div>
+  <div class="hero-art reveal" aria-label="ภาพประกอบระบบปฏิบัติการและตัวละคร Chiikawa">
+    <div class="mascot-stage" aria-hidden="true">
+      <div class="mascot chii"><img src="ชิอิคาวะ1.jpg" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span class="mascot-fallback">🐻</span></div>
+      <div class="mascot hachi"><img src="ชิอิคาวะ2.jpg" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span class="mascot-fallback">🐱</span></div>
+      <div class="mascot usa"><img src="ชิอิคาวะ3.jpg" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"><span class="mascot-fallback">🐰</span></div>
+      <div class="mascot-note">มาเรียนด้วยกันนะ ♡</div>
+    </div>
+    <div class="blob"></div><div class="monitor"><div class="monitor-screen"><div class="monitor-os">OS</div><div class="monitor-text">SYSTEM CORE</div></div></div><div class="keyboard"></div><div class="sticker one">PROCESS</div><div class="sticker two">WINDOWS</div><div class="sticker three">OPERATING SYSTEM</div></div></div>
+</section>
+
+<section class="slide topics" id="topics"><div class="inner"><div class="reveal"><div class="eyebrow">01 · TOPICS</div><span class="mascot-mini">Chiikawa Learning Club</span><h2 class="big-title">บทนี้เราจะ<br><span style="color:var(--blue)">เรียนรู้อะไร?</span></h2><p class="sub">จากความหมายของระบบปฏิบัติการ ไปจนถึงประเภทและวิวัฒนาการของ Windows</p></div><div class="topic-layout reveal"><div class="topic-main"><div class="eyebrow" style="color:#f9e3ee">2.1</div><h2>หลักการทำงาน<br>ของระบบปฏิบัติการ</h2><p>ทำความเข้าใจ OS ในฐานะตัวกลางระหว่างผู้ใช้กับฮาร์ดแวร์ และเรียนรู้การจัดการโปรเซส</p><div class="topic-number">02</div></div><div class="topic-side"><div class="topic-card"><div class="eyebrow">2.2</div><h3>หน้าที่และประเภทของ OS</h3><p>เรียนรู้การจัดการอุปกรณ์ หน่วยความจำ CPU ไฟล์ และระบบปฏิบัติการแต่ละประเภท</p></div><div class="topic-card"><div class="eyebrow">2.3</div><h3>วิวัฒนาการของ Windows</h3><p>สำรวจคุณสมบัติเด่นตั้งแต่ Windows 95 จนถึง Windows 11</p></div></div></div></div></section>
+
+<section class="slide concept" id="concept"><div class="inner"><div class="reveal"><div class="eyebrow" style="color:#efb5cf">02 · PROCESS MANAGEMENT</div><h2 class="big-title">ระบบปฏิบัติการ<br><span style="color:#efb5cf">จัดการงานอย่างไร?</span></h2><p class="sub">ระบบปฏิบัติการเป็นซอฟต์แวร์ที่ทำหน้าที่เป็นตัวกลางระหว่างผู้ใช้กับฮาร์ดแวร์ ช่วยจัดสรรทรัพยากรและจัดการการทำงานของโปรแกรม</p></div><div class="system reveal"><div class="system-box"><div class="num">01</div><div class="symbol">🟡</div><h3>Ready State</h3><p>สถานะพร้อมทำงาน รอให้ระบบปฏิบัติการจัดสรร CPU ให้</p></div><div class="system-box"><div class="num">02</div><div class="symbol">⚙️</div><h3>Running State</h3><p>สถานะที่โปรเซสกำลังใช้ CPU เพื่อประมวลผล</p></div><div class="system-box"><div class="num">03</div><div class="symbol">⏳</div><h3>Blocked State</h3><p>สถานะที่หยุดรอเหตุการณ์ เช่น รอข้อมูลจากอุปกรณ์รับส่งข้อมูล</p></div><div class="system-box"><div class="num">04</div><div class="symbol">🔒</div><h3>Deadlocked State</h3><p>ตามเนื้อหาบทเรียน หมายถึงการรอเหตุการณ์ที่ไม่เกิดขึ้น ทำให้โปรแกรมค้าง</p></div></div><p class="sub" style="margin-top:22px">โปรแกรมที่กำลังทำงานอยู่เรียกว่า <strong>โปรเซส (Process)</strong> ซึ่งระบบปฏิบัติการต้องควบคุมและจัดสรรเวลา CPU ให้เหมาะสม</p></div></section>
+
+<section class="slide competency"><div class="inner"><div class="reveal"><div class="eyebrow">03 · OS FUNCTIONS</div><h2 class="big-title">หน้าที่สำคัญของ<br><span style="color:var(--purple)">ระบบปฏิบัติการ</span></h2></div><div class="competency-grid reveal"><div class="comp"><div class="comp-icon">🖥️</div><h3>ควบคุมฮาร์ดแวร์</h3><p>จัดการฮาร์ดดิสก์ แป้นพิมพ์ จอภาพ และอุปกรณ์ต่อพ่วง</p></div><div class="comp"><div class="comp-icon">⚡</div><h3>จัดสรร CPU</h3><p>จัดลำดับและแบ่งเวลาให้โปรเซสต่าง ๆ ทำงาน</p></div><div class="comp"><div class="comp-icon">🧠</div><h3>จัดการหน่วยความจำ</h3><p>จัดสรรพื้นที่หน่วยความจำให้โปรแกรมตามความจำเป็น</p></div><div class="comp"><div class="comp-icon">🔐</div><h3>จัดการไฟล์และความปลอดภัย</h3><p>ดูแลการจัดเก็บไฟล์และควบคุมการเข้าถึงข้อมูล</p></div></div></div></section>
+
+<section class="slide objectives" id="objectives"><div class="inner"><div class="reveal"><div class="eyebrow">04 · BOOT PROCESS</div><h2 class="big-title">ก่อนคอมพิวเตอร์<br><span style="color:#d982ad">พร้อมใช้งาน</span></h2></div><div class="objective-layout reveal"><div class="target" aria-hidden="true"><div class="target-center">🚀</div></div><div class="objective-list"><div class="objective"><b>01</b><span>เปิดเครื่องและเริ่มกระบวนการเริ่มระบบ (Boot)</span></div><div class="objective"><b>02</b><span>Firmware/BIOS ใน ROM ช่วยตรวจสอบความพร้อมของฮาร์ดแวร์</span></div><div class="objective"><b>03</b><span>ระบบเริ่มโหลดระบบปฏิบัติการเข้าสู่หน่วยความจำ</span></div><div class="objective"><b>04</b><span>ระบบปฏิบัติการเริ่มจัดการอุปกรณ์ หน่วยความจำ และโปรเซส</span></div><div class="objective"><b>05</b><span>ผู้ใช้สามารถเข้าสู่ระบบและเรียกใช้โปรแกรมได้</span></div></div></div></div></section>
+
+<section class="slide outcomes" id="outcomes"><div class="inner"><div class="reveal"><div class="eyebrow">05 · OS TYPES</div><h2 class="big-title">ระบบปฏิบัติการ<br><span style="color:#b77fa5">มีหลายประเภท</span></h2><p class="sub">แต่ละประเภทออกแบบให้เหมาะกับลักษณะอุปกรณ์และจำนวนผู้ใช้งาน</p></div><div class="outcome-wrap reveal"><div class="outcome"><div class="outcome-number">01</div><h3>Stand-Alone OS</h3><p>ระบบปฏิบัติการที่ใช้งานบนคอมพิวเตอร์ส่วนบุคคลเป็นหลัก เช่น ใช้ทำงาน ดูหนัง และฟังเพลง</p></div><div class="outcome"><div class="outcome-number">02</div><h3>Network OS</h3><p>รองรับการใช้งานร่วมกันของผู้ใช้หลายคนในเครือข่าย เช่น ระบบในองค์กรและเซิร์ฟเวอร์</p></div><div class="outcome"><div class="outcome-number">03</div><h3>Embedded OS</h3><p>ระบบปฏิบัติการสำหรับอุปกรณ์เฉพาะทางหรืออุปกรณ์ขนาดเล็กตามลักษณะการใช้งาน</p></div></div></div></section>
+
+<section class="slide content" id="content"><div class="inner"><div class="content-intro reveal"><div><div class="eyebrow">06 · LESSON CONTENT</div><h2 class="big-title">เนื้อหาสาระ</h2><p class="sub">หน้าที่ มาตรฐาน และตัวอย่างของโปรแกรมระบบปฏิบัติการ</p></div><span class="content-tag">LESSON 02</span></div>
+<article class="content-block reveal"><div class="content-visual" aria-hidden="true">🛠️</div><div class="content-text"><div class="content-tag">2.1</div><h3>หน้าที่และความสำคัญของระบบปฏิบัติการ</h3><p>ระบบปฏิบัติการช่วยให้ผู้ใช้สั่งงานคอมพิวเตอร์ได้สะดวก และดูแลการทำงานเบื้องหลังหลายด้าน</p><div class="mini-card-grid"><div class="mini-card"><strong>ควบคุมอุปกรณ์</strong><span>จัดการฮาร์ดดิสก์ แป้นพิมพ์ จอภาพ และอุปกรณ์ต่อพ่วง</span></div><div class="mini-card"><strong>ทำงานร่วมกับ Firmware/BIOS</strong><span>ตรวจสอบความพร้อมของฮาร์ดแวร์ก่อนเริ่มระบบ</span></div><div class="mini-card"><strong>จัดการ CPU และหน่วยความจำ</strong><span>จัดลำดับงานและจัดสรรทรัพยากรให้โปรแกรม</span></div><div class="mini-card"><strong>จัดการข้อมูล</strong><span>จัดเก็บไฟล์ลงในหน่วยเก็บข้อมูลสำรอง (Secondary Storage)</span></div><div class="mini-card"><strong>ดูแลความปลอดภัย</strong><span>ช่วยควบคุมสิทธิ์การใช้งานและปกป้องข้อมูล</span></div></div></div></article>
+<article class="content-block reveal"><div class="content-visual" aria-hidden="true">📚</div><div class="content-text"><div class="content-tag">2.2 · STANDARDS</div><h3>มาตรฐานและลักษณะของระบบปฏิบัติการ</h3><ul class="definition-list"><li><strong>Proprietary:</strong> ซอฟต์แวร์กรรมสิทธิ์ที่การใช้งานและการติดตั้งอยู่ภายใต้เงื่อนไขของเจ้าของสิทธิ์ ซึ่งอาจต้องซื้อใบอนุญาต</li><li><strong>DOS (Disk Operating System):</strong> ระบบปฏิบัติการที่ใช้งานผ่านบรรทัดคำสั่งเป็นหลัก ไม่มีส่วนติดต่อแบบกราฟิกในลักษณะ Windows สมัยใหม่ และมีการใช้งานบน IBM PC ตั้งแต่ปี ค.ศ. 1981 (พ.ศ. 2524)</li></ul></div></article>
+<article class="content-block reveal"><div class="content-visual" aria-hidden="true">💻</div><div class="content-text"><div class="content-tag">2.3 · EXAMPLES</div><h3>ตัวอย่างระบบปฏิบัติการ</h3><div class="device-grid"><div class="device"><div class="device-icon">🪟</div><div><h3>Windows</h3><p>ระบบปฏิบัติการสำหรับคอมพิวเตอร์ส่วนบุคคลและองค์กร</p></div></div><div class="device"><div class="device-icon">🍎</div><div><h3>macOS</h3><p>ระบบปฏิบัติการบนคอมพิวเตอร์ Mac</p></div></div><div class="device"><div class="device-icon">🐧</div><div><h3>Linux</h3><p>ระบบปฏิบัติการที่พบได้ในคอมพิวเตอร์และเซิร์ฟเวอร์</p></div></div><div class="device"><div class="device-icon">📱</div><div><h3>Android</h3><p>ระบบปฏิบัติการบนโทรศัพท์และแท็บเล็ตหลายรุ่น</p></div></div><div class="device"><div class="device-icon">📱</div><div><h3>iOS</h3><p>ระบบปฏิบัติการบน iPhone</p></div></div></div></div></article>
+</div></section>
+
+<section class="slide responsibility"><div class="inner"><div class="reveal"><div class="eyebrow" style="color:#efb5cf">2.4 · WINDOWS EVOLUTION</div><h2 class="big-title">วิวัฒนาการของ<br><span style="color:#efb5cf">Windows</span></h2><p class="sub">แต่ละรุ่นพัฒนารูปแบบหน้าจอ ความปลอดภัย และความสามารถในการทำงานให้เหมาะกับผู้ใช้มากขึ้น</p></div><div class="os-wheel reveal" aria-label="ไทม์ไลน์วิวัฒนาการ Windows"><div class="orbit"></div><div class="os-core">WINDOWS<br>EVOLUTION</div><div class="orbit-item">🖱️ Windows 95/98/ME</div><div class="orbit-item">✨ Windows XP</div><div class="orbit-item">🛡️ Vista / Server 2003</div><div class="orbit-item">🪟 Windows 7 / 8</div><div class="orbit-item">🤖 Windows 10 / 11</div></div></div></section>
+
+<section class="slide examples"><div class="inner"><div class="reveal"><div class="eyebrow">WINDOWS TIMELINE</div><h2 class="big-title">จุดเด่นแต่ละรุ่น<br><span style="color:var(--blue)">ที่ควรรู้</span></h2><p class="sub">ไล่ดูพัฒนาการของ Windows จากส่วนติดต่อผู้ใช้แบบกราฟิกไปสู่เครื่องมือทำงานและ AI</p></div><div class="device-grid reveal"><div class="device"><div class="device-icon">🖱️</div><div><h3>Windows 95 / 98 / ME</h3><p>GUI ใช้งานง่ายขึ้น รองรับ Multitasking มัลติมีเดีย และเครือข่ายภายในบ้าน</p></div></div><div class="device"><div class="device-icon">🌈</div><div><h3>Windows XP</h3><p>เน้นประสบการณ์ใช้งาน หน้าตาน่าใช้ ติดตั้งฮาร์ดแวร์และเครือข่ายสะดวก พร้อม Windows Media Player และ Internet Explorer 6</p></div></div><div class="device"><div class="device-icon">🛡️</div><div><h3>Server 2003 / Vista</h3><p>เน้นการปรับปรุงความปลอดภัย มี UAC รองรับการแสดงผล 3D และระบบ 32/64 บิต</p></div></div><div class="device"><div class="device-icon">🪟</div><div><h3>Windows 7</h3><p>มี Aero Glass, Super Bar, Snipping Tool, Libraries, Aero Snap และ Windows Media Player 12</p></div></div><div class="device"><div class="device-icon">🟦</div><div><h3>Windows 8 / 8.1</h3><p>ออกแบบให้เหมาะกับจอสัมผัส มี Start Screen, Live Tiles, Charms Bar, Ribbon, Hyper-V และ Windows To Go</p></div></div><div class="device"><div class="device-icon">🌙</div><div><h3>Windows 10</h3><p>Start Menu แบบผสม, Snap Assist, Night Light และ Task View สำหรับ Multiple Desktops</p></div></div><div class="device"><div class="device-icon">✨</div><div><h3>Windows 11</h3><p>Start และ Taskbar อยู่กึ่งกลาง หน้าต่างมุมมน Snap Layouts, Widgets, Auto HDR, DirectStorage, Copilot, เครื่องมือ AI และคุณสมบัติการช่วยการเข้าถึง</p></div></div></div></div></section>
+
+<section class="slide content"><div class="inner"><article class="content-block reveal"><div class="content-visual" aria-hidden="true">🔤</div><div class="content-text"><div class="content-tag">KEY VOCABULARY</div><h3>คำศัพท์สำคัญ</h3><p>ทบทวนคำศัพท์ที่พบในบทนี้</p><div style="display:flex;flex-wrap:wrap;gap:9px;margin-top:20px"><span class="content-tag">Operating System</span><span class="content-tag">Process</span><span class="content-tag">Ready State</span><span class="content-tag">Running State</span><span class="content-tag">Blocked State</span><span class="content-tag">Firmware</span><span class="content-tag">BIOS</span><span class="content-tag">Secondary Storage</span><span class="content-tag">Proprietary</span><span class="content-tag">DOS</span></div></div></article></div></section>
+
+<section class="slide summary" id="summary"><div class="inner"><div class="reveal"><div class="eyebrow" style="color:#f9e3ee">07 · LESSON SUMMARY</div><h2 class="big-title">ก่อนจบบทเรียน<br><span style="color:var(--yellow)">จำเรื่องสำคัญไว้</span></h2></div><div class="summary-grid reveal"><div class="summary-main"><h3>บทที่ 2 ในหนึ่งหน้าจอ</h3><div class="summary-points"><div class="summary-point"><b>01</b> ระบบปฏิบัติการเป็นตัวกลางระหว่างผู้ใช้กับฮาร์ดแวร์ และจัดสรรทรัพยากรให้โปรแกรม</div><div class="summary-point"><b>02</b> หน้าที่สำคัญคือจัดการอุปกรณ์ CPU หน่วยความจำ ไฟล์ และความปลอดภัย</div><div class="summary-point"><b>03</b> ระบบปฏิบัติการมีหลายประเภท และ Windows พัฒนาความสามารถต่อเนื่องในแต่ละรุ่น</div></div></div><div class="summary-side"><div class="big">OS</div><p>ระบบปฏิบัติการช่วยให้คอมพิวเตอร์ทำงานร่วมกันได้อย่างเป็นระบบ</p><a class="start nav-link-load" href="index.html" style="background:#fff; color:#102b32; margin-top:15px; text-align:center; justify-content:center;">กลับหน้าแรก ↑</a></div></div></div></section>
+
+<footer class="footer">เว็บไซต์ประกอบการเรียนรู้รายวิชาระบบปฏิบัติการคอมพิวเตอร์<br>ผู้สอน: ครูกุสุมา ปิ่นสุภา</footer>
+
+<script>
+(() => {
+  const progress = document.getElementById('progress');
+  function updateProgress() {
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
+    progress.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+
+  // ควบคุมการเปิด-ปิด Sidebar
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const closeSidebar = document.getElementById('closeSidebar');
+
+  function toggleMenu() {
+    sidebar.classList.toggle('active');
+    sidebarOverlay.classList.toggle('active');
+  }
+
+  menuToggle.addEventListener('click', toggleMenu);
+  closeSidebar.addEventListener('click', toggleMenu);
+  sidebarOverlay.addEventListener('click', toggleMenu);
+
+  // ปิดเมนูเมื่อคลิกลิงก์ภายในหน้า
+  sidebar.querySelectorAll('a:not(.nav-link-load)').forEach(link => {
+    link.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    });
+  });
+
+  // ระบบ Loading Screen เมื่อกดไปหน้า Index หรือลิงก์เปลี่ยนหน้า
+  const loadingScreen = document.getElementById('loadingScreen');
+  const progressBarLoad = document.getElementById('progressBarLoad');
+  const progressPercent = document.getElementById('progressPercent');
+
+  document.querySelectorAll('.nav-link-load').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetUrl = this.getAttribute('href');
+      
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+      
+      loadingScreen.classList.add('show');
+      document.body.classList.add('loading-active');
+
+      let currentPercent = 0;
+      const duration = 700; // ระยะเวลาโหลด (มิลลิวินาที)
+      const intervalTime = 20;
+      const step = (intervalTime / duration) * 100;
+
+      const timer = setInterval(() => {
+        currentPercent += step;
+        if (currentPercent >= 100) {
+          currentPercent = 100;
+          clearInterval(timer);
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 150);
+        }
+        progressBarLoad.style.width = `${currentPercent}%`;
+        progressPercent.textContent = `${Math.round(currentPercent)}%`;
+      }, intervalTime);
+    });
+  });
+
+
+  // PINK BOW BURST: each click creates its own bow and fluffy sparkles.
+  document.addEventListener('click', function(e){
+    if (e.target.closest('.loading-screen') || e.target.closest('#sidebar')) return;
+
+    const holder = document.createElement('div');
+    holder.className = 'pink-effect';
+    holder.style.left = e.clientX + 'px';
+    holder.style.top = e.clientY + 'px';
+    holder.setAttribute('aria-hidden','true');
+
+    const bow = document.createElement('span');
+    bow.className = 'pink-click';
+    bow.textContent = '🎀';
+    holder.appendChild(bow);
+    document.body.appendChild(holder);
+
+    window.setTimeout(() => {
+      bow.remove();
+      const pieces = ['🎀','✧','♡','✦','🎀','⋆','✧','♡'];
+      const colors = ['#e99abd','#f3b8d1','#d9c5ee','#f6d5e5','#f5d77d'];
+      pieces.forEach((symbol, index) => {
+        const particle = document.createElement('span');
+        particle.className = 'pink-particle';
+        particle.textContent = symbol;
+        const angle = (index / pieces.length) * Math.PI * 2 + (Math.random() * .22);
+        const distance = 24 + Math.random() * 24;
+        particle.style.setProperty('--dx', (Math.cos(angle) * distance) + 'px');
+        particle.style.setProperty('--dy', (Math.sin(angle) * distance) + 'px');
+        particle.style.setProperty('--turn', (Math.random() * 300 - 150) + 'deg');
+        particle.style.color = colors[index % colors.length];
+        particle.style.fontSize = (7 + Math.random() * 6) + 'px';
+        holder.appendChild(particle);
+      });
+      holder.classList.add('bursting');
+      window.setTimeout(() => holder.remove(), 1050);
+    }, 360);
+  });
+
+  const revealItems = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    revealItems.forEach(item => observer.observe(item));
+  } else {
+    revealItems.forEach(item => item.classList.add('show'));
+  }
+})();
+</script>
+</body>
+</html>

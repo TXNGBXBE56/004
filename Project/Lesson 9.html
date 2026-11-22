@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="บทเรียนที่ 9 การใช้งานโปรแกรมยูทิลิตี้ ธีม Labor yorai san">
+<title>บทที่ 9 | การใช้งานโปรแกรมยูทิลิตี้</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ===== LABOR YORAI SAN THEME ===== */
+:root {
+  --primary:#d4af37;
+  --primary-dark:#997a15;
+  --accent:#e6c55c;
+  --dark:#2b2621;
+  --cream:#fcfbfa;
+  --yellow:#fdf8e2;
+  --steel:#4a453f;
+  --text:#3d352e;
+  --muted:#7a6f65;
+  --white:#ffffff;
+  --border:#e8dfd3;
+  --shadow:0 15px 40px rgba(43,38,33,.1);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  scroll-behavior:smooth;
+}
+
+html{
+  scroll-padding-top:70px;
+}
+
+body {
+  font-family:'Prompt',sans-serif;
+  background:var(--cream);
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+body.lock-scroll{overflow:hidden}
+
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+
+.progress{
+  position:fixed;
+  top:0;
+  left:0;
+  height:4px;
+  width:0;
+  background:linear-gradient(90deg,var(--primary-dark),var(--primary),var(--accent));
+  z-index:9999;
+  transition:width .15s;
+}
+
+/* NAVBAR */
+.navbar {
+  width:min(1100px, calc(100% - 30px));
+  margin:10px auto;
+  padding:8px 18px;
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:8px;
+  z-index:1000;
+  box-shadow:var(--shadow);
+}
+
+.nav-left {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.menu-btn {
+  background:transparent;
+  color:var(--dark);
+  border:0;
+  width:35px;
+  height:35px;
+  border-radius:10px;
+  font-size:21px;
+  cursor:pointer;
+  transition:.25s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.menu-btn:hover {
+  background:var(--yellow);
+  color:var(--primary-dark);
+  transform:scale(1.08);
+}
+
+.logo {
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.logo-icon {
+  width:32px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  color:white;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  border-radius:9px;
+  font-size:15px;
+}
+
+.logo-name {
+  display:block;
+  color:var(--dark);
+  font-size:15px;
+  font-weight:700;
+}
+
+.logo small {
+  display:block;
+  color:var(--muted);
+  font-size:9px;
+}
+
+.nav-links {
+  display:flex;
+  gap:4px;
+}
+
+.nav-links a {
+  text-decoration:none;
+  padding:6px 10px;
+  border-radius:8px;
+  color:var(--muted);
+  font-size:12px;
+  transition:.25s;
+}
+
+.nav-links a:hover {
+  background:var(--yellow);
+  color:var(--primary-dark);
+}
+
+/* SIDEBAR & OVERLAY */
+.overlay {
+  position:fixed;
+  inset:0;
+  background:rgba(43,38,33,.35);
+  backdrop-filter:blur(4px);
+  z-index:1150;
+  opacity:0;
+  visibility:hidden;
+  transition:.3s;
+}
+
+.overlay.active {
+  opacity:1;
+  visibility:visible;
+}
+
+.sidebar {
+  position:fixed;
+  top:0;
+  left:-300px;
+  width:280px;
+  height:100%;
+  background:#FFFDFF;
+  z-index:1200;
+  padding:25px 20px;
+  transition:.35s ease;
+  overflow-y:auto;
+  box-shadow:5px 0 25px rgba(43,38,33,.15);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.sidebar.active {
+  left:0;
+}
+
+.side-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
+
+.sidebar-title {
+  font-weight:700;
+  font-size:17px;
+  color:var(--dark);
+}
+
+.close-btn {
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-size:23px;
+  cursor:pointer;
+}
+
+.sidebar-menu {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.sidebar-menu a {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color:var(--text);
+  padding:10px 14px;
+  border-radius:10px;
+  font-size:13px;
+  background:#f9f5ef;
+  transition:.2s;
+}
+
+.sidebar-menu a:hover {
+  background:var(--primary);
+  color:white;
+  transform:translateX(4px);
+}
+
+/* HERO - จัดสัดส่วนให้พอดีจอคอมพิวเตอร์ ไม่ให้ล้นลงไปด้านล่าง */
+.hero {
+  height: calc(100vh - 75px);
+  min-height: 480px;
+  max-height: 580px;
+  padding: 10px 7vw;
+  background:linear-gradient(135deg,#fcfbfa 0%,#f9f3e6 55%,#f2ebd9 100%);
+  display:flex;
+  align-items:center;
+}
+
+.hero-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:30px;
+  align-items:center;
+  width: 100%;
+}
+
+.chapter {
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:2px;
+  color:var(--primary-dark);
+  margin-bottom:6px;
+}
+
+.hero h1 {
+  margin:0;
+  font-size:clamp(34px, 4.5vw, 62px);
+  line-height:1.06;
+  letter-spacing:-2px;
+  color:var(--dark);
+}
+
+.hero h1 span {
+  color:var(--primary);
+}
+
+.hero-desc {
+  max-width:460px;
+  margin:12px 0 18px;
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.65;
+}
+
+.start {
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  padding:10px 18px;
+  border-radius:12px;
+  font-size:12px;
+  transition:.25s;
+  border:0;
+  box-shadow:0 8px 20px rgba(212,175,55,0.25);
+}
+
+.start:hover {
+  transform:translateY(-3px);
+  box-shadow:0 12px 25px rgba(212,175,55,0.4);
+}
+
+/* HERO ART */
+.hero-art {
+  position:relative;
+  height:340px;
+  isolation:isolate;
+}
+
+.blob {
+  position:absolute;
+  width:310px;
+  height:310px;
+  right:15px;
+  top:10px;
+  background:#ede2cc;
+  border-radius:46% 54% 62% 38% / 40% 43% 57% 60%;
+  animation:float 6s ease-in-out infinite;
+  z-index:-1;
+}
+
+.monitor {
+  position:absolute;
+  width:260px;
+  height:165px;
+  right:45px;
+  top:65px;
+  background:var(--dark);
+  border:8px solid #6e655b;
+  border-radius:16px;
+  transform:rotate(-6deg);
+  box-shadow:0 15px 35px rgba(43,38,33,.22);
+  overflow:hidden;
+  z-index:0;
+}
+
+.monitor-screen {
+  height:100%;
+  background:radial-gradient(circle at 40% 40%, #f9f3e6 0%, transparent 45%), linear-gradient(135deg,var(--primary-dark),var(--dark));
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:white;
+}
+
+.monitor-os {
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:-1px;
+  text-shadow:0 2px 6px rgba(0,0,0,.4);
+}
+
+.monitor-text {
+  font-size:8px;
+  letter-spacing:2px;
+  opacity:.85;
+}
+
+/* รูปตัวละคร Labor yorai san */
+.yorai-photo {
+  position:absolute;
+  display:block;
+  object-fit:cover;
+  border-radius:50%;
+  background:#ffffff;
+  border:4px solid rgba(255,255,255,.95);
+  box-shadow:0 10px 25px rgba(43,38,33,.2);
+  transition:transform .35s ease,box-shadow .35s ease;
+  animation:photoFloat 5s ease-in-out infinite;
+  z-index:2;
+}
+.yorai-photo:hover {
+  transform:scale(1.06) rotate(3deg);
+  box-shadow:0 15px 30px rgba(212,175,55,0.35);
+}
+
+.yorai-photo.photo-one { width:100px; height:100px; right:10px; top:5px; animation-delay:0s; }
+.yorai-photo.photo-two { width:90px; height:90px; left:15px; bottom:15px; animation-delay:-1.5s; }
+.yorai-photo.photo-three { width:80px; height:80px; right:35px; bottom:5px; animation-delay:-3s; }
+
+.sticker-bubble {
+  position:absolute;
+  background:#fff;
+  padding:5px 9px;
+  border-radius:10px;
+  font-size:10px;
+  font-weight:600;
+  box-shadow:0 5px 15px rgba(43,38,33,.1);
+  border:1px solid var(--border);
+  z-index:3;
+}
+.bubble-one { right:115px; top:25px; transform:rotate(2deg); color:var(--dark); }
+.bubble-two { left:20px; top:15px; transform:rotate(-8deg); background:var(--yellow); color:var(--primary-dark); }
+.bubble-three { right:120px; bottom:20px; transform:rotate(-4deg); background:#e6f5ea; color:#275231; }
+
+@keyframes float {
+  0%,100%{transform:rotate(-12deg) translateY(0)}
+  50%{transform:rotate(-9deg) translateY(-8px)}
+}
+
+@keyframes photoFloat {
+  0%,100%{translate:0 0}
+  50%{translate:0 -5px}
+}
+
+/* CONTAINER & SECTIONS */
+.inner{
+  max-width:1180px;
+  margin:auto;
+}
+
+.eyebrow{
+  color:var(--primary-dark);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:2px;
+  margin-bottom:6px;
+}
+
+.big-title{
+  font-size:clamp(30px, 4.5vw, 56px);
+  line-height:1.15;
+  margin:0 0 12px;
+  letter-spacing:-1px;
+  color:var(--dark);
+}
+
+.sub{
+  color:var(--muted);
+  max-width:700px;
+  line-height:1.8;
+  font-size:13.5px;
+}
+
+/* INTRO & CARDS */
+.intro-box {
+  background:white;
+  padding:25px;
+  border-radius:22px;
+  border:1px solid var(--border);
+  box-shadow:0 10px 25px rgba(43,38,33,.05);
+  font-size:13.5px;
+  line-height:1.9;
+  margin-top:20px;
+}
+
+.intro-box strong {
+  color:var(--primary-dark);
+}
+
+.feature-layout {
+  margin-top:20px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  align-items:center;
+  background:#f9f4ea;
+  padding:22px;
+  border-radius:22px;
+  border:1px solid var(--border);
+}
+
+.feature-layout img {
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  border-radius:16px;
+}
+
+/* SCREEN GRID */
+.screen-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-top:20px;
+}
+
+.screen-card {
+  background:white;
+  padding:20px;
+  border-radius:18px;
+  border:1px solid var(--border);
+  transition:.25s;
+}
+
+.screen-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 10px 20px rgba(212,175,55,.12);
+}
+
+.card-icon {
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:var(--yellow);
+  font-size:20px;
+  margin-bottom:10px;
+}
+
+.screen-card h3 {
+  font-size:14px;
+  color:var(--dark);
+  margin-bottom:5px;
+}
+
+.screen-card p {
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.65;
+}
+
+/* VERSION LIST */
+.version-list {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+  margin-top:20px;
+}
+
+.version-card {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  transition:.25s;
+}
+
+.version-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 10px 20px rgba(212,175,55,.12);
+}
+
+.version-icon {
+  width:40px;
+  height:40px;
+  min-width:40px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:var(--yellow);
+  font-size:20px;
+}
+
+.version-card h3 {
+  font-size:14px;
+  color:var(--dark);
+  margin-bottom:4px;
+}
+
+.version-card p {
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.65;
+}
+
+/* ACCORDION */
+.procedure {
+  display:grid;
+  gap:10px;
+  margin-top:15px;
+}
+
+details {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:15px;
+  overflow:hidden;
+  transition:.2s;
+}
+
+details[open] {
+  border-color:var(--primary);
+  box-shadow:0 6px 16px rgba(212,175,55,.1);
+}
+
+summary {
+  list-style:none;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:15px 18px;
+  cursor:pointer;
+  color:var(--dark);
+  font-size:13.5px;
+  font-weight:600;
+}
+
+summary::-webkit-details-marker {
+  display:none;
+}
+
+summary::after {
+  content:"+";
+  margin-left:auto;
+  color:var(--primary);
+  font-size:20px;
+  font-weight:400;
+}
+
+details[open] summary::after {
+  content:"−";
+}
+
+.summary-icon {
+  width:32px;
+  height:32px;
+  min-width:32px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:var(--yellow);
+  font-size:16px;
+}
+
+.detail-content {
+  padding:0 18px 18px 62px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.85;
+}
+
+.detail-content ol {
+  padding-left:16px;
+}
+
+.detail-content li {
+  margin:4px 0;
+}
+
+.detail-content strong {
+  color:var(--dark);
+}
+
+.tip {
+  margin-top:10px;
+  padding:10px 14px;
+  border-radius:10px;
+  background:#f4fbf6;
+  border-left:4px solid #57a673;
+  color:#2f593b;
+  font-size:11px;
+  line-height:1.65;
+}
+
+/* ACTIVITY */
+.activity-card {
+  background:white;
+  border-radius:20px;
+  padding:22px;
+  border:1px solid var(--border);
+  margin-top:20px;
+  box-shadow:0 8px 20px rgba(43,38,33,.05);
+}
+
+.activity-item + .activity-item {
+  border-top:1px solid var(--border);
+  margin-top:18px;
+  padding-top:18px;
+}
+
+.activity-item h3 {
+  color:var(--primary-dark);
+  font-size:16px;
+  margin-bottom:5px;
+}
+
+.activity-item p {
+  color:var(--muted);
+  font-size:12.5px;
+  line-height:1.75;
+}
+
+/* FOOTER */
+footer {
+  background:var(--dark);
+  color:#e8dfd3;
+  text-align:center;
+  padding:35px 20px;
+  font-size:12px;
+  line-height:1.8;
+}
+
+.back-top {
+  margin-top:15px;
+  padding:10px 20px;
+  border:0;
+  border-radius:11px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:white;
+  font-family:inherit;
+  cursor:pointer;
+  font-weight:600;
+  transition:.2s;
+  box-shadow:0 4px 12px rgba(212,175,55,0.3);
+}
+
+.back-top:hover {
+  transform:translateY(-3px);
+  box-shadow:0 6px 16px rgba(212,175,55,0.4);
+}
+
+/* Sword Point Click Effect (เอฟเฟกต์ปลายดาบจิ้มจุด 🗡️✨) */
+.sword-effect {
+  position:fixed;
+  z-index:9998;
+  width:1px;height:1px;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+}
+.sword-click {
+  position:absolute;
+  left:0;top:0;
+  transform:translate(-50%,-50%) scale(.3) rotate(-45deg);
+  font-size:32px;
+  filter:drop-shadow(0 3px 8px rgba(212,175,55,0.5));
+  animation:swordStab .48s cubic-bezier(.15,.85,.25,1) forwards;
+}
+@keyframes swordStab {
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(-60deg)}
+  50%{opacity:1;transform:translate(-50%,-50%) scale(1.25) rotate(-15deg)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-30deg)}
+}
+.sword-spark {
+  position:absolute;
+  left:0;top:0;
+  opacity:0;
+  transform:translate(-50%,-50%) scale(.2);
+}
+.bursting .sword-spark {
+  animation:sparkBurst .72s cubic-bezier(.12,.72,.22,1) forwards;
+}
+@keyframes sparkBurst {
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(0) scale(.2)}
+  20%{opacity:1}
+  100%{
+    opacity:0;
+    transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--turn)) scale(1.1);
+  }
+}
+
+/* RESPONSIVE */
+@media(max-width:900px) {
+  .screen-grid {
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:650px) {
+  .navbar {
+    width:94%;
+    padding:8px 12px;
+  }
+  .nav-links {
+    display:none;
+  }
+  .hero-grid, .feature-layout, .screen-grid, .version-list {
+    grid-template-columns:1fr;
+  }
+  .hero {
+    height: auto;
+    min-height: auto;
+    padding: 25px 5vw;
+  }
+}
+</style>
+</head>
+
+<body id="home">
+
+<div class="progress" id="progress"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-left">
+        <button class="menu-btn" onclick="openMenu()">☰</button>
+
+        <div class="logo">
+            <div class="logo-icon">🗡️</div>
+            <div>
+                <span class="logo-name">OS Learning</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <a href="#intro">📖 ความหมาย</a>
+        <a href="#windows10">🪟 Win 10</a>
+        <a href="#windows11">💻 Win 11</a>
+        <a href="#android">📱 Android</a>
+    </div>
+</nav>
+
+<!-- SIDE MENU & OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="side-header">
+        <div class="sidebar-title">เมนูการเรียนรู้ 🗡️</div>
+        <button class="close-btn" onclick="closeMenu()">×</button>
+    </div>
+
+    <div class="sidebar-menu">
+        <a href="Index.html">🏠 กลับหน้าหลัก</a>
+        <a href="#intro" onclick="closeMenu()">📖 ความหมายของโปรแกรมยูทิลิตี้</a>
+        <a href="#windows10" onclick="closeMenu()">🪟 9.2 การใช้งานบน Windows 10</a>
+        <a href="#windows11" onclick="closeMenu()">💻 9.3 การใช้งานบน Windows 11</a>
+        <a href="#android" onclick="closeMenu()">📱 9.4 การใช้งานบน Android</a>
+        <a href="#activity" onclick="closeMenu()">🌷 กิจกรรมท้ายบท</a>
+    </div>
+</aside>
+
+<!-- HERO -->
+<section class="slide hero">
+    <div class="inner hero-grid">
+        <div>
+            <div class="chapter">บทเรียนที่ 9 · OS LEARNING</div>
+
+            <h1>
+                การใช้งาน<br>
+                <span>โปรแกรมยูทิลิตี้</span>
+            </h1>
+
+            <p class="hero-desc">
+                เรียนรู้การใช้งานโปรแกรมอรรถประโยชน์ที่ช่วยเพิ่มประสิทธิภาพให้กับคอมพิวเตอร์และอุปกรณ์ต่างๆ 
+                ตั้งแต่โปรแกรมพื้นฐาน ไปจนถึงเครื่องมือจัดการระบบบน Windows 10, Windows 11 และ Android
+            </p>
+
+            <a href="#intro" class="start">
+                เริ่มเรียนบทที่ 9 <span>→</span>
+            </a>
+        </div>
+
+        <div class="hero-art">
+            <div class="blob"></div>
+
+            <div class="monitor">
+                <div class="monitor-screen">
+                    <div class="monitor-text">UTILITY TOOLS</div>
+                </div>
+            </div>
+
+            <!-- รูปตัวละครทั้ง 3 รูปตามที่กำหนด -->
+            <img class="yorai-photo photo-one" src="รอยัล1.png" alt="Labor yorai san 1">
+            <img class="yorai-photo photo-two" src="รอยัล2.jpg" alt="Labor yorai san 2">
+            <img class="yorai-photo photo-three" src="รอยัล3.jpg" alt="Labor yorai san 3">
+
+            <div class="sticker-bubble bubble-one">วิ้งค์! 🗡️</div>
+            <div class="sticker-bubble bubble-two">รอยัลซาน ✨</div>
+            <div class="sticker-bubble bubble-three">UTILITY ⚔️</div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTAINER -->
+<main class="inner" style="padding-top:20px; padding-bottom:40px;">
+
+<!-- INTRO -->
+<section id="intro">
+    <div class="eyebrow">01 · INTRODUCTION</div>
+    <h2 class="big-title">ความหมายของโปรแกรมยูทิลิตี้ 🌟</h2>
+    <p class="sub">ทำความรู้จักโปรแกรมอรรถประโยชน์และหน้าที่ในการช่วยดูแลระบบ</p>
+
+    <div class="intro-box">
+        <strong>โปรแกรมยูทิลิตี้ (Utility Program)</strong> หรือโปรแกรมอรรถประโยชน์ คือซอฟต์แวร์ระบบที่ช่วยเพิ่มประสิทธิภาพ 
+        ของเครื่องคอมพิวเตอร์ ทำให้ผู้ใช้งานสามารถทำงานได้ง่ายและรวดเร็วขึ้น 
+        รวมถึงช่วยดูแลรักษาระบบและป้องกันการรบกวนจากโปรแกรมที่ไม่พึงประสงค์ 
+        โปรแกรมบางชนิดติดตั้งมาพร้อมกับระบบปฏิบัติการ ทำให้ผู้ใช้สามารถเรียกใช้งานได้ทันที
+    </div>
+
+    <h3 style="color:var(--dark); font-size:17px; margin:20px 0 10px;">หน้าที่ของโปรแกรมยูทิลิตี้</h3>
+
+    <div class="screen-grid">
+        <div class="screen-card">
+            <div class="card-icon">⚡</div>
+            <h3>เพิ่มประสิทธิภาพ</h3>
+            <p>ช่วยให้คอมพิวเตอร์ทำงานได้สะดวกและมีประสิทธิภาพมากขึ้น</p>
+        </div>
+
+        <div class="screen-card">
+            <div class="card-icon">🛡️</div>
+            <h3>ป้องกันภัยคุกคาม</h3>
+            <p>ช่วยป้องกันไวรัสและโปรแกรมที่ไม่พึงประสงค์</p>
+        </div>
+
+        <div class="screen-card">
+            <div class="card-icon">🧹</div>
+            <h3>ดูแลรักษาระบบ</h3>
+            <p>ช่วยจัดการไฟล์และดูแลพื้นที่จัดเก็บข้อมูลของเครื่อง</p>
+        </div>
+
+        <div class="screen-card">
+            <div class="card-icon">📦</div>
+            <h3>บีบอัดไฟล์</h3>
+            <p>ลดขนาดไฟล์และช่วยให้สะดวกต่อการจัดเก็บหรือส่งข้อมูล</p>
+        </div>
+
+        <div class="screen-card">
+            <div class="card-icon">💾</div>
+            <h3>สำรองข้อมูล</h3>
+            <p>ช่วยเก็บสำเนาข้อมูลเพื่อป้องกันการสูญหาย</p>
+        </div>
+
+        <div class="screen-card">
+            <div class="card-icon">🗑️</div>
+            <h3>ถอนการติดตั้ง</h3>
+            <p>ช่วยยกเลิกการติดตั้งโปรแกรมที่ไม่ต้องการใช้งาน</p>
+        </div>
+    </div>
+
+    <h3 style="color:var(--dark); font-size:17px; margin:20px 0 10px;">ตัวอย่างโปรแกรมยูทิลิตี้</h3>
+
+    <div class="version-list">
+        <div class="version-card">
+            <div class="version-icon">🧮</div>
+            <div>
+                <h3>เครื่องคิดเลข (Calculator)</h3>
+                <p>ใช้คำนวณตัวเลขและแปลงหน่วยต่าง ๆ</p>
+            </div>
+        </div>
+
+        <div class="version-card">
+            <div class="version-icon">📝</div>
+            <div>
+                <h3>โปรแกรมบันทึกข้อมูล</h3>
+                <p>ใช้พิมพ์ข้อความและจดบันทึกข้อมูล</p>
+            </div>
+        </div>
+
+        <div class="version-card">
+            <div class="version-icon">📸</div>
+            <div>
+                <h3>โปรแกรมจับภาพหน้าจอ</h3>
+                <p>ใช้บันทึกภาพหน้าจอเพื่อนำไปใช้งาน</p>
+            </div>
+        </div>
+
+        <div class="version-card">
+            <div class="version-icon">🎙️</div>
+            <div>
+                <h3>โปรแกรมบันทึกเสียง</h3>
+                <p>ใช้บันทึกเสียงผ่านไมโครโฟนหรือชุดหูฟัง</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WINDOWS 10 -->
+<section id="windows10" style="margin-top:40px;">
+    <div class="eyebrow">02 · WINDOWS 10</div>
+    <h2 class="big-title">การใช้งานบน Windows 10 🪟</h2>
+    <p class="sub">โปรแกรมเครื่องมือพื้นฐานที่ช่วยอำนวยความสะดวกในการทำงาน</p>
+
+    <div class="feature-layout" style="margin-top:18px;">
+        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=85" alt="Windows 10">
+        <div>
+            <h3 style="color:var(--dark); font-size:18px; margin-bottom:6px;">🪟 Windows 10 Utilities</h3>
+            <p style="color:var(--muted); line-height:1.75; font-size:12.5px;">
+                โปรแกรมยูทิลิตี้บน Windows 10 ส่วนใหญ่สืบทอดมาจาก Windows 8 เช่น Calculator, 
+                Notepad, Paint และ Snipping Tool ซึ่งช่วยจัดการข้อความ รูปภาพ 
+                และการคำนวณได้อย่างสะดวกโดยไม่ต้องติดตั้งเพิ่มเติม
+            </p>
+        </div>
+    </div>
+
+    <div class="procedure">
+        <details open>
+            <summary>
+                <span class="summary-icon">💱</span>
+                ตัวอย่าง: ขั้นตอนการแปลงค่าเงิน (Currency) ใน Calculator
+            </summary>
+            <div class="detail-content">
+                <ol>
+                    <li>คลิกปุ่ม Start หรือกดปุ่มโลโก้ Windows บนแป้นพิมพ์</li>
+                    <li>เลือกโปรแกรม Calculator โดยหน้าต่างเริ่มต้นจะแสดงแบบ Standard</li>
+                    <li>คลิกสัญลักษณ์ Open Navigation (☰)</li>
+                    <li>เลือกเครื่องมือ Currency</li>
+                    <li>เลือกสกุลเงินที่ต้องการเปรียบเทียบ เช่น Thailand - Baht และ United States - Dollar</li>
+                    <li>ป้อนตัวเลขที่ต้องการแปลงลงในช่อง</li>
+                    <li>คลิก Update rates เพื่ออัปเดตอัตราแลกเปลี่ยนล่าสุด</li>
+                </ol>
+            </div>
+        </details>
+    </div>
+</section>
+
+<!-- WINDOWS 11 -->
+<section id="windows11" style="margin-top:40px;">
+    <div class="eyebrow">03 · WINDOWS 11</div>
+    <h2 class="big-title">การใช้งานบน Windows 11 💻</h2>
+    <p class="sub">ทำความรู้จักเครื่องมือพื้นฐานและคุณสมบัติที่เพิ่มเข้ามา</p>
+
+    <div class="intro-box">
+        <strong>Windows 11</strong> มีการปรับดีไซน์หน้าต่างโปรแกรมยูทิลิตี้ให้มีความโค้งมนและใช้งานง่ายยิ่งขึ้น 
+        สามารถเปิดใช้งานได้ผ่านเมนู All apps หรือพิมพ์ค้นหาในช่อง Search ได้อย่างรวดเร็ว
+    </div>
+
+    <div class="screen-grid">
+        <div class="screen-card">
+            <div class="card-icon">🧮</div>
+            <h3>Calculator</h3>
+            <p>เครื่องคิดเลขดีไซน์ใหม่ รองรับธีมมืดและโหมดการคำนวณที่หลากหลาย</p>
+        </div>
+        <div class="screen-card">
+            <div class="card-icon">📝</div>
+            <h3>Notepad</h3>
+            <p>รองรับระบบเปิดหลายแท็บ (Tabs) ในหน้าต่างเดียว สะดวกต่อการแก้ไขข้อความ</p>
+        </div>
+        <div class="screen-card">
+            <div class="card-icon">📸</div>
+            <h3>Snipping Tool</h3>
+            <p>เครื่องมือจับภาพและอัดวิดีโอหน้าจอในตัว สะดวกยิ่งขึ้น</p>
+        </div>
+    </div>
+</section>
+
+<!-- ANDROID -->
+<section id="android" style="margin-top:40px;">
+    <div class="eyebrow">04 · ANDROID</div>
+    <h2 class="big-title">การใช้งานบน Android 📱</h2>
+    <p class="sub">เครื่องมืออรรถประโยชน์บนระบบปฏิบัติการมือถือ</p>
+
+    <div class="version-list">
+        <div class="version-card">
+            <div class="version-icon">📁</div>
+            <div>
+                <h3>Files by Google</h3>
+                <p>จัดการไฟล์ ทำความสะอาดพื้นที่ว่าง และลบไฟล์ขยะในเครื่อง</p>
+            </div>
+        </div>
+        <div class="version-card">
+            <div class="version-icon">⚙️</div>
+            <div>
+                <h3>Device Care / Settings</h3>
+                <p>ตรวจสอบสถานะแบตเตอรี่ พื้นที่จัดเก็บ และความปลอดภัยของระบบ</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ACTIVITY -->
+<section id="activity" style="margin-top:40px;">
+    <div class="eyebrow">05 · ACTIVITY</div>
+    <h2 class="big-title">กิจกรรมท้ายบทเรียน 🌷</h2>
+
+    <div class="activity-card">
+        <div class="activity-item">
+            <h3>📚 ใบงานปฏิบัติ</h3>
+            <p>ให้นักเรียนทดลองใช้งานโปรแกรมยูทิลิตี้พื้นฐาน เช่น Calculator บน Windows และ Files บน Android ตามหัวข้อที่กำหนด</p>
+        </div>
+
+        <div class="activity-item">
+            <h3>✏️ แบบทดสอบท้ายบท</h3>
+            <p>ทำแบบทดสอบทบทวนความรู้เกี่ยวกับการใช้งานโปรแกรมยูทิลิตี้ จำนวน 10 ข้อ</p>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer>
+    <p style="font-size:15px; font-weight:700; color:var(--primary);">LABOR YORAI SAN 🗡️</p>
+    <p>สื่อประกอบการเรียนรู้รายวิชาระบบปฏิบัติการคอมพิวเตอร์</p>
+    <p>บทเรียนที่ 9 · การใช้งานโปรแกรมยูทิลิตี้</p>
+
+    <button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        ↑ กลับสู่ด้านบน
+    </button>
+</footer>
+
+<script>
+// SCROLL PROGRESS
+const progress = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
+    progress.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+}, {passive:true});
+
+// SIDEBAR
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+
+function openMenu() {
+    sidebar.classList.add("active");
+    overlay.classList.add("active");
+    document.body.classList.add("lock-scroll");
+}
+
+function closeMenu() {
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+    document.body.classList.remove("lock-scroll");
+}
+
+document.addEventListener("keydown", function(e) {
+    if(e.key === "Escape") closeMenu();
+});
+
+// Sword Point Click Effect (เอฟเฟกต์ปลายดาบจิ้มจุด 🗡️✨)
+document.addEventListener('click', function(e){
+    const x = e.clientX;
+    const y = e.clientY;
+    const holder = document.createElement('div');
+    holder.className = 'sword-effect';
+    holder.style.left = x + 'px';
+    holder.style.top = y + 'px';
+    holder.setAttribute('aria-hidden', 'true');
+
+    const item = document.createElement('span');
+    item.className = 'sword-click';
+    item.textContent = '🗡️';
+    holder.appendChild(item);
+    document.body.appendChild(holder);
+
+    window.setTimeout(() => {
+        item.remove();
+        const symbols = ['🗡️','✨','⚔️','⭐','✨','🗡️','💫','⚡'];
+        const colors = ['#d4af37','#e6c55c','#ffffff','#997a15','#fdf8e2'];
+        symbols.forEach((symbol, index) => {
+            const spark = document.createElement('span');
+            spark.className = 'sword-spark';
+            spark.textContent = symbol;
+            spark.style.setProperty('--dx', (Math.cos(index * Math.PI / 4) * 75) + 'px');
+            spark.style.setProperty('--dy', (Math.sin(index * Math.PI / 4) * 75) + 'px');
+            spark.style.setProperty('--turn', (Math.random() * 260 - 130) + 'deg');
+            spark.style.color = colors[index % colors.length];
+            spark.style.fontSize = (11 + Math.random() * 11) + 'px';
+            holder.appendChild(spark);
+        });
+        holder.classList.add('bursting');
+        window.setTimeout(() => holder.remove(), 750);
+    }, 400);
+});
+</script>
+
+</body>
+</html>

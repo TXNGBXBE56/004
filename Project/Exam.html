@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รวมแบบทดสอบท้ายหน่วย (บทที่ 1-10) - OS Learning</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue: #4b9eea;
+            --dark: #183451;
+            --muted: #64748b;
+            --green: #10b981;
+            --red: #ef4444;
+            --bg: #f5fbff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .eyebrow {
+            color: var(--blue);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .header-section h1 {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .header-section p {
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .quiz-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(75, 158, 234, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(75, 158, 234, 0.12);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(75, 158, 234, 0.15);
+        }
+
+        /* ป้ายสถานะ ขวาบน */
+        .status-badge {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.completed {
+            background-color: #d1fae5;
+            color: var(--green);
+        }
+
+        .status-badge.pending {
+            background-color: #fee2e2;
+            color: var(--red);
+        }
+
+        .quiz-content h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 12px;
+            padding-right: 90px;
+        }
+
+        .quiz-content p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .quiz-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(125deg, #4495e7, #67c4ef);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 20px rgba(75, 158, 234, 0.2);
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .quiz-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+        }
+
+        .back-nav {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-home {
+            display: inline-block;
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .back-home:hover {
+            color: var(--blue);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-section">
+            <div class="eyebrow">OS LEARNING QUIZZES</div>
+            <h1>รวมแบบทดสอบท้ายหน่วย (บทที่ 1 - 10)</h1>
+            <p>เลือกบทเรียนเพื่อทำแบบทดสอบหรือเล่นเกม ระบบจะบันทึกสถานะ "เสร็จสิ้น" ให้โดยอัตโนมัติ</p>
+        </div>
+
+        <div class="quiz-grid" id="quizGrid"></div>
+
+        <div class="back-nav">
+            <a href="index.html" class="back-home">← กลับสู่หน้าหลักเว็บไซต์</a>
+        </div>
+    </div>
+
+    <script>
+        const quizzes = [
+            { id: 1, title: "บทที่ 1", name: "ระบบปฏิบัติการคอมพิวเตอร์", desc: "ทดสอบความรู้พื้นฐานเกี่ยวกับความหมาย หน้าที่ และความสำคัญของระบบปฏิบัติการ", link: "Game1.html" },
+            { id: 2, title: "บทที่ 2", name: "โปรแกรมระบบปฏิบัติการคอมพิวเตอร์", desc: "ทดสอบความเข้าใจเกี่ยวกับโครงสร้างและองค์ประกอบของระบบปฏิบัติการ", link: "Game2.html" },
+            { id: 3, title: "บทที่ 3", name: "การเลือกใช้และติดตั้งระบบปฏิบัติการ", desc: "ทดสอบความรู้เรื่องการจัดการทรัพยากรคอมพิวเตอร์และการทำงานของระบบ", link: "Game3.html" },
+            { id: 4, title: "บทที่ 4", name: "มาตรฐานปิดและมาตรฐานเปิด", desc: "ทดสอบความปลอดภัยของระบบปฏิบัติการและการป้องกันข้อมูลเบื้องต้น", link: "Game4.html" },
+            { id: 5, title: "บทที่ 5", name: "การติดตั้งไดรเวอร์", desc: "เคลียร์ภารกิจในเกมเพื่อผ่านบททดสอบนี้", link: "Game5.html" },
+            { id: 6, title: "บทที่ 6", name: "การใช้งานโปรแกรม Windows 10", desc: "ทดสอบทักษะการใช้งานระบบปฏิบัติการ Windows 10 เบื้องต้น", link: "Game6.html" },
+            { id: 7, title: "บทที่ 7", name: "การจัดการไฟล์และโฟลเดอร์", desc: "ทดสอบความรู้เรื่องการจัดเก็บ คัดลอก และจัดการไฟล์ในระบบ", link: "Game7.html" },
+            { id: 8, title: "บทที่ 8", name: "การบำรุงรักษาคอมพิวเตอร์", desc: "ทดสอบแนวทางการดูแลรักษาอุปกรณ์และเพิ่มประสิทธิภาพเครื่องคอมพิวเตอร์", link: "Game8.html" },
+            { id: 9, title: "บทที่ 9", name: "ความปลอดภัยของระบบ", desc: "ทดสอบความรู้เกี่ยวกับการป้องกันภัยคุกคามทางไซเบอร์และความปลอดภัย", link: "Game9.html" },
+            { id: 10, title: "บทที่ 10", name: "ไวรัสและการกู้คืนข้อมูล", desc: "ทดสอบความรู้เรื่องไวรัสคอมพิวเตอร์ การสำรองข้อมูล และการกู้คืนระบบ", link: "Game10.html" }
+        ];
+
+        function renderQuizzes() {
+            const grid = document.getElementById("quizGrid");
+            grid.innerHTML = "";
+
+            quizzes.forEach(q => {
+                // เช็คสถานะจากระบบอัตโนมัติใน localStorage
+                const isCompleted = localStorage.getItem(`quiz_completed_${q.id}`) === "true";
+
+                const card = document.createElement("div");
+                card.className = "quiz-card";
+                card.innerHTML = `
+                    <div class="status-badge ${isCompleted ? 'completed' : 'pending'}">
+                        ${isCompleted ? '✓ เสร็จสิ้น' : '✕ ยังไม่เสร็จ'}
+                    </div>
+                    <div class="quiz-content">
+                        <h3>${q.title}: ${q.name}</h3>
+                        <p>${q.desc}</p>
+                    </div>
+                    <div>
+                        <a href="${q.link}" class="quiz-btn">🚀 ลุยทำแบบทดสอบ</a>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        renderQuizzes();
+    </script>
+</body>
+</html>

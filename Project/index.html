@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="เว็บไซต์ประกอบการเรียนรู้รายวิชาระบบปฏิบัติการคอมพิวเตอร์ ธีมสีฟ้าเหลืองสุดน่ารัก จัดทำโดยนักเรียน ปวช.3">
+<title>OS Learning | ระบบปฏิบัติการคอมพิวเตอร์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Anuphan",sans-serif}
+:root{
+    --sky:#5cb3ff;
+    --ice:#eaf5ff;
+    --cloud:#f7fbff;
+    --ink:#2c3e50;
+    --soft-blue:#d5edff;
+    --theme-yellow:#ffeaa7;
+    --theme-yellow-light:#fff6dc;
+    --theme-blue:#74b9ff;
+    --theme-blue-soft:#e3f2fd;
+}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{background:var(--cloud);color:var(--ink);overflow-x:hidden}
+body.lock-scroll, body.loading-active{overflow:hidden}
+
+header{height:74px;background:rgba(255,255,255,.92);display:flex;align-items:center;padding:0 30px;position:fixed;top:0;left:0;right:0;z-index:1500;border-bottom:1px solid #d5edff;box-shadow:0 6px 20px rgba(92,179,255,.1);backdrop-filter:blur(18px);transition:.3s}
+.menu-btn{width:44px;height:44px;border:1px solid #c8e4ff;background:#f0f8ff;border-radius:16px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;transition:.25s}
+.menu-btn:hover{background:#e0f2ff;border-color:#5cb3ff;transform:scale(1.05)}
+.menu-btn span{width:21px;height:2.5px;background:#5cb3ff;border-radius:10px}
+.logo{margin-left:18px;font-size:24px;font-weight:800;color:#2c3e50;white-space:nowrap;letter-spacing:-.5px}
+.logo span{color:#0984e3}
+.search{margin-left:auto;width:280px;height:42px;padding:0 18px;background:#f4f9ff;border:1px solid #d5edff;border-radius:16px;color:#333;outline:none;font-size:14px;transition:.25s}
+.search:focus{background:#fff;border-color:#0984e3;box-shadow:0 0 0 4px rgba(116,185,255,.15)}
+
+.menu-backdrop{position:fixed;inset:0;z-index:2000;background:rgba(44,62,80,.25);backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:.3s}
+.menu-backdrop.show{opacity:1;visibility:visible}
+.side-menu{position:fixed;top:0;left:0;width:320px;max-width:88vw;height:100dvh;background:#fff;z-index:2500;padding:23px 16px;border-right:1px solid #d5edff;box-shadow:12px 0 40px rgba(92,179,255,.15);transform:translateX(-110%);transition:transform .38s cubic-bezier(.77,0,.18,1);overflow-y:auto;visibility:hidden}
+.side-menu.open{transform:translateX(0);visibility:visible}
+.side-top{height:55px;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.side-title{color:#0984e3;font-size:21px;font-weight:750}
+.side-title:before{content:"💛";margin-right:8px}
+.close-menu{width:40px;height:40px;border:1px solid #d5edff;background:#f0f8ff;border-radius:14px;color:#0984e3;font-size:22px;cursor:pointer;transition:.2s}
+.close-menu:hover{background:#e0f2ff}
+.side-menu a{display:flex;align-items:center;gap:14px;min-height:54px;padding:12px 15px;margin:6px 0;border-radius:16px;color:#55687d;text-decoration:none;font-size:15px;font-weight:500;border:1px solid transparent;transition:.2s}
+.side-menu a:hover{background:#f0f8ff;color:#0984e3;border-color:#d5edff;transform:translateX(4px)}
+.side-menu a.active{background:#e3f2fd;color:#0984e3;border-color:#b2dfdb}
+.menu-icon{width:30px;text-align:center;font-size:20px}
+
+main{transition:.3s}
+main.menu-open,header.menu-open,footer.menu-open{filter:blur(5px)}
+main.menu-open{pointer-events:none;user-select:none}
+
+/* Hero Section */
+.hero{min-height:780px;padding:125px 7% 80px;position:relative;overflow:hidden;background:radial-gradient(circle at 85% 15%,#fff9db 0,transparent 35%),radial-gradient(circle at 10% 85%,#e3f2fd 0,transparent 35%),linear-gradient(145deg,#f7fbff,#fffdf5 70%,#f7fbff);display:flex;align-items:center}
+.hero:before{content:'✦ 💛 ☁️';position:absolute;top:110px;right:7%;font-size:24px;letter-spacing:15px;color:#f1c40f;opacity:.7;pointer-events:none;animation:twinkle 4s ease-in-out infinite}
+.hero:after{content:'✦ ✨ 🎈';position:absolute;bottom:45px;left:4%;font-size:20px;letter-spacing:10px;color:#74b9ff;opacity:.6;pointer-events:none}
+.hero-grid{width:100%;max-width:1400px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
+.hero-left{position:relative;z-index:5}
+.tag{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;margin-bottom:22px;color:#b7791f;background:#fff6dc;border:1px solid #ffeaa7;border-radius:999px;font-size:14px;font-weight:650;box-shadow:0 4px 15px rgba(241,196,15,.15)}
+.hero-left h1{color:#2c3e50;font-size:clamp(40px,5vw,66px);line-height:1.2;letter-spacing:-1px;font-weight:800;margin-bottom:20px}
+.hero-left h1 span{color:#0984e3;text-shadow:0 2px 10px rgba(9,132,227,.18)}
+.teacher{color:#55687d;font-size:16px;margin-bottom:20px;background:rgba(255,255,255,.8);display:inline-block;padding:6px 14px;border-radius:12px;border:1px solid #d5edff}
+.teacher strong{color:#0984e3}
+.hero-description{max-width:600px;color:#576574;font-size:16px;line-height:1.9;margin-bottom:30px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:14px 26px;border-radius:20px;text-decoration:none;font-weight:700;font-size:15px;transition:.25s}
+.btn-primary{color:#2c3e50;background:linear-gradient(135deg,#ffeaa7,#fdcb6e);box-shadow:0 10px 25px rgba(253,203,110,.35)}
+.btn-primary:hover{transform:translateY(-3px);background:linear-gradient(135deg,#fdcb6e,#e1b12c);box-shadow:0 15px 30px rgba(253,203,110,.45)}
+
+/* Comic Bubble */
+.comic-bubble{position:absolute;background:#fff;padding:8px 14px;border-radius:18px;box-shadow:0 5px 20px rgba(116,185,255,.2);border:2px solid #ffeaa7;font-size:12.5px;font-weight:700;color:#0984e3;z-index:12;white-space:nowrap;animation:float 3.5s ease-in-out infinite}
+.comic-bubble:after{content:'';position:absolute;bottom:-7px;left:20px;border-width:7px 7px 0;border-style:solid;border-color:#ffeaa7 transparent;display:block;width:0}
+
+/* Mascots */
+.hero-cute-mascot{position:absolute;right:-15px;bottom:-15px;z-index:10;animation:float 3.5s ease-in-out infinite;display:flex;flex-direction:column;align-items:flex-end}
+.hero-cute-mascot img{width:75px;height:75px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 8px 25px rgba(116,185,255,.3);cursor:pointer;transition:transform .3s cubic-bezier(.175,.885,.32,1.275)}
+.hero-cute-mascot img:hover{transform:scale(1.18) rotate(8deg)}
+.hero-cute-mascot .comic-bubble{position:relative;top:5px;right:10px}
+
+.project-penguin-banner{max-width:1250px;margin:-20px auto 15px;padding:0 20px;display:flex;align-items:center;justify-content:flex-start;gap:15px;z-index:5;position:relative}
+.penguin-mascot-container{position:relative;display:flex;align-items:center;gap:12px;background:#fffdf0;padding:10px 18px;border-radius:99px;border:1px solid #ffeaa7;box-shadow:0 5px 15px rgba(253,203,110,.15);animation:float 4s ease-in-out infinite}
+.penguin-mascot-container img{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #fff;cursor:pointer;transition:transform .3s cubic-bezier(.175,.885,.32,1.275)}
+.penguin-mascot-container img:hover{transform:scale(1.2) rotate(-10deg)}
+.penguin-bubble{background:#fff;padding:6px 12px;border-radius:14px;font-size:13px;font-weight:700;color:#d35400;box-shadow:0 3px 10px rgba(0,0,0,.05)}
+
+.section-whale-banner{max-width:1250px;margin:-30px auto 20px;padding:0 20px;display:flex;align-items:center;gap:15px;z-index:5;position:relative}
+.whale-mascot-container{position:relative;display:flex;align-items:center;gap:12px;background:#e3f2fd;padding:10px 18px;border-radius:99px;border:1px solid #b2dfdb;box-shadow:0 5px 15px rgba(116,185,255,.15);animation:float 4.5s ease-in-out infinite}
+.whale-mascot-container img{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #fff;cursor:pointer;transition:transform .3s cubic-bezier(.175,.885,.32,1.275)}
+.whale-mascot-container img:hover{transform:scale(1.2) rotate(10deg)}
+.whale-bubble{background:#fff;padding:6px 12px;border-radius:14px;font-size:13px;font-weight:700;color:#0984e3;box-shadow:0 3px 10px rgba(0,0,0,.05)}
+
+.floating-mascot-corner{position:fixed;right:25px;bottom:25px;width:65px;height:65px;background:#fff;border-radius:50%;box-shadow:0 10px 25px rgba(253,203,110,.3);border:3px solid #ffeaa7;display:flex;align-items:center;justify-content:center;z-index:1000;cursor:pointer}
+.floating-mascot-corner img{width:100%;height:100%;border-radius:50%;object-fit:cover;transition:transform .3s cubic-bezier(.175,.885,.32,1.275)}
+.floating-mascot-corner:hover img{transform:scale(1.18) rotate(10deg)}
+.corner-bubble{position:absolute;right:75px;bottom:10px;background:#fff;padding:6px 12px;border-radius:16px;font-size:12px;font-weight:700;color:#d35400;box-shadow:0 5px 15px rgba(253,203,110,.2);border:2px solid #ffeaa7;white-space:nowrap;pointer-events:none}
+
+.footer-mascots{display:flex;justify-content:center;gap:15px;margin-bottom:20px}
+.footer-mascots img{width:50px;height:50px;border-radius:50%;border:2px solid #ffeaa7;object-fit:cover;box-shadow:0 4px 15px rgba(0,0,0,.3);animation:float 3.5s ease-in-out infinite;cursor:pointer;transition:transform .3s cubic-bezier(.175,.885,.32,1.275)}
+.footer-mascots img:hover{transform:scale(1.25) rotate(12deg)}
+.footer-mascots img:nth-child(2){animation-delay:.2s}
+.footer-mascots img:nth-child(3){animation-delay:.4s}
+.footer-mascots img:nth-child(4){animation-delay:.6s}
+
+.hero-board{position:relative;width:100%;max-width:570px;height:490px;margin:auto}
+.board-main{position:absolute;width:430px;height:330px;right:20px;top:70px;background:white;border:1px solid #ffeaa7;border-radius:28px;box-shadow:0 28px 65px rgba(116,185,255,.2),0 6px 20px rgba(253,203,110,.1);transform:rotate(3deg);overflow:hidden;z-index:3}
+.board-top{height:50px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #fffdf0;background:#fffef6}
+.board-dots{display:flex;gap:6px}
+.board-dots span{width:8px;height:8px;border-radius:50%;background:#ffeaa7}
+.board-label{color:#b2bec3;font-size:11px;font-weight:600}
+.board-content{padding:25px}
+.board-title{color:#2c3e50;font-size:27px;font-weight:800;margin-bottom:6px}
+.board-sub{color:#b2bec3;font-size:12px;margin-bottom:20px}
+.fake-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
+.fake-large{height:145px;border-radius:18px;background:linear-gradient(145deg,#74b9ff,#ffeaa7);position:relative;overflow:hidden;box-shadow:inset 0 4px 10px rgba(255,255,255,.5)}
+.fake-large:before{content:"OS";position:absolute;left:20px;bottom:15px;color:white;font-size:36px;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.15)}
+.fake-large:after{content:"LEARNING";position:absolute;left:22px;top:18px;color:#ffffffcc;font-size:9px;letter-spacing:3px;font-weight:700}
+.fake-small{display:grid;gap:12px}
+.fake-box{border-radius:16px;background:#fffdf0;position:relative;overflow:hidden;border:1px solid #ffeaa7}
+.fake-box:first-child{background:#e3f2fd}
+
+.float-card{position:absolute;background:#fff;border-radius:20px;box-shadow:0 18px 40px rgba(116,185,255,.18);border:1px solid #ffeaa7;z-index:8}
+.float-chapter{width:175px;padding:18px;left:0;top:105px;transform:rotate(-6deg);animation:float 4s ease-in-out infinite}
+.float-chapter small{color:#b2bec3;font-size:10px;font-weight:700}
+.float-chapter h3{color:#2c3e50;font-size:19px;margin-top:4px}
+.float-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:#fffdf0;border-radius:14px;margin-bottom:10px;font-size:20px}
+.float-score{width:155px;padding:17px;right:0;bottom:55px;transform:rotate(5deg);animation:float 4.7s ease-in-out infinite reverse}
+.score-top{display:flex;justify-content:space-between;align-items:center}
+.score-top span{color:#b2bec3;font-size:11px;font-weight:600}
+.score-number{color:#0984e3;font-size:27px;font-weight:850}
+.mini-progress{height:6px;background:#fffdf0;border-radius:20px;overflow:hidden;margin-top:8px}
+.mini-progress div{width:100%;height:100%;background:#fdcb6e;border-radius:20px}
+.float-folder{width:90px;height:90px;display:flex;align-items:center;justify-content:center;left:35px;bottom:35px;background:#fff9e6;font-size:38px;transform:rotate(7deg);animation:float 5s ease-in-out infinite;border:1px solid #ffeaa7;box-shadow:0 15px 35px rgba(253,203,110,.25)}
+
+.shape{position:absolute;pointer-events:none}
+.shape-circle{width:80px;height:80px;border-radius:50%;background:#ffeaa7;right:25px;top:10px;opacity:.7}
+.shape-square{width:48px;height:48px;background:#74b9ff;left:90px;top:20px;border-radius:14px;transform:rotate(18deg);opacity:.6}
+.shape-line{width:100px;height:12px;border-radius:20px;background:#ffeaa7;right:70px;bottom:15px;transform:rotate(-15deg);opacity:.7}
+
+.section{padding:90px 7%;background:#fff}
+.section-title{max-width:1250px;margin:0 auto 42px}
+.section-title .eyebrow{color:#d35400;font-size:13px;font-weight:750;letter-spacing:1px;margin-bottom:8px;display:inline-block;background:#fff6dc;padding:4px 12px;border-radius:10px}
+.section-title h2{color:#2c3e50;font-size:36px;font-weight:800;margin-bottom:8px}
+.section-title p{color:#636e72;font-size:15px}
+
+.cards{max-width:1250px;margin:auto;display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+.card{min-height:250px;background:#fff;border:1px solid #ffeaa7;border-radius:24px;padding:20px;position:relative;overflow:hidden;transition:.3s;box-shadow:0 8px 25px rgba(116,185,255,.1);cursor:pointer;text-decoration:none;display:block}
+.card:hover{transform:translateY(-7px);box-shadow:0 18px 42px rgba(9,132,227,.22);border-color:#fdcb6e}
+.icon{width:55px;height:55px;display:flex;align-items:center;justify-content:center;border-radius:16px;background:#fffdf0;font-size:25px;margin-bottom:17px;box-shadow:0 4px 12px rgba(253,203,110,.2)}
+.card h3{color:#2c3e50;font-size:17px;font-weight:700;line-height:1.5;margin-bottom:9px}
+.card p{color:#636e72;line-height:1.7;font-size:13px}
+.card-link-text{display:inline-block;margin-top:16px;color:#0984e3;font-size:13px;font-weight:750}
+.card:hover .card-link-text{color:#e1b12c}
+
+.info{background:#fffef9;border-block:1px solid #ffeaa7}
+.info-box{max-width:1250px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.info-item{min-height:155px;padding:25px;background:#fff;border-radius:24px;border:1px solid #ffeaa7;position:relative;overflow:hidden;box-shadow:0 8px 25px rgba(253,203,110,.1)}
+.info-item:after{content:"";position:absolute;width:80px;height:80px;right:-30px;bottom:-30px;border-radius:50%;background:#fff9e6}
+.info-item h3{position:relative;z-index:2;color:#d35400;font-size:38px;font-weight:850}
+.info-item p{position:relative;z-index:2;color:#55687d;margin-top:4px;font-size:14px;font-weight:600}
+
+.project-details{background:#fffef9;padding:70px 7%;border-top:1px solid #ffeaa7}
+.project-container{max-width:1250px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:35px}
+.project-box{background:#fff;border:1px solid #ffeaa7;border-radius:26px;padding:30px;box-shadow:0 10px 30px rgba(116,185,255,.1)}
+.project-box h3{color:#2c3e50;font-size:21px;font-weight:750;margin-bottom:15px;display:flex;align-items:center;gap:10px}
+.project-box p{color:#55687d;font-size:14px;line-height:1.9;margin-bottom:12px}
+.project-list{list-style:none;margin-top:15px}
+.project-list li{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;color:#636e72;font-size:14px;line-height:1.7}
+.project-list li span{color:#0984e3;font-weight:bold}
+
+footer{padding:45px 20px 30px;background:#2c3e50;color:#fff;text-align:center}
+footer h3{color:#fff;font-size:24px;font-weight:800}
+footer p{color:#ffeaa7;margin-top:8px;font-size:13px;line-height:1.8}
+
+/* Loading Screen */
+.loading-screen{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(255,253,245,.95);backdrop-filter:blur(15px);opacity:0;visibility:hidden;transition:.3s}
+.loading-screen.show{opacity:1;visibility:visible}
+.loading-card{width:min(390px,100%);padding:35px 28px;background:#fff;border:1px solid #ffeaa7;border-radius:28px;text-align:center;box-shadow:0 25px 80px rgba(253,203,110,.25);transform:translateY(12px) scale(.98);transition:.3s}
+.loading-screen.show .loading-card{transform:translateY(0) scale(1)}
+.loading-logo{font-size:25px;font-weight:800;color:#2c3e50;margin-bottom:24px}
+.loading-logo span{color:#d35400}
+.spinner{width:56px;height:56px;margin:0 auto 22px;border:5px solid #fffdf0;border-top-color:#fdcb6e;border-right-color:#74b9ff;border-radius:50%;animation:spin .8s linear infinite}
+.loading-card h2{font-size:21px;color:#2c3e50;margin-bottom:8px}
+.loading-card p{font-size:14px;color:#636e72;line-height:1.8}
+.progress-track{height:7px;background:#fffdf0;border-radius:20px;margin-top:23px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,#74b9ff,#fdcb6e);border-radius:20px;transition:width .15s linear}
+.progress-percent{display:block;margin-top:9px;text-align:right;color:#d35400;font-size:12px;font-weight:700}
+body.loading-active header,body.loading-active main,body.loading-active footer,body.loading-active .side-menu{filter:blur(5px);pointer-events:none}
+
+/* 4-Pointed Star Click Effect (ดาว 4 มุม/4 แฉก) */
+.magic-star-main, .magic-star-particle {
+    position: fixed;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    user-select: none;
+    z-index: 4900;
+    transform: translate(-50%, -50%);
+    will-change: transform, opacity;
+}
+.magic-star-main {
+    font-size: 28px;
+    color: #fdcb6e;
+    text-shadow: 0 0 6px #fff9d6, 0 0 14px #fdcb6e, 0 0 28px #f1c40f;
+    animation: star4Appear 0.22s cubic-bezier(.2,.8,.2,1) both;
+}
+.magic-star-particle {
+    font-size: var(--star-size, 15px);
+    color: var(--star-color, #fdcb6e);
+    text-shadow: 0 0 5px #fff8d6, 0 0 12px #fdcb6e, 0 0 22px #f1c40f;
+    animation: star4Explode 0.62s cubic-bezier(.16,.72,.24,1) forwards;
+}
+
+@keyframes star4Appear {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(-30deg); }
+    70% { opacity: 1; transform: translate(-50%, -50%) scale(1.3) rotate(10deg); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0); }
+}
+
+@keyframes star4Explode {
+    0% { opacity: 1; left: var(--start-x); top: var(--start-y); transform: translate(-50%, -50%) scale(0.3) rotate(0deg); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(45deg); }
+    100% { opacity: 0; left: var(--end-x); top: var(--end-y); transform: translate(-50%, -50%) scale(0.5) rotate(180deg); }
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes twinkle{0%,100%{opacity:.45;transform:translateY(0)}50%{opacity:1;transform:translateY(-5px)}}
+
+/* Responsive */
+@media(max-width:1150px){
+  .hero-grid{grid-template-columns:1fr;gap:35px}
+  .hero-left{text-align:center}
+  .hero-description{margin-left:auto;margin-right:auto}
+  .hero-board{transform:scale(.9);margin-top:-25px}
+  .cards{grid-template-columns:repeat(3,1fr)}
+  .project-container{grid-template-columns:1fr}
+}
+@media(max-width:800px){
+  header{padding:0 18px}
+  .search{width:210px}
+  .hero{padding:120px 25px 60px}
+  .hero-left h1{font-size:42px}
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .info-box{grid-template-columns:repeat(2,1fr)}
+  .section{padding:70px 25px}
+}
+@media(max-width:550px){
+  .hero{padding:95px 16px 40px}
+  .logo{font-size:19px;margin-left:8px}
+  .search{display:none}
+  .hero-left h1{font-size:31px;letter-spacing:-.5px;margin-bottom:15px}
+  .hero-description{font-size:13.5px;line-height:1.7;margin-bottom:20px}
+  .tag{font-size:12px;padding:6px 12px;margin-bottom:15px}
+  .teacher{font-size:13.5px;padding:5px 10px;margin-bottom:15px}
+  .btn{padding:11px 20px;font-size:14px;border-radius:16px}
+  .hero-board{transform:scale(.62);transform-origin:center top;height:320px;margin-top:-50px;margin-bottom:-105px;width:100%}
+  .section{padding:50px 16px}
+  .section-title{margin-bottom:28px}
+  .section-title h2{font-size:26px}
+  .section-title p{font-size:13.5px}
+  .cards{grid-template-columns:1fr;gap:12px}
+  .card{min-height:auto;padding:16px;border-radius:20px}
+  .icon{width:46px;height:46px;font-size:20px;border-radius:14px;margin-bottom:12px}
+  .card h3{font-size:15px}
+  .card p{font-size:12.5px}
+  .info-box{grid-template-columns:1fr 1fr;gap:10px}
+  .info-item{min-height:auto;padding:16px 12px;border-radius:20px}
+  .info-item h3{font-size:27px}
+  .info-item p{font-size:12px}
+  .project-details{padding:50px 16px}
+  .project-box{padding:20px 16px;border-radius:20px}
+  .project-box h3{font-size:18px}
+  .project-box p,.project-list li{font-size:13px}
+  .footer-mascots img{width:40px;height:40px}
+  footer{padding:35px 16px}
+  footer h3{font-size:20px}
+  footer p{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen" role="status" aria-live="polite" aria-hidden="true">
+    <div class="loading-card">
+        <div class="loading-logo">💛 OS <span>Learning</span> ✦</div>
+        <div class="spinner"></div>
+        <h2 id="loadingTitle">กำลังเปิดบทเรียน</h2>
+        <p id="loadingMessage">กำลังเตรียมความรู้ให้... กรุณารอสักครู่! ✨</p>
+        <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+        <span class="progress-percent" id="progressPercent">0%</span>
+    </div>
+</div>
+
+<div class="menu-backdrop" id="menuBackdrop" onclick="closeMenu()" aria-hidden="true"></div>
+
+<div class="floating-mascot-corner" title="พร้อมลุยการเรียนรู้แล้ว! 💛">
+    <div class="corner-bubble">สู้ๆ น้า! 💪✨</div>
+    <img src="ฮาชิวาริ.jpg" alt="ฮาชิวาริ">
+</div>
+
+<aside class="side-menu" id="sideMenu" aria-label="เมนูการเรียนรู้" aria-hidden="true">
+    <div class="side-top">
+        <div class="side-title">เมนูการเรียนรู้ 💛</div>
+        <button class="close-menu" onclick="closeMenu()" title="ปิดเมนู" aria-label="ปิดเมนู">×</button>
+    </div>
+    <a href="#home" class="active" onclick="navigateWithLoading(event,this,'หน้าหลัก')"><span class="menu-icon">🏠</span><span>หน้าหลัก</span></a>
+    <a href="#lesson" onclick="navigateWithLoading(event,this,'บทเรียน')"><span class="menu-icon">📚</span><span>บทเรียน</span></a>
+    <a href="LM.html" onclick="navigateWithLoading(event,this,'สื่อประกอบการเรียนรู้')"><span class="menu-icon">📖</span><span>สื่อประกอบการเรียนรู้</span></a>
+    <a href="Exam.html" onclick="navigateWithLoading(event,this,'แบบฝึกหัด')"><span class="menu-icon">🎯</span><span>แบบฝึกหัด</span></a>
+    <a href="#about" onclick="navigateWithLoading(event,this,'เกี่ยวกับเว็บไซต์')"><span class="menu-icon">👨‍💻</span><span>เกี่ยวกับเว็บไซต์</span></a>
+</aside>
+
+<header id="siteHeader">
+    <button class="menu-btn" id="menuButton" onclick="openMenu()" title="เปิดเมนู" aria-label="เปิดเมนู" aria-expanded="false">
+        <span></span><span></span><span></span>
+    </button>
+    <div class="logo">OS <span>Learning</span></div>
+    <input class="search" id="lessonSearch" type="search" placeholder="ค้นหาบทเรียน..." aria-label="ค้นหาบทเรียน">
+</header>
+
+<main id="mainContent">
+    <section class="hero" id="home">
+        <div class="hero-grid">
+            <div class="hero-left">
+                <div class="tag">💛 Computer Operating System</div>
+                <h1>ระบบปฏิบัติการ <br> <span>คอมพิวเตอร์</span></h1>
+                <div class="teacher">ครูผู้สอน <strong>ครูกุสุมา ปิ่นสุภา</strong></div>
+                <p class="hero-description">เว็บไซต์ประกอบการเรียนการสอนรายวิชา ระบบปฏิบัติการคอมพิวเตอร์ ธีมสีฟ้าเหลืองอ่อนละมุน เรียนรู้ตั้งแต่พื้นฐาน ส่วนประกอบ การทำงาน และการจัดการระบบ พร้อมเกมสนุกๆ ท้ายบทเรียน</p>
+                <a href="#lesson" class="btn btn-primary" onclick="navigateWithLoading(event,this,'บทเรียน')">📚 ดูบทเรียนกันเลย!</a>
+            </div>
+            <div class="hero-board">
+                <div class="shape shape-circle"></div>
+                <div class="shape shape-square"></div>
+                <div class="shape shape-line"></div>
+                <div class="board-main">
+                    <div class="board-top">
+                        <div class="board-dots"><span></span><span></span><span></span></div>
+                        <div class="board-label">OS Learning</div>
+                    </div>
+                    <div class="board-content">
+                        <div class="board-title">ระบบปฏิบัติการ</div>
+                        <div class="board-sub">Computer Operating System</div>
+                        <div class="fake-layout">
+                            <div class="fake-large"></div>
+                            <div class="fake-small"><div class="fake-box"></div><div class="fake-box"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="float-card float-chapter">
+                    <div class="float-icon">📚</div><small>LEARNING</small><h3>10 บทเรียน</h3>
+                </div>
+                <div class="float-card float-score">
+                    <div class="score-top"><span>ความคืบหน้า</span><span>100%</span></div>
+                    <div class="score-number">OS</div><div class="mini-progress"><div></div></div>
+                </div>
+                <div class="float-card float-folder">📁</div>
+                <div class="hero-cute-mascot">
+                    <div class="comic-bubble">ตั้งใจเรียนน้า! ✨</div>
+                    <img src="แมวฟ้า.jpg" alt="แมวบลูเบอร์รี่">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-whale-banner">
+        <div class="whale-mascot-container">
+            <img src="ปลาวาฬ.jpg" alt="ปลาวาฬ">
+            <div class="whale-bubble">🌊 ดำดิ่งสู่โลกความรู้กันเถอะ! ยะฮู~</div>
+        </div>
+    </div>
+
+    <section class="section" id="lesson">
+        <div class="section-title">
+            <div class="eyebrow">OS LEARNING</div>
+            <h2>บทเรียนของเรา</h2>
+            <p>เลือกหัวข้อที่ต้องการเรียนรู้ (ทุกบทเรียนมีเกมท้ายบทเพื่อทดสอบความเข้าใจ)</p>
+        </div>
+        <div class="cards" id="lessonCards">
+            <a href="Lesson 1.html" class="card" onclick="openLesson(event,this)"><div class="icon">💻</div><h3>บทที่ 1 ระบบปฏิบัติการคอมพิวเตอร์</h3><p>ศึกษาความหมาย ความสำคัญ หน้าที่หลัก และวิวัฒนาการของระบบปฏิบัติการคอมพิวเตอร์</p><span class="card-link-text">ดูบทเรียน →</span></a>
+            <a href="Lesson 2.html" class="card" onclick="openLesson(event,this)"><div class="icon">⚙️</div><h3>บทที่ 2 โปรแกรมระบบปฏิบัติการคอมพิวเตอร์</h3><p>เรียนรู้เกี่ยวกับประเภท โครงสร้าง และสถาปัตยกรรมของโปรแกรมระบบปฏิบัติการ</p><span class="card-link-text">ดูบทเรียน →</span></a>
+            <a href="Lesson 3.html" class="card" onclick="openLesson(event,this)"><div class="icon">🖥️</div><h3>บทที่ 3 การเลือกใช้และติดตั้งระบบปฏิบัติการ</h3><p>แนวทางการคัดเลือกสเปคคอมพิวเตอร์ และขั้นตอนการติดตั้งระบบปฏิบัติการให้เหมาะสมกับการใช้งาน</p><span class="card-link-text">ดูบทเรียน →</span></a>
+            <a href="Lesson 4.html" class="card" onclick="openLesson(event,this)"><div class="icon">🔐</div><h3>บทที่ 4 การเลือกใช้และการติดตั้งระบบปฏิบัติการมาตรฐานปิดและมาตรฐานเปิด</h3><p>ความปลอดภัยของระบบปฏิบัติการ และการป้องกันข้อมูล</p><span class="card-link-text">ดูบทเรียน →</span></a>
+            <a href="Lesson 5.html" class="card" onclick="openLesson(event,this)"><div class="icon">🪟</div><h3>บทที่ 5 การติดตั้งไดรเวอร์</h3><p>ทำความรู้จักระบบปฏิบัติการ Windows และการใช้งานพื้นฐาน</p><span class="card-link-text">ดูบทเรียน →</span></a>
+            <a href="Lesson 6.html" class="card" onclick="openLesson(event,this)"><div class="icon">🐧</div><h3>บทที่ 6 การใช้งานโปรแกรมระบบปฏิบัติการ Windows 10 เบื้องต้น</h3><p>การใช้งานเมนูหลัก การจัดการหน้าจอเดสก์ท็อป และเครื่องมือพื้นฐานบน Windows 10</p><span class="card-link-text">ดูบทเรียน →</span></a>
+            <a href="Lesson 7.html" class="card" onclick="openLesson(event,this)"><div class="icon">📂</div><h3>บทที่ 7 การใช้งานโปรแกรมระบบปฏิบัติการ Windows 11 เบื้องต้น</h3><p>การจัดการไฟล์และโฟลเดอร์ การจัดเก็บข้อมูล และระบบไฟล์</p><span class="card-link-text">ดูบทเรียน →</span></a>
+            <a href="Lesson 8.html" class="card" onclick="openLesson(event,this)"><div class="icon">🧠</div><h3>บทที่ 8 การใช้งานโปรแกรมระบบปฏิบัติการ Ubuntu เบื้องต้น</h3><p>การจัดการหน่วยความจำ และการทำงานร่วมกันของโปรแกรม</p><span class="card-link-text">ดูบทเรียน →</span></a>
+            <a href="Lesson 9.html" class="card" onclick="openLesson(event,this)"><div class="icon">🛡️</div><h3>บทที่ 9 การใช้งานโปรแกรมยูทิลิตี้</h3><p>การดูแลรักษาระบบ การแก้ไขปัญหา และความปลอดภัยของคอมพิวเตอร์</p><span class="card-link-text">ดูบทเรียน →</span></a>
+            <a href="Lesson 10.html" class="card" onclick="openLesson(event,this)"><div class="icon">🚀</div><h3>บทที่ 10 ไวรัสคอมพิวเตอร์ การสำรอง และการกู้คืนข้อมูล</h3><p>เรียนรู้ภัยคุกคามจากไวรัส การป้องกันด้วยโปรแกรมสแกน วิธีสำรองข้อมูล (Backup) และการกู้คืนระบบ (Restore)</p><span class="card-link-text">ดูบทเรียน →</span></a>
+        </div>
+    </section>
+
+    <section class="section info">
+        <div class="section-title">
+            <div class="eyebrow">ABOUT LEARNING</div><h2>เว็บไซต์นี้มีอะไรบ้าง?</h2>
+            <p>เครื่องมือช่วยให้การเรียนรู้สนุกและเข้าใจง่ายขึ้น</p>
+        </div>
+        <div class="info-box">
+            <div class="info-item"><h3>10</h3><p>บทเรียน</p></div>
+            <div class="info-item"><h3>10</h3><p>เกมท้ายบท (บทละ 1 เกม)</p></div>
+            <div class="info-item"><h3>10</h3><p>แบบฝึกหัดทบทวน</p></div>
+            <div class="info-item"><h3>∞</h3><p>เรียนรู้ได้ทุกเวลา</p></div>
+        </div>
+    </section>
+
+    <div class="project-penguin-banner">
+        <div class="penguin-mascot-container">
+            <img src="เพนกวิน.jpg" alt="เพนกวินฟ้า">
+            <div class="penguin-bubble">🐧 มาดูเบื้องหลังความตั้งใจกันเถอะ! ยะฮู~</div>
+        </div>
+    </div>
+
+    <section class="project-details" id="about-project">
+        <div class="section-title">
+            <div class="eyebrow">PROJECT INFORMATION</div><h2>รายละเอียดการพัฒนาเว็บไซต์</h2>
+            <p>ข้อมูลความเป็นมาและรูปแบบการจัดทำโครงงาน</p>
+        </div>
+        <div class="project-container">
+            <div class="project-box">
+                <h3>🎮 ระบบเกมการศึกษา (Gamification)</h3>
+                <p>เพื่อเพิ่มความสนุกสนานและลดความน่าเบื่อในการเรียนออนไลน์ เว็บไซต์ของเราจึงได้ออกแบบและพัฒนากิจกรรมเสริมการเรียนรู้ ดังนี้:</p>
+                <ul class="project-list">
+                    <li><span>เกมท้ายบทเรียน:</span> มีมินิเกมหรือแบบทดสอบเชิงเกมมิฟิเคชันจำนวน <strong>1 เกมต่อ 1 บทเรียน</strong> รวมทั้งหมด 10 บท</li>
+                    <li><span>วัตถุประสงค์:</span> เพื่อให้ผู้เรียนได้ทบทวนความเข้าใจ วัดผลตนเอง และเสริมสร้างแรงจูงใจในการศึกษาเนื้อหารายวิชาระบบปฏิบัติการคอมพิวเตอร์</li>
+                </ul>
+            </div>
+            <div class="project-box">
+                <h3>📅 ข้อมูลการจัดทำและเผยแพร่</h3>
+                <p>เว็บไซต์นี้เป็นส่วนหนึ่งของโครงงานระดับประกาศนียบัตรวิชาชีพ (ปวช.3) แผนกเทคโนโลยีธุรกิจดิจิทัล รายละเอียดสำคัญมีดังนี้:</p>
+                <ul class="project-list">
+                    <li><span>ระยะเวลาพัฒนา:</span> พัฒนาขึ้นในช่วงปีการศึกษา 2569</li>
+                    <li><span>วันที่เผยแพร่ระบบ:</span> เปิดให้บริการและเผยแพร่ออนไลน์อย่างเป็นทางการในวันที่ 24 มกราคม 2570</li>
+                    <li><span>เทคโนโลยีที่ใช้:</span> พัฒนาด้วยภาษา HTML, CSS และ JavaScript พร้อมหน้าจอโหลดดิ้งและเอฟเฟกต์ตอบสนองที่ทันสมัย</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer id="about">
+    <div class="footer-mascots">
+        <img src="แมวฟ้า.jpg" alt="แมวบลูเบอร์รี่" title="แมวบลูเบอร์รี่">
+        <img src="ฮาชิวาริ.jpg" alt="ฮาชิวาริ" title="ฮาชิวาริ">
+        <img src="เพนกวิน.jpg" alt="เพนกวินฟ้า" title="เพนกวินฟ้า">
+        <img src="ปลาวาฬ.jpg" alt="ปลาวาฬ" title="ปลาวาฬ">
+    </div>
+    <h3>OS Learning</h3>
+    <p>เว็บไซต์ประกอบการเรียนการสอนรายวิชาระบบปฏิบัติการคอมพิวเตอร์</p>
+    <p>ครูผู้สอน : ครูกุสุมา ปิ่นสุภา</p>
+    <p>จัดทำโดย นักเรียนแผนกเทคโนโลยีธุรกิจดิจิทัล ระดับ ปวช.3</p>
+</footer>
+
+<script>
+const sideMenu=document.getElementById("sideMenu");
+const mainContent=document.getElementById("mainContent");
+const siteHeader=document.getElementById("siteHeader");
+const siteFooter=document.querySelector("footer");
+const menuBackdrop=document.getElementById("menuBackdrop");
+const menuButton=document.getElementById("menuButton");
+
+let loadingTimer=null,progressTimer=null,isNavigating=false;
+
+const loadingQuotes = [
+    "ฮึบ... ฮึบ! กำลังวิ่งเอาความรู้มาส่งแย้ว 🏃💨",
+    "ว้าว... เนื้อหานี้ดูน่าสนใจสุดๆ ไปเลย! ✨",
+    "สู้ๆ น้า! ใกล้จะเปิดบทเรียนสำเร็จแล้วนะ 💪🌟",
+    "เอ๋? มีความรู้ใหม่รออยู่ตรงนี้ด้วยนะ! 💛"
+];
+
+function openMenu(){
+    if(isNavigating)return;
+    sideMenu.classList.add("open");
+    menuBackdrop.classList.add("show");
+    mainContent.classList.add("menu-open");
+    siteHeader.classList.add("menu-open");
+    siteFooter.classList.add("menu-open");
+    document.body.classList.add("lock-scroll");
+    sideMenu.setAttribute("aria-hidden","false");
+    menuButton.setAttribute("aria-expanded","true");
+}
+
+function closeMenu(){
+    sideMenu.classList.remove("open");
+    menuBackdrop.classList.remove("show");
+    mainContent.classList.remove("menu-open");
+    siteHeader.classList.remove("menu-open");
+    siteFooter.classList.remove("menu-open");
+    document.body.classList.remove("lock-scroll");
+    sideMenu.setAttribute("aria-hidden","true");
+    menuButton.setAttribute("aria-expanded","false");
+}
+
+function showLoading(title,message){
+    if(isNavigating)return;
+    isNavigating=true;
+    closeMenu();
+    const screen=document.getElementById("loadingScreen");
+    document.getElementById("loadingTitle").textContent=title||"กำลังโหลดหน้าเว็บ";
+    
+    const randomQuote = loadingQuotes[Math.floor(Math.random() * loadingQuotes.length)];
+    document.getElementById("loadingMessage").textContent = message ? `${message} — ${randomQuote}` : randomQuote;
+
+    const bar=document.getElementById("progressBar");
+    const percent=document.getElementById("progressPercent");
+    bar.style.width="0%";
+    percent.textContent="0%";
+    document.body.classList.add("loading-active");
+    screen.classList.add("show");
+    screen.setAttribute("aria-hidden","false");
+    let value=0;
+    clearInterval(progressTimer);
+    progressTimer=setInterval(()=>{
+        if(value<90){
+            value+=value<50?6:3;
+            value=Math.min(value,90);
+            bar.style.width=value+"%";
+            percent.textContent=value+"%";
+        }
+    },50);
+}
+
+function openLesson(event,link){
+    const destination=link.getAttribute("href");
+    if(!destination||destination==="#")return;
+    if(isNavigating){event.preventDefault();return;}
+    event.preventDefault();
+    const card=link.closest(".card");
+    const chapter=card?card.querySelector("h3").textContent:"บทเรียน";
+    showLoading("กำลังเปิดบทเรียน","กำลังเตรียม "+chapter);
+    loadingTimer=setTimeout(()=>{
+        clearInterval(progressTimer);
+        document.getElementById("progressBar").style.width="100%";
+        document.getElementById("progressPercent").textContent="100%";
+        setTimeout(()=>{window.location.href=destination;},300);
+    },1100);
+}
+
+function navigateWithLoading(event,link,pageName){
+    const destination=link.getAttribute("href");
+    if(!destination||destination==="#")return;
+    if(isNavigating){event.preventDefault();return;}
+    if(destination.startsWith("#")){
+        closeMenu();
+        return;
+    }
+    event.preventDefault();
+    showLoading("กำลังเดินทาง","ไปหน้า "+pageName);
+    loadingTimer=setTimeout(()=>{
+        clearInterval(progressTimer);
+        document.getElementById("progressBar").style.width="100%";
+        document.getElementById("progressPercent").textContent="100%";
+        setTimeout(()=>{window.location.href=destination;},300);
+    },900);
+}
+
+/* ==========================================
+   4-POINTED STAR CLICK / TOUCH EFFECT (ดาว 4 มุม ✦)
+========================================== */
+(() => {
+    const activePresses = new Map();
+    // ใช้สัญลักษณ์ดาว 4 มุม/4 แฉก
+    const starSymbols = ["✦", "✧", "⯪", "⯫"];
+    const starColors = ["#ffeaa7", "#fdcb6e", "#74b9ff", "#0984e3", "#f1c40f", "#fff"];
+
+    function makeMainStar(x, y) {
+        const star = document.createElement("span");
+        star.className = "magic-star-main";
+        star.textContent = "✦"; // ดาว 4 มุมตัวหลัก
+        star.style.left = `${x}px`;
+        star.style.top = `${y}px`;
+        document.body.appendChild(star);
+        return star;
+    }
+
+    function makeBurst(x, y, ownStar) {
+        if (ownStar && ownStar.isConnected) ownStar.remove();
+
+        const particleCount = 14;
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement("span");
+            particle.className = "magic-star-particle";
+            particle.textContent = starSymbols[Math.floor(Math.random() * starSymbols.length)];
+
+            const angle = (Math.PI * 2 * i / particleCount) + (Math.random() - .5) * .28;
+            const distance = 38 + Math.random() * 48;
+            const endX = x + Math.cos(angle) * distance;
+            const endY = y + Math.sin(angle) * distance;
+
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.setProperty("--start-x", `${x}px`);
+            particle.style.setProperty("--start-y", `${y}px`);
+            particle.style.setProperty("--end-x", `${endX}px`);
+            particle.style.setProperty("--end-y", `${endY}px`);
+            particle.style.setProperty("--star-size", `${12 + Math.random() * 14}px`);
+            particle.style.setProperty("--star-color", starColors[Math.floor(Math.random() * starColors.length)]);
+            document.body.appendChild(particle);
+            particle.addEventListener("animationend", () => particle.remove(), { once: true });
+            setTimeout(() => particle.remove(), 850);
+        }
+
+        const flash = document.createElement("span");
+        flash.className = "magic-star-particle";
+        flash.textContent = "✦";
+        flash.style.left = `${x}px`;
+        flash.style.top = `${y}px`;
+        flash.style.fontSize = "28px";
+        flash.style.setProperty("--start-x", `${x}px`);
+        flash.style.setProperty("--start-y", `${y}px`);
+        flash.style.setProperty("--end-x", `${x}px`);
+        flash.style.setProperty("--end-y", `${y - 10}px`);
+        flash.style.setProperty("--star-size", "28px");
+        flash.style.setProperty("--star-color", "#ffeaa7");
+        document.body.appendChild(flash);
+        flash.addEventListener("animationend", () => flash.remove(), { once: true });
+        setTimeout(() => flash.remove(), 850);
+    }
+
+    document.addEventListener("pointerdown", event => {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        const star = makeMainStar(event.clientX, event.clientY);
+        activePresses.set(event.pointerId, { star, x: event.clientX, y: event.clientY });
+    }, { passive: true });
+
+    document.addEventListener("pointerup", event => {
+        const press = activePresses.get(event.pointerId);
+        if (!press) return;
+        activePresses.delete(event.pointerId);
+
+        const x = press.x;
+        const y = press.y;
+        const ownStar = press.star;
+
+        setTimeout(() => makeBurst(x, y, ownStar), 400);
+    }, { passive: true });
+
+    document.addEventListener("pointercancel", event => {
+        const press = activePresses.get(event.pointerId);
+        if (!press) return;
+        activePresses.delete(event.pointerId);
+        if (press.star && press.star.isConnected) press.star.remove();
+    }, { passive: true });
+
+    window.addEventListener("blur", () => {
+        for (const press of activePresses.values()) {
+            if (press.star && press.star.isConnected) press.star.remove();
+        }
+        activePresses.clear();
+    });
+})();
+</script>
+</body>
+</html>

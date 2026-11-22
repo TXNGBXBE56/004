@@ -1,0 +1,2269 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="บทเรียนออนไลน์เรื่องการติดตั้งไดรเวอร์ ธีมรักโกะสุดอบอุ่น">
+<title>บทที่ 5 | การติดตั้งไดรเวอร์</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --blue:#7092be;
+  --blue2:#a2c4f2;
+  --dark:#42362f;
+  --cream:#fcf9f5;
+  --yellow:#ffe8b6;
+  --pink:#fce2d8;
+  --green:#d6ebd9;
+  --purple:#eedff5;
+  --text:#4a3f38;
+  --muted:#84766d;
+  --white:#fff;
+}
+
+*{box-sizing:border-box}
+
+html{
+  scroll-behavior:smooth;
+  scroll-padding-top:95px;
+}
+
+body{
+  margin:0;
+  font-family:'Prompt',sans-serif;
+  background:#fdfbf9;
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+body.lock-scroll,
+body.loading-active{overflow:hidden}
+
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+
+.progress{
+  position:fixed;
+  top:0;
+  left:0;
+  height:4px;
+  width:0;
+  background:linear-gradient(90deg,#7092be,#d08a58,#ffe8b6);
+  z-index:9999;
+  transition:width .15s;
+}
+
+/* NAVIGATION */
+.nav{
+  position:fixed;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(1100px,calc(100% - 30px));
+  min-height:58px;
+  background:#FFFFFF;
+  backdrop-filter:blur(18px);
+  border:1px solid #f0e8e0;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 18px;
+  z-index:1000;
+  box-shadow:0 15px 40px #5c473c15;
+  gap:12px;
+}
+
+.menu-toggle{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  width:28px;
+  height:22px;
+  background:transparent;
+  border:none;
+  padding:0;
+}
+
+.menu-toggle span{
+  width:100%;
+  height:3px;
+  background:var(--dark);
+  border-radius:5px;
+  transition:.3s;
+}
+
+.menu-toggle:hover span{background:#c48453}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.logo-box{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#c48453,#925c34);
+  color:#fff;
+  font-size:13px;
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.nav-btn{
+  border:0;
+  background:transparent;
+  padding:8px 10px;
+  border-radius:10px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.nav-btn:hover{
+  background:#fbf2eb;
+  color:#c48453;
+}
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed;
+  top:0;
+  left:-300px;
+  width:280px;
+  height:100%;
+  background:#FFFDFF;
+  box-shadow:5px 0 25px rgba(92,71,60,.15);
+  z-index:1200;
+  transition:.35s ease;
+  padding:30px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+  overflow-y:auto;
+}
+
+.sidebar.active{left:0}
+
+.sidebar-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.sidebar-title{
+  font-weight:700;
+  font-size:18px;
+}
+
+.close-btn{
+  background:transparent;
+  border:none;
+  font-size:25px;
+  color:var(--muted);
+}
+
+.sidebar-menu{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.sidebar-menu a{
+  padding:12px 15px;
+  border-radius:12px;
+  background:#fcf7f2;
+  color:var(--text);
+  font-size:13px;
+  transition:.2s;
+}
+
+.sidebar-menu a:hover{
+  background:#c48453;
+  color:white;
+  transform:translateX(4px);
+}
+
+.sidebar-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(66,54,47,.28);
+  backdrop-filter:blur(4px);
+  z-index:1150;
+  opacity:0;
+  visibility:hidden;
+  transition:.3s;
+}
+
+.sidebar-overlay.active{
+  opacity:1;
+  visibility:visible;
+}
+
+/* LOADING */
+.loading-screen{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(253,251,249,.97);
+  backdrop-filter:blur(15px);
+  opacity:0;
+  visibility:hidden;
+  transition:.3s;
+}
+
+.loading-screen.show{
+  opacity:1;
+  visibility:visible;
+}
+
+.loading-card{
+  width:min(390px,100%);
+  padding:35px 28px;
+  background:#fff;
+  border:1px solid #f0e8e0;
+  border-radius:23px;
+  text-align:center;
+  box-shadow:0 25px 80px #5c473c20;
+}
+
+.loading-logo{
+  font-size:27px;
+  font-weight:800;
+  color:var(--dark);
+  margin-bottom:24px;
+}
+
+.loading-logo span{color:#c48453}
+
+.spinner{
+  width:56px;
+  height:56px;
+  margin:0 auto 22px;
+  border:5px solid #fcf2eb;
+  border-top-color:#c48453;
+  border-right-color:#ffe8b6;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.loading-card h2{font-size:21px}
+.loading-card p{
+  font-size:14px;
+  color:var(--muted);
+}
+
+.progress-track{
+  height:7px;
+  background:#fcf2eb;
+  border-radius:20px;
+  margin-top:23px;
+  overflow:hidden;
+}
+
+.progress-bar-load{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#c48453,#ffe8b6);
+  border-radius:20px;
+}
+
+.progress-percent{
+  display:block;
+  margin-top:9px;
+  text-align:right;
+  color:#b37241;
+  font-size:12px;
+}
+
+body.loading-active .nav,
+body.loading-active .slide,
+body.loading-active footer,
+body.loading-active .sidebar{
+  filter:blur(5px);
+  pointer-events:none;
+}
+
+/* GENERAL SECTION */
+.slide{
+  min-height:80vh;
+  padding:120px 7vw 80px;
+  position:relative;
+  overflow:hidden;
+}
+
+.inner{
+  max-width:1180px;
+  margin:auto;
+}
+
+.eyebrow{
+  color:#b37241;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:2px;
+  margin-bottom:12px;
+}
+
+.big-title{
+  font-size:clamp(38px,6vw,72px);
+  line-height:1.12;
+  margin:0 0 20px;
+  letter-spacing:-2px;
+}
+
+.sub{
+  color:var(--muted);
+  max-width:720px;
+  line-height:1.9;
+}
+
+/* HERO */
+.hero{
+  min-height:100vh;
+  background:linear-gradient(135deg,#fcf7f2 0%,#f7ebd9 55%,#fcf2eb 100%);
+  display:flex;
+  align-items:center;
+}
+
+.hero-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  align-items:center;
+}
+
+.chapter{
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:2px;
+  color:#b37241;
+  margin-bottom:18px;
+}
+
+.hero h1{
+  margin:0;
+  font-size:clamp(48px,7vw,90px);
+  line-height:1.05;
+  letter-spacing:-3px;
+  color:var(--dark);
+}
+
+.hero h1 span{color:#c48453}
+
+.hero-desc{
+  max-width:500px;
+  margin:28px 0;
+  font-size:16px;
+  color:var(--muted);
+  line-height:1.9;
+}
+
+.start{
+  display:inline-flex;
+  align-items:center;
+  gap:14px;
+  background:linear-gradient(135deg,#c48453,#925c34);
+  color:#fff;
+  padding:15px 20px;
+  border-radius:14px;
+  font-size:13px;
+  transition:.25s;
+  border:0;
+  box-shadow:0 10px 24px #925c3433;
+}
+
+.start:hover{
+  transform:translateY(-3px);
+  box-shadow:0 15px 30px #925c3444;
+}
+
+/* HERO ART (จัดตำแหน่งตามรูปตัวอย่างอ้างอิง: จอสีดำตรงกลางเอียงๆ, รูปที่ 1 ขวาบน, รูปที่ 2 ซ้ายล่าง, รูปที่ 3 ขวาล่าง) */
+.hero-art{
+  position:relative;
+  height:490px;
+  isolation:isolate;
+}
+
+.blob{
+  position:absolute;
+  width:410px;
+  height:410px;
+  right:15px;
+  top:25px;
+  background:#f5dfc9;
+  border-radius:46% 54% 62% 38% / 40% 43% 57% 60%;
+  animation:float 6s ease-in-out infinite;
+  z-index:-1;
+}
+
+/* จอสีดำตรงกลาง (Driver System) */
+.monitor{
+  position:absolute;
+  width:340px;
+  height:220px;
+  right:55px;
+  top:100px;
+  background:#42362f;
+  border:10px solid #b59882;
+  border-radius:20px;
+  transform:rotate(-6deg);
+  box-shadow:0 22px 50px rgba(66,54,47,.22);
+  overflow:hidden;
+  z-index:0;
+}
+
+.monitor-screen{
+  height:100%;
+  background:radial-gradient(circle at 40% 40%, #ffe8b6 0%, transparent 45%), linear-gradient(135deg,#7092be,#42362f);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:white;
+}
+
+.monitor-os{
+  font-size:42px;
+  font-weight:800;
+  letter-spacing:-1px;
+  text-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+
+.monitor-text{
+  font-size:10px;
+  letter-spacing:3px;
+  opacity:.85;
+}
+
+/* รูปภาพ 3 รูปตามตำแหน่งในรูปอ้างอิง */
+.rakko-photo{
+  position:absolute;
+  display:block;
+  object-fit:cover;
+  border-radius:50%;
+  background:#ffffff;
+  border:6px solid rgba(255,255,255,.95);
+  box-shadow:0 15px 35px rgba(66,54,47,.22);
+  transition:transform .35s ease,box-shadow .35s ease;
+  animation:photoFloat 5s ease-in-out infinite;
+  z-index:2;
+}
+.rakko-photo:hover{
+  transform:scale(1.06) rotate(3deg);
+  box-shadow:0 20px 40px rgba(66,54,47,.3);
+}
+
+/* รูปที่ 1: ขวาบน (ซ้อนแถวเดียวกับจอและกล่องข้อความ) */
+.rakko-photo.photo-one{ width:135px; height:135px; right:15px; top:12px; animation-delay:0s; }
+
+/* รูปที่ 2: ซ้ายล่าง */
+.rakko-photo.photo-two{ width:125px; height:125px; left:25px; bottom:25px; animation-delay:-1.5s; }
+
+/* รูปที่ 3: ขวาล่าง */
+.rakko-photo.photo-three{ width:115px; height:115px; right:45px; bottom:15px; animation-delay:-3s; }
+
+/* กล่องข้อความสติกเกอร์จำลองตามแบบ */
+.sticker-bubble{
+  position:absolute;
+  background:#fff;
+  padding:9px 14px;
+  border-radius:14px;
+  font-size:11px;
+  font-weight:600;
+  box-shadow:0 8px 22px rgba(66,54,47,.12);
+  border:1px solid #f0e8e0;
+  z-index:3;
+}
+.sticker-bubble.bubble-one{ right:145px; top:42px; transform:rotate(2deg); color:#42362f; }
+.sticker-bubble.bubble-two{ left:30px; top:35px; transform:rotate(-8deg); background:#ffe8b6; color:#7a5323; }
+.sticker-bubble.bubble-three{ right:165px; bottom:38px; transform:rotate(-4deg); background:#fce2d8; color:#9c5344; }
+
+@keyframes float{
+  0%,100%{transform:rotate(-12deg) translateY(0)}
+  50%{transform:rotate(-9deg) translateY(-12px)}
+}
+
+@keyframes photoFloat{
+  0%,100%{translate:0 0}
+  50%{translate:0 -8px}
+}
+
+/* TOPICS */
+.topics{background:#FFFDFF}
+
+.topic-layout{
+  margin-top:55px;
+  display:grid;
+  grid-template-columns:1.3fr .7fr;
+  gap:20px;
+}
+
+.topic-main{
+  min-height:350px;
+  border-radius:30px;
+  background:linear-gradient(135deg,#c48453,#a0663c);
+  color:white;
+  padding:40px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 15px 35px rgba(196,132,83,.25);
+}
+
+.topic-main h2{
+  font-size:clamp(28px,3vw,40px);
+  margin:0;
+  line-height:1.3;
+  position:relative;
+  z-index:1;
+}
+
+.topic-main p{
+  max-width:480px;
+  color:#fcf9f5;
+  line-height:1.85;
+  position:relative;
+  z-index:1;
+}
+
+.topic-number{
+  position:absolute;
+  right:-20px;
+  bottom:-55px;
+  font-size:230px;
+  font-weight:800;
+  opacity:.12;
+}
+
+.topic-side{
+  display:grid;
+  gap:20px;
+}
+
+.topic-card{
+  border-radius:24px;
+  padding:28px;
+  min-height:165px;
+  position:relative;
+  border:1px solid #f0e8e0;
+}
+
+.topic-card:nth-child(1){background:#fbf2eb}
+.topic-card:nth-child(2){background:#fce2d8}
+
+.topic-card h3{
+  margin:0 0 10px;
+  font-size:24px;
+}
+
+.topic-card p{
+  line-height:1.8;
+  font-size:14px;
+  color:var(--muted);
+}
+
+/* CONCEPT */
+.concept{
+  background:linear-gradient(145deg,#42362f,#2e2520);
+  color:white;
+}
+
+.concept .big-title{color:white}
+.concept .sub{color:#d5cdc6}
+.concept .eyebrow{color:#ffe8b6!important}
+
+.system{
+  margin-top:55px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.system-box{
+  min-height:230px;
+  border-radius:24px;
+  padding:25px;
+  position:relative;
+  overflow:hidden;
+  transition:.25s;
+}
+
+.system-box:hover{transform:translateY(-8px)}
+
+.system-box:nth-child(1){background:#7092be}
+.system-box:nth-child(2){background:#c48453}
+.system-box:nth-child(3){background:#d08a58}
+.system-box:nth-child(4){background:#83bebe}
+.system-box{color:#fff}
+
+.system-box .num{
+  font-size:12px;
+  opacity:.7;
+}
+
+.system-box h3{
+  font-size:22px;
+  margin-top:55px;
+  margin-bottom:5px;
+}
+
+.system-box p{
+  font-size:12px;
+  opacity:.95;
+  line-height:1.8;
+}
+
+.system-box .symbol{
+  position:absolute;
+  right:18px;
+  top:12px;
+  font-size:50px;
+  opacity:.25;
+}
+
+/* COMPETENCY */
+.competency{background:#fcf7f2}
+
+.competency-grid{
+  margin-top:50px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+
+.comp{
+  background:white;
+  border-radius:24px;
+  padding:28px;
+  min-height:260px;
+  border:1px solid #f0e8e0;
+  transition:.25s;
+}
+
+.comp:hover{
+  transform:translateY(-7px);
+  box-shadow:0 20px 40px #5c473c12;
+}
+
+.comp-icon{font-size:38px}
+
+.comp h3{
+  font-size:20px;
+  margin:30px 0 8px;
+}
+
+.comp p{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.8;
+}
+
+/* OBJECTIVES */
+.objectives{background:#fcfaf5}
+
+.objective-layout{
+  margin-top:50px;
+  display:grid;
+  grid-template-columns:.8fr 1.2fr;
+  gap:50px;
+  align-items:center;
+}
+
+.target{
+  width:300px;
+  height:300px;
+  margin:auto;
+  border-radius:50%;
+  border:2px solid #c48453;
+  display:grid;
+  place-items:center;
+  position:relative;
+}
+
+.target:before,.target:after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  border:2px solid #c48453;
+}
+
+.target:before{width:220px;height:220px}
+.target:after{
+  width:140px;
+  height:140px;
+  background:#ffe8b6;
+}
+
+.target-center{
+  position:relative;
+  z-index:2;
+  font-size:48px;
+}
+
+.objective-list{
+  display:grid;
+  gap:12px;
+}
+
+.objective{
+  display:flex;
+  gap:16px;
+  align-items:center;
+  background:white;
+  padding:17px 20px;
+  border-radius:16px;
+  line-height:1.7;
+  border:1px solid #f0e8e0;
+}
+
+.objective b{
+  flex:0 0 34px;
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  background:#fbf2eb;
+  color:#c48453;
+}
+
+/* OUTCOMES */
+.outcomes{background:#f7ebd9}
+
+.outcome-wrap{
+  margin-top:50px;
+  display:flex;
+  align-items:stretch;
+  gap:16px;
+}
+
+.outcome{
+  flex:1;
+  padding:30px 25px;
+  background:white;
+  border-radius:26px;
+  transition:.25s;
+  border:1px solid #f0e8e0;
+}
+
+.outcome:hover{transform:translateY(-7px)}
+
+.outcome-number{
+  font-size:60px;
+  font-weight:800;
+  color:#ebd5c4;
+}
+
+.outcome h3{margin-top:0;font-size:21px}
+
+.outcome p{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.8;
+}
+
+/* CONTENT */
+.content{background:#FFFDFF}
+
+.content-intro{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:30px;
+  margin-bottom:45px;
+}
+
+.content-tag{
+  display:inline-block;
+  padding:8px 12px;
+  background:#fbf2eb;
+  color:#c48453;
+  border-radius:10px;
+  font-size:11px;
+  font-weight:600;
+}
+
+.content-block{
+  margin:30px 0;
+  border-radius:30px;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:.8fr 1.2fr;
+  min-height:300px;
+  border:1px solid #f0e8e0;
+}
+
+.content-visual{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(60px,8vw,100px);
+  background:#f5dfc9;
+  min-height:220px;
+}
+
+.content-text{
+  padding:clamp(24px,4vw,45px);
+  background:#fcf9f5;
+}
+
+.content-text h3{
+  font-size:clamp(23px,3vw,30px);
+  margin:0 0 15px;
+  line-height:1.4;
+  color:var(--dark);
+}
+
+.content-text p{
+  color:#7a6d65;
+  font-size:14px;
+  line-height:2;
+}
+
+.content-block:nth-of-type(even) .content-visual{background:#fce2d8}
+.content-block:nth-of-type(3n) .content-visual{background:#ffe8b6}
+
+.definition-list{
+  padding-left:22px;
+  line-height:1.9;
+  color:#7a6d65;
+}
+
+.definition-list li{margin:8px 0}
+
+.mini-card-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:20px;
+}
+
+.mini-card{
+  background:white;
+  border:1px solid #f0e8e0;
+  border-radius:15px;
+  padding:16px;
+}
+
+.mini-card strong{
+  display:block;
+  margin-bottom:6px;
+  color:var(--text);
+}
+
+.mini-card span{
+  font-size:13px;
+  line-height:1.8;
+  color:var(--muted);
+}
+
+/* STEP */
+.steps{
+  display:grid;
+  gap:12px;
+  margin-top:20px;
+}
+
+.step{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  padding:17px;
+  background:white;
+  border:1px solid #f0e8e0;
+  border-radius:15px;
+  transition:.25s;
+}
+
+.step:hover{
+  transform:translateX(5px);
+  border-color:#c48453;
+  box-shadow:0 8px 20px #c484531a;
+}
+
+.step-num{
+  flex:0 0 35px;
+  width:35px;
+  height:35px;
+  display:grid;
+  place-items:center;
+  background:#c48453;
+  color:white;
+  border-radius:11px;
+  font-weight:700;
+  font-size:13px;
+}
+
+.step h4{
+  margin:0 0 5px;
+  font-size:15px;
+  color:var(--dark);
+}
+
+.step p{
+  margin:0;
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.9;
+}
+
+.note{
+  background:#fbf2eb;
+  border-left:4px solid #c48453;
+  border-radius:12px;
+  padding:18px;
+  margin:20px 0;
+  font-size:13px;
+  line-height:1.9;
+}
+
+.warning{
+  background:#FFF4E8;
+  border-left:4px solid #D4A66A;
+  border-radius:12px;
+  padding:18px;
+  margin:20px 0;
+  font-size:13px;
+  line-height:1.9;
+}
+
+.sub-heading{
+  margin:35px 0 10px;
+  color:#c48453;
+  font-size:21px;
+}
+
+.vocabulary{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:20px;
+}
+
+.vocab{
+  padding:10px 15px;
+  background:#fbf2eb;
+  color:#c48453;
+  border-radius:12px;
+  font-size:13px;
+}
+
+.vocab:nth-child(3n+2){background:#ffe8b6;color:#8a6a21}
+.vocab:nth-child(3n){background:#d6ebd9;color:#396d42}
+
+/* SUMMARY */
+.summary{
+  background:linear-gradient(135deg,#c48453,#925c34);
+  color:white;
+}
+
+.summary .sub,.summary .eyebrow{color:#fcf9f5!important}
+
+.summary-grid{
+  margin-top:50px;
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:20px;
+}
+
+.summary-main{
+  background:white;
+  color:var(--text);
+  border-radius:28px;
+  padding:35px;
+  box-shadow:0 15px 40px #5c473c18;
+}
+
+.summary-main h3{
+  font-size:26px;
+  margin-top:0;
+  color:var(--dark);
+}
+
+.summary-points{
+  display:grid;
+  gap:10px;
+}
+
+.summary-point{
+  padding:15px;
+  border-radius:14px;
+  background:#fcf7f2;
+  font-size:13px;
+  line-height:1.9;
+  color:var(--muted);
+}
+
+.summary-side{
+  border-radius:28px;
+  background:#5a4332;
+  padding:35px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  line-height:1.8;
+}
+
+.summary-side .big{
+  font-size:65px;
+  font-weight:800;
+  line-height:1;
+  color:#ffe8b6;
+}
+
+/* FOOTER */
+.footer{
+  background:#42362f;
+  color:#f0e8e0;
+  text-align:center;
+  padding:35px 20px;
+  font-size:11px;
+  line-height:1.9;
+}
+
+/* REVEAL */
+.reveal{
+  opacity:0;
+  transform:translateY(25px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+
+.reveal.show{
+  opacity:1;
+  transform:none;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+
+  .hero-grid,
+  .topic-layout,
+  .objective-layout,
+  .summary-grid{
+    grid-template-columns:1fr;
+  }
+
+  .hero-art{
+    height:380px;
+    max-width:520px;
+    width:100%;
+    margin:auto;
+  }
+
+  .system,
+  .competency-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .content-block{grid-template-columns:1fr}
+  .outcome-wrap{flex-direction:column}
+}
+
+@media(max-width:600px){
+
+  .nav{
+    top:8px;
+    width:calc(100% - 16px);
+    padding:7px 10px;
+  }
+
+  .nav-right{display:none}
+
+  .slide{padding:100px 20px 60px}
+
+  .hero h1{
+    font-size:52px;
+    letter-spacing:-2px;
+  }
+
+  .hero-grid{gap:15px}
+
+  .hero-art{
+    transform:scale(.88);
+    transform-origin:top center;
+    margin-bottom:-35px;
+  }
+
+  .big-title{
+    font-size:43px;
+    letter-spacing:-1.5px;
+  }
+
+  .system,
+  .competency-grid,
+  .mini-card-grid{
+    grid-template-columns:1fr;
+  }
+
+  .topic-main{padding:28px}
+
+  .target{
+    width:240px;
+    height:240px;
+  }
+
+  .target:before{width:175px;height:175px}
+  .target:after{width:110px;height:110px}
+
+  .content-intro{
+    align-items:start;
+    flex-direction:column;
+  }
+
+  .summary-main,
+  .summary-side{padding:25px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    transition-duration:.01ms!important;
+  }
+  .reveal{opacity:1;transform:none}
+}
+
+/* Rakko Scarf Click Effect (ผ้าพันคอรักโกะ 🧣 ปลิวแตกกระจาย) */
+.rakko-effect{
+  position:fixed;
+  z-index:9998;
+  width:1px;height:1px;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+}
+.rakko-click{
+  position:absolute;
+  left:0;top:0;
+  transform:translate(-50%,-50%) scale(.4) rotate(-20deg);
+  font-size:30px;
+  filter:drop-shadow(0 3px 6px #c4845355);
+  animation:rakkoBloom .52s cubic-bezier(.2,.8,.2,1) forwards;
+}
+@keyframes rakkoBloom{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(-35deg)}
+  65%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(10deg)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}
+}
+.rakko-petal{
+  position:absolute;
+  left:0;top:0;
+  opacity:0;
+  transform:translate(-50%,-50%) scale(.2);
+}
+.bursting .rakko-petal{
+  animation:rakkoBurst .78s cubic-bezier(.12,.72,.22,1) forwards;
+}
+@keyframes rakkoBurst{
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(0) scale(.2)}
+  18%{opacity:1}
+  100%{
+    opacity:0;
+    transform:
+      translate(calc(-50% + var(--dx)),calc(-50% + var(--dy)))
+      rotate(var(--turn)) scale(1.05);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-card">
+    <div class="loading-logo">OS <span>LEARNING</span></div>
+    <div class="spinner"></div>
+    <h2 id="loadingTitle">กำลังโหลดบทเรียน</h2>
+    <p>กรุณารอสักครู่ ระบบกำลังพาคุณไปยังหน้าที่เลือก</p>
+    <div class="progress-track">
+      <div class="progress-bar-load" id="progressBarLoad"></div>
+    </div>
+    <span class="progress-percent" id="progressPercent">0%</span>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">เมนูการเรียนรู้</div>
+    <button class="close-btn" id="closeSidebar">&times;</button>
+  </div>
+
+  <div class="sidebar-menu">
+    <a href="index.html" class="nav-link-load">🏠 หน้าแรก</a>
+    <a href="#home">🚀 หน้าหลักบทที่ 5</a>
+    <a href="#topics">📌 หัวข้อในบทนี้</a>
+    <a href="#concept">⚙️ ความหมายของไดรเวอร์</a>
+    <a href="#objectives">🎯 ขั้นตอนการติดตั้ง</a>
+    <a href="#outcomes">🔄 การอัปเดตไดรเวอร์</a>
+    <a href="#content">📚 เนื้อหาสาระ</a>
+    <a href="#firmware">💾 เฟิร์มแวร์</a>
+    <a href="#vocabulary">🔤 คำศัพท์สำคัญ</a>
+    <a href="#summary">📝 สรุปบทเรียน</a>
+  </div>
+</aside>
+
+<!-- NAVBAR -->
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:15px">
+    <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู">
+      <span></span><span></span><span></span>
+    </button>
+
+    <a class="logo nav-link-load" href="index.html">
+      <span class="logo-box">OS</span>
+      <span>OS Learning</span>
+    </a>
+  </div>
+
+  <div class="nav-right">
+    <a class="nav-btn" href="#topics">หัวข้อ</a>
+    <a class="nav-btn" href="#concept">ความหมาย</a>
+    <a class="nav-btn" href="#content">เนื้อหา</a>
+    <a class="nav-btn" href="#summary">สรุป</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="slide hero" id="home">
+  <div class="inner hero-grid">
+
+    <div class="reveal">
+      <div class="chapter">บทเรียนที่ 5 · OS LEARNING</div>
+
+      <h1>
+        การติดตั้ง<br>
+        <span>ไดรเวอร์</span><br>
+        คอมพิวเตอร์
+      </h1>
+
+      <p class="hero-desc">
+        เรียนรู้ความหมายและความสำคัญของไดรเวอร์
+        วิธีติดตั้งอุปกรณ์ฮาร์ดแวร์ การอัปเดตไดรเวอร์
+        และการอัปเดตเฟิร์มแวร์ในระบบปฏิบัติการ Windows
+      </p>
+
+      <a href="#topics" class="start">
+        เริ่มเรียนบทที่ 5 <span>→</span>
+      </a>
+    </div>
+
+    <!-- ส่วนฮีโร่อาร์ต จัดวางตามตำแหน่งในรูปตัวอย่าง -->
+    <div class="hero-art reveal">
+      <div class="blob"></div>
+
+      <!-- จอสีดำตรงกลางเอียงๆ -->
+      <div class="monitor">
+        <div class="monitor-screen">
+          <div class="monitor-os">DRIVER</div>
+          <div class="monitor-text">INSTALLATION SYSTEM</div>
+        </div>
+      </div>
+
+      <!-- รูป 3 รูป: รักโกะ1.jpg (ขวาบน), รักโกะ2.jpg (ซ้ายล่าง), รักโกะ3.jpg (ขวาล่าง) -->
+      <img class="rakko-photo photo-one" src="รักโกะ1.jpg" alt="รักโกะ 1">
+      <img class="rakko-photo photo-two" src="รักโกะ2.jpg" alt="รักโกะ 2">
+      <img class="rakko-photo photo-three" src="รักโกะ3.jpg" alt="รักโกะ 3">
+
+      <!-- กล่องข้อความและป้ายสติกเกอร์จำลองตามแบบ -->
+      <div class="sticker-bubble bubble-one">มาเรียนด้วยกันนะ ♡</div>
+      <div class="sticker-bubble bubble-two">DRIVER 🧣</div>
+      <div class="sticker-bubble bubble-three">OS LEARNING</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- TOPICS -->
+<section class="slide topics" id="topics">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow">01 · LESSON OVERVIEW</div>
+      <h2 class="big-title">
+        สิ่งที่จะได้เรียนรู้<br>
+        <span style="color:#c48453">ในบทเรียนนี้</span>
+      </h2>
+      <p class="sub">
+        ทำความรู้จักกับไดรเวอร์และเรียนรู้ขั้นตอนการติดตั้ง
+        รวมถึงการดูแลและปรับปรุงอุปกรณ์คอมพิวเตอร์ให้พร้อมใช้งาน
+      </p>
+    </div>
+
+    <div class="topic-layout reveal">
+
+      <div class="topic-main">
+        <h2>DRIVER<br>INSTALLATION</h2>
+        <p>
+          ไดรเวอร์เป็นส่วนสำคัญที่ทำให้ระบบปฏิบัติการ
+          สามารถสื่อสารและควบคุมอุปกรณ์ฮาร์ดแวร์ได้
+          อย่างถูกต้องและมีประสิทธิภาพ
+        </p>
+        <div class="topic-number">05</div>
+      </div>
+
+      <div class="topic-side">
+
+        <div class="topic-card">
+          <div class="eyebrow">TOPIC 01</div>
+          <h3>ติดตั้งไดรเวอร์</h3>
+          <p>เรียนรู้วิธีติดตั้งไดรเวอร์การ์ดจอ การ์ดเสียง และเครื่องพิมพ์</p>
+        </div>
+
+        <div class="topic-card">
+          <div class="eyebrow">TOPIC 02</div>
+          <h3>อัปเดตระบบ</h3>
+          <p>ทำความเข้าใจการอัปเดตไดรเวอร์และเฟิร์มแวร์</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONCEPT -->
+<section class="slide concept" id="concept">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow" style="color:#ffe8b6">02 · DRIVER CONCEPT</div>
+
+      <h2 class="big-title">
+        ไดรเวอร์คืออะไร?<br>
+        <span style="color:#ffe8b6">ทำงานอย่างไร</span>
+      </h2>
+
+      <p class="sub">
+        ไดรเวอร์ (Driver) คือโปรแกรมตัวกลางระหว่างระบบปฏิบัติการ
+        กับฮาร์ดแวร์ ช่วยให้อุปกรณ์ต่าง ๆ สามารถทำงานร่วมกับคอมพิวเตอร์ได้
+      </p>
+    </div>
+
+    <div class="system reveal">
+
+      <div class="system-box">
+        <div class="num">01</div>
+        <div class="symbol">🖥️</div>
+        <h3>Hardware</h3>
+        <p>อุปกรณ์ฮาร์ดแวร์ เช่น การ์ดจอ เมาส์ และเครื่องพิมพ์</p>
+      </div>
+
+      <div class="system-box">
+        <div class="num">02</div>
+        <div class="symbol">⚙️</div>
+        <h3>Driver</h3>
+        <p>โปรแกรมตัวกลางที่ช่วยแปลคำสั่งระหว่างระบบกับอุปกรณ์</p>
+      </div>
+
+      <div class="system-box">
+        <div class="num">03</div>
+        <div class="symbol">💻</div>
+        <h3>Operating System</h3>
+        <p>ระบบปฏิบัติการที่ใช้จัดการและควบคุมการทำงานของคอมพิวเตอร์</p>
+      </div>
+
+      <div class="system-box">
+        <div class="num">04</div>
+        <div class="symbol">✨</div>
+        <h3>Plug and Play</h3>
+        <p>ความสามารถในการตรวจจับและติดตั้งไดรเวอร์ให้อัตโนมัติเมื่อรองรับ</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- COMPETENCY -->
+<section class="slide competency">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow">03 · DRIVER TYPES</div>
+
+      <h2 class="big-title">
+        อุปกรณ์ที่ต้องใช้<br>
+        <span style="color:#c48453">ไดรเวอร์</span>
+      </h2>
+    </div>
+
+    <div class="competency-grid reveal">
+
+      <div class="comp">
+        <div class="comp-icon">🎮</div>
+        <h3>การ์ดจอ</h3>
+        <p>VGA Card ช่วยให้คอมพิวเตอร์ประมวลผลและแสดงผลภาพได้อย่างถูกต้อง</p>
+      </div>
+
+      <div class="comp">
+        <div class="comp-icon">🔊</div>
+        <h3>การ์ดเสียง</h3>
+        <p>Sound Card ช่วยให้ระบบรับและส่งสัญญาณเสียงผ่านอุปกรณ์ต่าง ๆ</p>
+      </div>
+
+      <div class="comp">
+        <div class="comp-icon">🖨️</div>
+        <h3>เครื่องพิมพ์</h3>
+        <p>Printer ช่วยให้คอมพิวเตอร์สามารถส่งข้อมูลเพื่อสั่งพิมพ์เอกสาร</p>
+      </div>
+
+      <div class="comp">
+        <div class="comp-icon">🖱️</div>
+        <h3>อุปกรณ์ต่อพ่วง</h3>
+        <p>เมาส์ จอภาพ เมนบอร์ด และอุปกรณ์ฮาร์ดแวร์อื่น ๆ</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- INSTALLATION PROCESS -->
+<section class="slide objectives" id="objectives">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow">04 · INSTALLATION PROCESS</div>
+
+      <h2 class="big-title">
+        ขั้นตอนการติดตั้ง<br>
+        <span style="color:#c48453">ไดรเวอร์</span>
+      </h2>
+
+      <p class="sub">
+        การติดตั้งไดรเวอร์จำเป็นต้องตรวจสอบรุ่นอุปกรณ์
+        และเลือกไฟล์ให้ตรงกับระบบปฏิบัติการ
+      </p>
+    </div>
+
+    <div class="objective-layout reveal">
+
+      <div class="target">
+        <div class="target-center">⚙️</div>
+      </div>
+
+      <div class="objective-list">
+
+        <div class="objective">
+          <b>01</b>
+          <span>ตรวจสอบรุ่นและรายละเอียดของอุปกรณ์ฮาร์ดแวร์</span>
+        </div>
+
+        <div class="objective">
+          <b>02</b>
+          <span>ค้นหาและดาวน์โหลดไดรเวอร์จากเว็บไซต์ผู้ผลิต</span>
+        </div>
+
+        <div class="objective">
+          <b>03</b>
+          <span>เปิดไฟล์ติดตั้งและดำเนินการตามขั้นตอน</span>
+        </div>
+
+        <div class="objective">
+          <b>04</b>
+          <span>ตรวจสอบความสมบูรณ์ของการติดตั้ง</span>
+        </div>
+
+        <div class="objective">
+          <b>05</b>
+          <span>รีสตาร์ทคอมพิวเตอร์หากระบบร้องขอ</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- UPDATE -->
+<section class="slide outcomes" id="outcomes">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow">05 · UPDATING DRIVERS</div>
+
+      <h2 class="big-title">
+        การอัปเดตไดรเวอร์<br>
+        <span style="color:#7092be">ให้ทันสมัยอยู่เสมอ</span>
+      </h2>
+
+      <p class="sub">
+        การอัปเดตไดรเวอร์ช่วยแก้ไขข้อผิดพลาด
+        ปรับปรุงประสิทธิภาพ และเพิ่มความเข้ากันได้ของอุปกรณ์
+      </p>
+    </div>
+
+    <div class="outcome-wrap reveal">
+
+      <div class="outcome">
+        <div class="outcome-number">01</div>
+        <h3>Device Manager</h3>
+        <p>ใช้ตรวจสอบอุปกรณ์และค้นหาไดรเวอร์เวอร์ชันใหม่ผ่านระบบ Windows</p>
+      </div>
+
+      <div class="outcome">
+        <div class="outcome-number">02</div>
+        <h3>Windows Update</h3>
+        <p>ใช้ค้นหาและติดตั้งไดรเวอร์เพิ่มเติมผ่าน Optional updates ใน Windows 11</p>
+      </div>
+
+      <div class="outcome">
+        <div class="outcome-number">03</div>
+        <h3>Firmware Update</h3>
+        <p>การปรับปรุงโปรแกรมที่ฝังอยู่ภายในชิปของอุปกรณ์ฮาร์ดแวร์</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<section class="slide content" id="content">
+  <div class="inner">
+
+    <div class="content-intro reveal">
+      <div>
+        <div class="eyebrow">06 · LESSON CONTENT</div>
+        <h2 class="big-title">เนื้อหาสาระ</h2>
+        <p class="sub">ศึกษาขั้นตอนการติดตั้งไดรเวอร์ในระบบปฏิบัติการ Windows 10 และ Windows 11</p>
+      </div>
+
+      <span class="content-tag">LESSON 05</span>
+    </div>
+
+    <!-- VGA -->
+    <article class="content-block reveal">
+      <div class="content-visual">🎮</div>
+
+      <div class="content-text">
+        <div class="content-tag">5.1 · VGA CARD</div>
+        <h3>การติดตั้งไดรเวอร์การ์ดจอ</h3>
+
+        <p>
+          การ์ดจอ (VGA Card) เป็นอุปกรณ์ที่ทำหน้าที่ประมวลผล
+          และแสดงผลภาพบนหน้าจอคอมพิวเตอร์
+          การติดตั้งไดรเวอร์ที่ถูกต้องช่วยให้การแสดงผลทำงานได้อย่างเหมาะสม
+        </p>
+
+        <div class="steps">
+
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>ตรวจสอบรุ่นการ์ดจอ</h4>
+              <p>กด Windows + R พิมพ์ dxdiag แล้วกด OK จากนั้นเลือกแท็บ Display และดูชื่อรุ่นในหัวข้อ Name</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>ดาวน์โหลดไดรเวอร์</h4>
+              <p>ค้นหาไดรเวอร์จากเว็บไซต์อย่างเป็นทางการของผู้ผลิต โดยเลือกให้ตรงกับรุ่นอุปกรณ์</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>เริ่มติดตั้ง</h4>
+              <p>แตกไฟล์และดับเบิลคลิก setup.exe จากนั้นเลือก AGREE AND CONTINUE</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">4</div>
+            <div>
+              <h4>เลือกรูปแบบการติดตั้ง</h4>
+              <p>เลือก Express สำหรับติดตั้งแบบแนะนำ หรือ Custom สำหรับกำหนดรายละเอียดเอง</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">5</div>
+            <div>
+              <h4>เสร็จสิ้นการติดตั้ง</h4>
+              <p>รอจนติดตั้งเสร็จเรียบร้อยแล้วคลิก Close</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="note">
+          <strong>ข้อควรรู้:</strong>
+          ควรตรวจสอบรุ่นการ์ดจอและระบบปฏิบัติการก่อนดาวน์โหลดไดรเวอร์ทุกครั้ง
+        </div>
+      </div>
+    </article>
+
+    <!-- SOUND -->
+    <article class="content-block reveal">
+      <div class="content-visual">🔊</div>
+
+      <div class="content-text">
+        <div class="content-tag">5.2 · SOUND CARD</div>
+        <h3>การติดตั้งไดรเวอร์การ์ดเสียง</h3>
+
+        <p>
+          การ์ดเสียง (Sound Card) ทำหน้าที่จัดการสัญญาณเสียง
+          เพื่อให้คอมพิวเตอร์สามารถเล่นเสียงและใช้งานอุปกรณ์เสียงได้
+        </p>
+
+        <div class="steps">
+
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>ตรวจสอบรุ่นการ์ดเสียง</h4>
+              <p>กด Windows + R พิมพ์ dxdiag กด OK และเลือกแท็บ Sound เพื่อดูชื่อรุ่นในหัวข้อ Name</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>ดาวน์โหลดไดรเวอร์</h4>
+              <p>ค้นหาไดรเวอร์ที่ตรงกับรุ่น เช่น Realtek High Definition Audio Driver</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>ติดตั้งไดรเวอร์</h4>
+              <p>ดับเบิลคลิกไฟล์ติดตั้งและดำเนินการตามคำแนะนำบนหน้าจอ</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">4</div>
+            <div>
+              <h4>รีสตาร์ทคอมพิวเตอร์</h4>
+              <p>เลือก Restart เพื่อเริ่มต้นระบบใหม่ตามที่โปรแกรมติดตั้งร้องขอ</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </article>
+
+    <!-- PRINTER -->
+    <article class="content-block reveal">
+      <div class="content-visual">🖨️</div>
+
+      <div class="content-text">
+        <div class="content-tag">5.3 · PRINTER</div>
+        <h3>การติดตั้งไดรเวอร์เครื่องพิมพ์</h3>
+
+        <p>
+          เครื่องพิมพ์ (Printer) เป็นอุปกรณ์ที่ใช้พิมพ์เอกสาร
+          และต้องอาศัยไดรเวอร์ในการรับคำสั่งจากคอมพิวเตอร์
+        </p>
+
+        <h4 class="sub-heading">วิธีที่ 1 ติดตั้งผ่านเว็บไซต์ผู้ผลิต</h4>
+
+        <div class="steps">
+
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>เชื่อมต่อเครื่องพิมพ์</h4>
+              <p>เชื่อมต่อสาย USB และเปิดเครื่องพิมพ์</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>ดาวน์โหลดไดรเวอร์</h4>
+              <p>เข้าเว็บไซต์ผู้ผลิต เช่น Epson แล้วเลือกรุ่นและระบบปฏิบัติการให้ถูกต้อง</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>เริ่มติดตั้ง</h4>
+              <p>ดับเบิลคลิกไฟล์ติดตั้ง เลือกภาษา และยอมรับข้อตกลง Agree</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">4</div>
+            <div>
+              <h4>ตั้งค่าเครื่องพิมพ์</h4>
+              <p>ตั้งค่าเป็นเครื่องพิมพ์เริ่มต้น (Default Printer) และดำเนินการตามขั้นตอน</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">5</div>
+            <div>
+              <h4>ตรวจสอบการติดตั้ง</h4>
+              <p>เมื่อปรากฏข้อความ Setup is complete แสดงว่าการติดตั้งเสร็จสิ้น</p>
+            </div>
+          </div>
+
+        </div>
+
+        <h4 class="sub-heading">วิธีที่ 2 เพิ่มเครื่องพิมพ์ผ่าน Windows 10</h4>
+
+        <div class="steps">
+
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>เปิดการตั้งค่า</h4>
+              <p>ไปที่ Settings → Devices → Printers & scanners</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>เพิ่มเครื่องพิมพ์</h4>
+              <p>คลิก + Add a printer or scanner หากหาไม่พบให้เลือก The printer that I want isn't listed</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>กำหนดการเชื่อมต่อ</h4>
+              <p>เลือก Add a local printer or network printer with manual settings และเลือกพอร์ตที่ใช้งาน เช่น USB001</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">4</div>
+            <div>
+              <h4>เลือกไดรเวอร์</h4>
+              <p>เลือกยี่ห้อและรุ่น หรือคลิก Have Disk... เพื่อเลือกไฟล์ไดรเวอร์นามสกุล .inf</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">5</div>
+            <div>
+              <h4>ตั้งชื่อและแชร์เครื่องพิมพ์</h4>
+              <p>ตั้งชื่อ เลือกการแชร์หรือไม่แชร์ แล้วคลิก Next จนเสร็จสิ้น</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="note">
+          <strong>การทดสอบ:</strong>
+          เปิด Microsoft Word ไปที่ File → Print
+          เพื่อทดลองสั่งพิมพ์และตรวจสอบความพร้อมใช้งาน
+        </div>
+      </div>
+    </article>
+
+    <!-- DRIVER UPDATE -->
+    <article class="content-block reveal">
+      <div class="content-visual">🔄</div>
+
+      <div class="content-text">
+        <div class="content-tag">5.4 · DRIVER UPDATE</div>
+        <h3>การอัปเดตไดรเวอร์ (Updating Drivers)</h3>
+
+        <p>
+          การอัปเดตไดรเวอร์ช่วยปรับปรุงโปรแกรมควบคุมอุปกรณ์
+          แก้ไขข้อผิดพลาด และเพิ่มความเข้ากันได้กับระบบปฏิบัติการ
+        </p>
+
+        <h4 class="sub-heading">ช่องทางที่ 1 ผ่าน Device Manager</h4>
+
+        <div class="steps">
+
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>เปิด Device Manager</h4>
+              <p>คลิกขวาที่ปุ่ม Start แล้วเลือก Device Manager</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>เลือกอุปกรณ์</h4>
+              <p>คลิกขยายหมวดอุปกรณ์ที่ต้องการอัปเดต แล้วคลิกขวาที่อุปกรณ์นั้น</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>เลือก Update driver</h4>
+              <p>คลิก Update driver เพื่อเข้าสู่หน้าต่างการอัปเดต</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">4</div>
+            <div>
+              <h4>เลือกรูปแบบการค้นหา</h4>
+              <p>Search automatically for updated driver software เพื่อค้นหาอัตโนมัติ หรือ Browse my computer for driver software เพื่อเลือกไฟล์ในเครื่อง</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">5</div>
+            <div>
+              <h4>เสร็จสิ้น</h4>
+              <p>รอจนระบบดำเนินการเสร็จ แล้วคลิก Close</p>
+            </div>
+          </div>
+
+        </div>
+
+        <h4 class="sub-heading">ช่องทางที่ 2 ผ่าน Windows Update</h4>
+
+        <div class="steps">
+
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>ค้นหา Windows Update</h4>
+              <p>พิมพ์ Check for updates ในช่อง Search</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>เปิด Advanced options</h4>
+              <p>เข้าสู่ Advanced options เพื่อดูตัวเลือกเพิ่มเติม</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>เลือก Optional updates</h4>
+              <p>เปิด Optional updates และตรวจสอบรายการ Driver updates</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">4</div>
+            <div>
+              <h4>ดาวน์โหลดและติดตั้ง</h4>
+              <p>เลือกรายการที่ต้องการแล้วคลิก Download & install</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">5</div>
+            <div>
+              <h4>รีสตาร์ทระบบ</h4>
+              <p>คลิก Restart now หากระบบร้องขอ</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="note">
+          <strong>ประโยชน์ของการอัปเดต</strong>
+          <ul class="definition-list">
+            <li>แก้ไขข้อผิดพลาดในการทำงาน</li>
+            <li>เพิ่มประสิทธิภาพของอุปกรณ์</li>
+            <li>ปรับปรุงความเข้ากันได้กับระบบปฏิบัติการ</li>
+            <li>รองรับคุณสมบัติใหม่ ๆ</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- FIRMWARE -->
+<section class="slide competency" id="firmware">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow">07 · FIRMWARE</div>
+
+      <h2 class="big-title">
+        การอัปเดตเฟิร์มแวร์<br>
+        <span style="color:#c48453">Firmware Update</span>
+      </h2>
+
+      <p class="sub">
+        เฟิร์มแวร์คือโปรแกรมขนาดเล็กที่ฝังอยู่ในชิปของอุปกรณ์ฮาร์ดแวร์
+        ทำหน้าที่ควบคุมการทำงานพื้นฐานของอุปกรณ์
+      </p>
+    </div>
+
+    <div class="content-block reveal" style="margin-top:45px">
+
+      <div class="content-visual" style="background:#f5dfc9">💾</div>
+
+      <div class="content-text">
+        <div class="content-tag">SYSTEM FIRMWARE</div>
+        <h3>ขั้นตอนการอัปเดต System Firmware</h3>
+
+        <p>
+          สามารถตรวจสอบและจัดการรายการ System Firmware
+          ผ่าน Device Manager ในระบบ Windows ได้
+        </p>
+
+        <div class="steps">
+
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>เปิด Device Manager</h4>
+              <p>คลิกขวาที่ปุ่ม Start แล้วเลือก Device Manager</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>ค้นหาหมวด Firmware</h4>
+              <p>คลิกขยายหัวข้อ Firmware เพื่อดูรายการอุปกรณ์</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>เลือก System Firmware</h4>
+              <p>คลิกขวาที่ System Firmware แล้วเลือก Update Driver หรือเข้า Properties → Driver → Update Driver</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">4</div>
+            <div>
+              <h4>ค้นหาไดรเวอร์</h4>
+              <p>เลือก Search automatically for drivers เพื่อให้ระบบค้นหาไดรเวอร์ที่เหมาะสม</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-num">5</div>
+            <div>
+              <h4>ตรวจสอบผลลัพธ์</h4>
+              <p>หากปรากฏข้อความ The best drivers for your device are already installed ให้คลิก Close</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="warning">
+          <strong>ข้อควรระวัง:</strong>
+          การอัปเดตเฟิร์มแวร์ประเภท BIOS หรือ UEFI
+          ควรใช้ไฟล์ที่ตรงกับรุ่นอุปกรณ์จากผู้ผลิตเท่านั้น
+          และไม่ควรปิดเครื่องระหว่างกระบวนการอัปเดต
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- VOCABULARY -->
+<section class="slide content" id="vocabulary">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow">08 · KEY VOCABULARY</div>
+      <h2 class="big-title">คำศัพท์สำคัญ</h2>
+      <p class="sub">ทบทวนคำศัพท์ภาษาอังกฤษที่พบในบทเรียนที่ 5</p>
+    </div>
+
+    <div class="content-block reveal">
+      <div class="content-visual" style="background:#ffe8b6">🔤</div>
+
+      <div class="content-text">
+        <h3>Vocabulary</h3>
+
+        <div class="vocabulary">
+          <span class="vocab">Driver — ไดรเวอร์</span>
+          <span class="vocab">Hardware — ฮาร์ดแวร์</span>
+          <span class="vocab">Plug and Play — เสียบแล้วใช้งานได้</span>
+          <span class="vocab">VGA Card — การ์ดจอ</span>
+          <span class="vocab">Sound Card — การ์ดเสียง</span>
+          <span class="vocab">Printer — เครื่องพิมพ์</span>
+          <span class="vocab">Device Manager — ตัวจัดการอุปกรณ์</span>
+          <span class="vocab">Update Driver — อัปเดตไดรเวอร์</span>
+          <span class="vocab">Windows Update — อัปเดต Windows</span>
+          <span class="vocab">Firmware — เฟิร์มแวร์</span>
+          <span class="vocab">BIOS — ระบบพื้นฐานสำหรับเริ่มต้นเครื่อง</span>
+          <span class="vocab">Restart — เริ่มระบบใหม่</span>
+          <span class="vocab">Setup — การติดตั้ง</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="slide summary" id="summary">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow" style="color:#fcf9f5">09 · LESSON SUMMARY</div>
+
+      <h2 class="big-title">
+        ก่อนจบบทเรียน<br>
+        <span style="color:#ffe8b6">จำเรื่องสำคัญไว้</span>
+      </h2>
+    </div>
+
+    <div class="summary-grid reveal">
+
+      <div class="summary-main">
+        <h3>บทที่ 5 ในหนึ่งหน้าจอ</h3>
+
+        <div class="summary-points">
+
+          <div class="summary-point">
+            <b>01</b>
+            ไดรเวอร์เป็นโปรแกรมตัวกลางที่ช่วยให้ระบบปฏิบัติการสื่อสารกับฮาร์ดแวร์
+          </div>
+
+          <div class="summary-point">
+            <b>02</b>
+            การติดตั้งไดรเวอร์ต้องเลือกรุ่นให้ตรงกับอุปกรณ์และระบบปฏิบัติการ
+          </div>
+
+          <div class="summary-point">
+            <b>03</b>
+            สามารถติดตั้งไดรเวอร์การ์ดจอ การ์ดเสียง และเครื่องพิมพ์ได้หลายวิธี
+          </div>
+
+          <div class="summary-point">
+            <b>04</b>
+            Device Manager และ Windows Update เป็นช่องทางสำหรับการอัปเดตไดรเวอร์
+          </div>
+
+          <div class="summary-point">
+            <b>05</b>
+            เฟิร์มแวร์เป็นโปรแกรมที่ฝังอยู่ในชิปเพื่อควบคุมการทำงานพื้นฐานของฮาร์ดแวร์
+          </div>
+
+        </div>
+      </div>
+
+      <div class="summary-side">
+        <div class="big">DRIVER</div>
+        <h3>ติดตั้งถูกต้อง<br>ใช้งานได้เต็มประสิทธิภาพ</h3>
+        <p>
+          การดูแลไดรเวอร์และเฟิร์มแวร์
+          เป็นสิ่งสำคัญที่ช่วยให้คอมพิวเตอร์ทำงานได้อย่างมีประสิทธิภาพ
+        </p>
+
+        <a href="index.html"
+           class="start nav-link-load"
+           style="background:#fff;color:#42362f;margin-top:15px;justify-content:center">
+          กลับหน้าแรก ↑
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <strong>OS LEARNING</strong><br>
+  เว็บไซต์ประกอบการเรียนรู้รายวิชาระบบปฏิบัติการคอมพิวเตอร์<br>
+  บทเรียนที่ 5 : การติดตั้งไดรเวอร์ (Driver Installation)
+</footer>
+
+<script>
+(() => {
+
+  // SCROLL PROGRESS
+  const progress = document.getElementById('progress');
+
+  function updateProgress(){
+    const maxScroll =
+      document.documentElement.scrollHeight - window.innerHeight;
+
+    const percent = maxScroll > 0
+      ? (window.scrollY / maxScroll) * 100
+      : 0;
+
+    progress.style.width =
+      `${Math.min(100,Math.max(0,percent))}%`;
+  }
+
+  window.addEventListener('scroll',updateProgress,{passive:true});
+  window.addEventListener('resize',updateProgress);
+  updateProgress();
+
+  // SIDEBAR
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const closeSidebar = document.getElementById('closeSidebar');
+
+  function openMenu(){
+    sidebar.classList.add('active');
+    overlay.classList.add('active');
+    document.body.classList.add('lock-scroll');
+  }
+
+  function closeMenu(){
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+    document.body.classList.remove('lock-scroll');
+  }
+
+  menuToggle.addEventListener('click',openMenu);
+  closeSidebar.addEventListener('click',closeMenu);
+  overlay.addEventListener('click',closeMenu);
+
+  sidebar.querySelectorAll('a:not(.nav-link-load)').forEach(link=>{
+    link.addEventListener('click',closeMenu);
+  });
+
+  document.addEventListener('keydown',e=>{
+    if(e.key === 'Escape') closeMenu();
+  });
+
+  // LOADING SCREEN
+  const loadingScreen = document.getElementById('loadingScreen');
+  const progressBarLoad = document.getElementById('progressBarLoad');
+  const progressPercent = document.getElementById('progressPercent');
+
+  document.querySelectorAll('.nav-link-load').forEach(link=>{
+
+    link.addEventListener('click',function(e){
+
+      const targetUrl = this.getAttribute('href');
+
+      if(!targetUrl || targetUrl === '#') return;
+
+      e.preventDefault();
+
+      closeMenu();
+
+      loadingScreen.classList.add('show');
+      document.body.classList.add('loading-active');
+
+      let currentPercent = 0;
+      const duration = 700;
+      const intervalTime = 20;
+      const step = (intervalTime / duration) * 100;
+
+      const timer = setInterval(()=>{
+
+        currentPercent += step;
+
+        if(currentPercent >= 100){
+          currentPercent = 100;
+          clearInterval(timer);
+
+          setTimeout(()=>{
+            window.location.href = targetUrl;
+          },150);
+        }
+
+        progressBarLoad.style.width = `${currentPercent}%`;
+        progressPercent.textContent =
+          `${Math.round(currentPercent)}%`;
+
+      },intervalTime);
+
+    });
+
+  });
+
+  // Rakko Scarf Click Effect (ผ้าพันคอรักโกะ 🧣 ปลิวแตกกระจาย)
+  document.addEventListener('click', function(e){
+    if (e.target.closest('.loading-screen')) return;
+
+    const x = e.clientX;
+    const y = e.clientY;
+    const holder = document.createElement('div');
+    holder.className = 'rakko-effect';
+    holder.style.left = x + 'px';
+    holder.style.top = y + 'px';
+    holder.setAttribute('aria-hidden','true');
+
+    const scarf = document.createElement('span');
+    scarf.className = 'rakko-click';
+    scarf.textContent = '🧣';
+    holder.appendChild(scarf);
+    document.body.appendChild(holder);
+
+    window.setTimeout(() => {
+      scarf.remove();
+      const symbols = ['🧣','✨','🤎','💫','🧣','⭐','🤎','✨'];
+      const colors = ['#c48453','#d08a58','#ffe8b6','#925c34','#f5dfc9'];
+      symbols.forEach((symbol, index) => {
+        const petal = document.createElement('span');
+        petal.className = 'rakko-petal';
+        petal.textContent = symbol;
+        petal.style.setProperty('--angle', (index * 45 + Math.random() * 16) + 'deg');
+        petal.style.setProperty('--distance', (42 + Math.random() * 38) + 'px');
+        petal.style.setProperty('--dx', (Math.cos(index * Math.PI / 4) * 65) + 'px');
+        petal.style.setProperty('--dy', (Math.sin(index * Math.PI / 4) * 65) + 'px');
+        petal.style.setProperty('--turn', (Math.random() * 220 - 110) + 'deg');
+        petal.style.color = colors[index % colors.length];
+        petal.style.fontSize = (13 + Math.random() * 10) + 'px';
+        holder.appendChild(petal);
+      });
+      holder.classList.add('bursting');
+      window.setTimeout(() => holder.remove(), 850);
+    }, 520);
+  });
+
+  // REVEAL ANIMATION
+  const revealItems = document.querySelectorAll('.reveal');
+
+  if('IntersectionObserver' in window){
+
+    const observer = new IntersectionObserver(entries=>{
+
+      entries.forEach(entry=>{
+
+        if(entry.isIntersecting){
+          entry.target.classList.add('show');
+          observer.unobserve(entry.target);
+        }
+
+      });
+
+    },{threshold:0.1});
+
+    revealItems.forEach(item=>observer.observe(item));
+
+  }else{
+
+    revealItems.forEach(item=>item.classList.add('show'));
+
+  }
+
+})();
+</script>
+
+</body>
+</html>

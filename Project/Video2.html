@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บทที่ 2 | โปรแกรมระบบปฏิบัติการคอมพิวเตอร์</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --blue:#087f8c;
+  --blue2:#36b8a5;
+  --dark:#102b32;
+  --cream:#f2fbf8;
+  --yellow:#ffb45b;
+  --pink:#ff927e;
+  --green:#83c9a8;
+  --purple:#e28b5b;
+}
+
+* {box-sizing:border-box}
+
+body {
+  margin:0;
+  font-family:'Prompt',sans-serif;
+  background:linear-gradient(135deg,#e1f5f2,#f2fbf8,#e7ddff);
+  color:var(--dark);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.container {
+  width:min(1100px,100%);
+  background:white;
+  border-radius:26px;
+  overflow:hidden;
+  box-shadow:0 20px 70px #102b322b;
+}
+
+.header {
+  padding:17px 25px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  border-bottom:1px solid #d5ece6;
+}
+
+.brand {
+  font-size:17px;
+  font-weight:700;
+  color:var(--blue);
+}
+
+.brand span {color:var(--yellow)}
+
+.header small {
+  color:#687f83;
+  font-size:11px;
+}
+
+.screen {
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  min-height:340px;
+  overflow:hidden;
+  background:linear-gradient(145deg,#d7f0ed,#e1f5f2,#f4f5f8);
+}
+
+.scene-bg {
+  position:absolute;
+  inset:0;
+  transition:background 1s;
+  overflow:hidden;
+}
+
+.scene-bg::before {
+  content:"";
+  position:absolute;
+  width:500px;
+  height:500px;
+  border-radius:50%;
+  background:#ffffff48;
+  top:-250px;
+  left:-100px;
+}
+
+.scene-bg::after {
+  content:"";
+  position:absolute;
+  width:400px;
+  height:400px;
+  border-radius:50%;
+  background:#ffffff35;
+  bottom:-250px;
+  right:-100px;
+}
+
+/* พื้นหลังแต่ละฉากบทที่ 2 */
+.scene-1 .scene-bg {background:linear-gradient(135deg,#d7f0ed,#fff0ad,#e1f5f2)}
+.scene-2 .scene-bg {background:linear-gradient(135deg,#102b32,#1c444d,#087f8c)}
+.scene-3 .scene-bg {background:linear-gradient(135deg,#f4f1ff,#e8e5f2,#fff0ad)}
+.scene-4 .scene-bg {background:linear-gradient(135deg,#fff8e8,#f2ca5355,#ffe0e7)}
+.scene-5 .scene-bg {background:linear-gradient(135deg,#eaf8f3,#d9f3e9,#d7f0ed)}
+.scene-6 .scene-bg {background:linear-gradient(135deg,#087f8c,#36b8a5,#102b32)}
+
+.stars {
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.star {
+  position:absolute;
+  color:white;
+  font-size:22px;
+  animation:twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+  from {opacity:.3;transform:scale(.7) rotate(0)}
+  to {opacity:1;transform:scale(1.3) rotate(35deg)}
+}
+
+.scene-content {
+  position:absolute;
+  inset:0;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:25px;
+  text-align:center;
+}
+
+.scene-label {
+  background:#ffffffb8;
+  padding:6px 18px;
+  border-radius:30px;
+  font-size:12px;
+  color:var(--blue);
+  font-weight:600;
+  margin-bottom:12px;
+  box-shadow:0 3px 12px #087f8c20;
+}
+
+.scene-title {
+  font-size:clamp(19px,3vw,32px);
+  font-weight:800;
+  color:var(--dark);
+  text-shadow:0 2px 0 #ffffff80;
+  margin:0 0 12px;
+}
+
+.scene-title.light {color:#fff;}
+.scene-subtitle.light {color:#aeb7cf;}
+
+.scene-subtitle {
+  font-size:clamp(11px,1.5vw,15px);
+  color:#687f83;
+  margin:0 0 15px;
+}
+
+/* ตัวละครหุ่นยนต์ AI ตัวเดิมอ้างอิงตามภาพ */
+.robot {
+  position:relative;
+  width:105px;
+  height:120px;
+  animation:robotFloat 2.5s ease-in-out infinite;
+  filter:drop-shadow(0 10px 8px #102b322e);
+  flex-shrink:0;
+}
+
+@keyframes robotFloat {
+  0%,100% {transform:translateY(0) rotate(-3deg)}
+  50% {transform:translateY(-14px) rotate(3deg)}
+}
+
+.robot-head {
+  position:absolute;
+  width:95px;
+  height:75px;
+  top:13px;
+  left:5px;
+  border-radius:25px;
+  background:linear-gradient(145deg,#ffffff,#b9e9ff);
+  border:4px solid #5b9ddc;
+  box-shadow:inset -5px -5px 0 #a5d5f4;
+}
+
+.robot-head::before {
+  content:"";
+  position:absolute;
+  width:13px;
+  height:13px;
+  background:#ffb8dc;
+  border-radius:50%;
+  top:-12px;
+  left:37px;
+  border:3px solid #5b9ddc;
+}
+
+.robot-eyes {
+  position:absolute;
+  display:flex;
+  gap:22px;
+  top:24px;
+  left:24px;
+}
+
+.robot-eyes i {
+  width:11px;
+  height:14px;
+  border-radius:50%;
+  background:#294c78;
+  display:block;
+  position:relative;
+}
+
+.robot-eyes i::after {
+  content:"";
+  position:absolute;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:white;
+  top:2px;
+  right:2px;
+}
+
+.robot-mouth {
+  position:absolute;
+  width:19px;
+  height:9px;
+  border-bottom:3px solid #ed8cb6;
+  border-radius:50%;
+  left:35px;
+  top:46px;
+}
+
+.robot-body {
+  position:absolute;
+  width:48px;
+  height:35px;
+  left:29px;
+  bottom:0;
+  border-radius:12px;
+  background:linear-gradient(135deg,#75cfff,#468edc);
+  border:3px solid #5b9ddc;
+}
+
+.robot-body::after {
+  content:"";
+  position:absolute;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#fff;
+  top:9px;
+  left:16px;
+}
+
+.robot-arm {
+  position:absolute;
+  width:12px;
+  height:32px;
+  border-radius:20px;
+  background:#74bff2;
+  top:80px;
+  animation:wave 1s ease-in-out infinite alternate;
+}
+
+.robot-arm.left {left:14px;transform-origin:top}
+.robot-arm.right {right:10px;transform-origin:top;animation-delay:.3s}
+
+@keyframes wave {
+  to {transform:rotate(35deg)}
+}
+
+.robot-wrap {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  position:relative;
+  z-index:3;
+}
+
+.robot-speech {
+  background:white;
+  color:var(--dark);
+  border-radius:15px;
+  padding:7px 14px;
+  font-size:12px;
+  box-shadow:0 5px 15px #102b322a;
+  margin-bottom:10px;
+  animation:pop .6s;
+}
+
+@keyframes pop {
+  from {transform:scale(.5);opacity:0}
+  to {transform:scale(1);opacity:1}
+}
+
+/* องค์ประกอบเฉพาะฉากเนื้อหาบทที่ 2 */
+.system-grid {
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+
+.sys-box {
+  background:#ffffff15;
+  border:1px solid #ffffff30;
+  padding:10px 14px;
+  border-radius:14px;
+  color:white;
+  font-size:12px;
+  backdrop-filter:blur(5px);
+}
+
+.func-row {
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+
+.func-card {
+  background:white;
+  padding:12px 16px;
+  border-radius:15px;
+  box-shadow:0 5px 15px #102b3210;
+  font-size:12px;
+  font-weight:600;
+  color:var(--dark);
+}
+
+.caption {
+  position:absolute;
+  z-index:5;
+  bottom:12px;
+  left:5%;
+  width:90%;
+  background:rgba(16,43,50,0.85);
+  color:white;
+  padding:12px 18px;
+  border-radius:13px;
+  font-size:clamp(11px,1.4vw,15px);
+  line-height:1.7;
+  text-align:center;
+  box-shadow:0 5px 20px #102b3230;
+  min-height:53px;
+  backdrop-filter:blur(5px);
+}
+
+.controls {
+  padding:18px 22px;
+}
+
+.progress-info {
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  color:#687f83;
+  margin-bottom:8px;
+}
+
+.progress {
+  height:7px;
+  background:#e1f5f2;
+  border-radius:20px;
+  overflow:hidden;
+  margin-bottom:16px;
+}
+
+.progress-bar {
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--blue),var(--yellow));
+  border-radius:20px;
+  transition:width .3s;
+}
+
+.control-buttons {
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+button {
+  font-family:inherit;
+  border:none;
+  cursor:pointer;
+  border-radius:12px;
+  padding:11px 19px;
+  font-size:13px;
+  font-weight:600;
+  transition:.2s;
+}
+
+button:hover {transform:translateY(-2px);filter:brightness(1.04)}
+
+.primary {
+  background:var(--blue);
+  color:white;
+  box-shadow:0 5px 12px #087f8c3d;
+}
+
+.secondary {
+  background:#e1f5f2;
+  color:var(--blue);
+}
+
+.sound-btn {
+  background:#fff0ad;
+  color:#8a6500;
+}
+
+.footer {
+  text-align:center;
+  padding:12px;
+  font-size:11px;
+  color:#687f83;
+  border-top:1px solid #d5ece6;
+}
+
+@media(max-width:600px) {
+  body {padding:8px}
+  .container {border-radius:17px}
+  .screen {aspect-ratio:4/5;min-height:470px}
+  .scene-content {padding:15px 10px 85px}
+  .caption {bottom:8px;padding:9px 10px;font-size:11px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <header class="header">
+    <div class="brand">🤖 OS <span>LEARNING</span></div>
+    <small>บทที่ 2 : โปรแกรมระบบปฏิบัติการคอมพิวเตอร์</small>
+  </header>
+
+  <main class="screen scene-1" id="screen">
+    <div class="scene-bg"></div>
+    <div class="stars" id="stars"></div>
+    <div class="scene-content" id="sceneContent"></div>
+    <div class="caption" id="caption">ยินดีต้อนรับเข้าสู่บทเรียนระบบปฏิบัติการคอมพิวเตอร์ครับ!</div>
+  </main>
+
+  <section class="controls">
+    <div class="progress-info">
+      <span id="sceneName">ฉากที่ 1 : หน้าหลักบทที่ 2</span>
+      <span id="timeText">00:00 / 02:00</span>
+    </div>
+
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="control-buttons">
+      <button class="secondary" onclick="restart()">↺ เริ่มใหม่</button>
+      <button class="primary" id="playBtn" onclick="togglePlay()">▶ เล่นแอนิเมชัน</button>
+      <button class="secondary" onclick="previousScene()">◀ ก่อนหน้า</button>
+      <button class="secondary" onclick="nextScene()">ถัดไป ▶</button>
+      <button class="sound-btn" id="soundBtn" onclick="toggleSound()">🔊 เปิดเสียง</button>
+    </div>
+  </section>
+
+  <footer class="footer">
+    COMPUTER OPERATING SYSTEMS | ผู้สอน: ครูกุสุมา ปิ่นสุภา
+  </footer>
+
+</div>
+
+<script>
+/* ===================================
+   ข้อมูลแอนิเมชัน 6 ฉาก (บทที่ 2)
+=================================== */
+
+const scenes = [
+
+{
+  name:"ฉากที่ 1 : เปิดบทเรียน",
+  duration:15,
+  title:"โปรแกรมระบบปฏิบัติการ",
+  subtitle:"Operating System (OS)",
+  speech:"สวัสดีครับทุกคน! วันนี้เราจะมาเรียนรู้บทที่ 2 เรื่องระบบปฏิบัติการคอมพิวเตอร์ ตัวกลางสำคัญที่ช่วยให้เราสั่งงานคอมพิวเตอร์ได้อย่างราบรื่นครับ",
+  visual:`
+    <div class="scene-label">✨ CHAPTER 02 · OS LEARNING ✨</div>
+    <h1 class="scene-title">โปรแกรมระบบปฏิบัติการ<br>คอมพิวเตอร์</h1>
+    <div class="robot-wrap">
+      <div class="robot-speech">พร้อมเรียนรู้เรื่องระบบปฏิบัติการกันรึยังครับ?</div>
+      <div class="robot">
+        <div class="robot-head">
+          <div class="robot-eyes"><i></i><i></i></div>
+          <div class="robot-mouth"></div>
+        </div>
+        <div class="robot-body"></div>
+        <div class="robot-arm left"></div>
+        <div class="robot-arm right"></div>
+      </div>
+    </div>
+  `,
+  caption:"ระบบปฏิบัติการ หรือ OS คือซอฟต์แวร์ระบบทำหน้าที่เป็นตัวกลางระหว่างผู้ใช้และฮาร์ดแวร์"
+},
+
+{
+  name:"ฉากที่ 2 : ระบบจัดการโปรเซส",
+  duration:20,
+  title:"ระบบจัดการโปรเซส (Process)",
+  subtitle:"การบริหารสถานะการทำงานของโปรแกรม",
+  speech:"โปรแกรมที่กำลังทำงานอยู่เราเรียกว่าโปรเซสครับ โดย OS จะคอยจัดสรรสถานะ เช่น Ready พร้อมทำงาน, Running กำลังประมวลผล และ Blocked ตอนรอข้อมูลครับ",
+  visual:`
+    <div class="scene-label">02 · PROCESS MANAGEMENT</div>
+    <h1 class="scene-title light">ระบบจัดการโปรเซส</h1>
+    <p class="scene-subtitle light">ควบคุมและจัดสรรเวลาซีพียูให้เหมาะสม</p>
+    <div class="system-grid">
+      <div class="sys-box">🟡 Ready State</div>
+      <div class="sys-box">⚙️ Running State</div>
+      <div class="sys-box">⏳ Blocked State</div>
+      <div class="sys-box">🔒 Deadlocked</div>
+    </div>
+    <div class="robot-wrap" style="margin-top:15px">
+      <div class="robot" style="transform:scale(.7)">
+        <div class="robot-head"><div class="robot-eyes"><i></i><i></i></div><div class="robot-mouth"></div></div>
+        <div class="robot-body"></div>
+        <div class="robot-arm left"></div><div class="robot-arm right"></div>
+      </div>
+    </div>
+  `,
+  caption:"OS ควบคุมโปรเซสผ่านสถานะต่างๆ เพื่อให้การประมวลผลของคอมพิวเตอร์เป็นไปอย่างมีประสิทธิภาพ"
+},
+
+{
+  name:"ฉากที่ 3 : หน้าที่ของ OS",
+  duration:20,
+  title:"หน้าที่สำคัญของ OS",
+  subtitle:"ควบคุม จัดสรร และดูแลความปลอดภัย",
+  speech:"หน้าที่หลักของระบบปฏิบัติการ ได้แก่ ควบคุมอุปกรณ์ฮาร์ดแวร์, จัดสรรซีพียู, จัดการหน่วยความจำ และดูแลรักษาความปลอดภัยของไฟล์ข้อมูลครับ",
+  visual:`
+    <div class="scene-label">03 · OS FUNCTIONS</div>
+    <h1 class="scene-title">หน้าที่สำคัญของระบบปฏิบัติการ</h1>
+    <div class="func-row">
+      <div class="func-card">🖥️ ควบคุมฮาร์ดแวร์</div>
+      <div class="func-card">⚡ จัดสรร CPU</div>
+      <div class="func-card">🧠 จัดการความจำ</div>
+      <div class="func-card">🔐 ไฟล์และความปลอดภัย</div>
+    </div>
+    <div class="robot-wrap" style="margin-top:12px">
+      <div class="robot" style="transform:scale(.65)">
+        <div class="robot-head"><div class="robot-eyes"><i></i><i></i></div><div class="robot-mouth"></div></div>
+        <div class="robot-body"></div>
+        <div class="robot-arm left"></div><div class="robot-arm right"></div>
+      </div>
+    </div>
+  `,
+  caption:"ระบบปฏิบัติการทำหน้าที่เปรียบเสมือนผู้จัดการทรัพยากรทั้งหมดภายในเครื่องคอมพิวเตอร์"
+},
+
+{
+  name:"ฉากที่ 4 : ขั้นตอนการเปิดเครื่อง (Boot)",
+  duration:20,
+  title:"กระบวนการเริ่มระบบ (Boot)",
+  subtitle:"จาก Firmware สู่หน้าจอเดสก์ท็อป",
+  speech:"เมื่อเรากดปุ่มเปิดเครื่อง ระบบ Firmware หรือ BIOS ในรอมจะตรวจสอบฮาร์ดแวร์เบื้องต้น ก่อนจะโหลดระบบปฏิบัติการเข้าสู่หน่วยความจำเพื่อให้เราใช้งานได้ครับ",
+  visual:`
+    <div class="scene-label">04 · BOOT PROCESS</div>
+    <h1 class="scene-title">ขั้นตอนการเปิดเครื่อง</h1>
+    <p class="scene-subtitle">① เปิดเครื่อง ➔ ② เช็คฮาร์ดแวร์ (BIOS) ➔ ③ โหลด OS ➔ ④ พร้อมใช้งาน</p>
+    <div class="robot-wrap">
+      <div class="robot-speech">ระบบพร้อมทำงานแล้วครับ! 🚀</div>
+      <div class="robot">
+        <div class="robot-head"><div class="robot-eyes"><i></i><i></i></div><div class="robot-mouth"></div></div>
+        <div class="robot-body"></div>
+        <div class="robot-arm left"></div><div class="robot-arm right"></div>
+      </div>
+    </div>
+  `,
+  caption:"กระบวนการ Boot เริ่มต้นจากฮาร์ดแวร์ตรวจสอบตัวเองผ่าน BIOS ก่อนโหลด OS เข้าสู่หน่วยความจำหลัก"
+},
+
+{
+  name:"ฉากที่ 5 : ประเภทของ OS",
+  duration:20,
+  title:"ประเภทของระบบปฏิบัติการ",
+  subtitle:"Stand-Alone, Network และ Embedded OS",
+  speech:"ระบบปฏิบัติการแบ่งออกเป็นหลายประเภท เช่น Stand-Alone สำหรับคอมพิวเตอร์ส่วนบุคคล, Network OS สำหรับเครือข่ายองค์กร และ Embedded OS สำหรับอุปกรณ์เฉพาะทางครับ",
+  visual:`
+    <div class="scene-label">05 · OS TYPES</div>
+    <h1 class="scene-title">ประเภทของระบบปฏิบัติการ</h1>
+    <div class="func-row">
+      <div class="func-card">💻 Stand-Alone OS</div>
+      <div class="func-card">🌐 Network OS</div>
+      <div class="func-card">📱 Embedded OS</div>
+    </div>
+    <div class="robot-wrap" style="margin-top:12px">
+      <div class="robot" style="transform:scale(.65)">
+        <div class="robot-head"><div class="robot-eyes"><i></i><i></i></div><div class="robot-mouth"></div></div>
+        <div class="robot-body"></div>
+        <div class="robot-arm left"></div><div class="robot-arm right"></div>
+      </div>
+    </div>
+  `,
+  caption:"การเลือกใช้ระบบปฏิบัติการขึ้นอยู่กับลักษณะการใช้งานและประเภทของอุปกรณ์นั้นๆ"
+},
+
+{
+  name:"ฉากที่ 6 : วิวัฒนาการ Windows และสรุป",
+  duration:20,
+  title:"วิวัฒนาการ Windows และสรุปบทเรียน",
+  subtitle:"จาก Windows 95 สู่ Windows 11 และ AI",
+  speech:"ตั้งแต่ Windows 95 จนถึง Windows 11 ระบบปฏิบัติการได้พัฒนาหน้าตาและความปลอดภัยมาอย่างต่อเนื่อง ขอให้สนุกกับการเรียนนะครับ บ๊ายบาย!",
+  visual:`
+    <div class="scene-label">06 · WINDOWS EVOLUTION & SUMMARY</div>
+    <h1 class="scene-title light">วิวัฒนาการ Windows & สรุปบทเรียน</h1>
+    <div class="system-grid">
+      <div class="sys-box">🪟 Win 95/98</div>
+      <div class="sys-box">🌈 Win XP</div>
+      <div class="sys-box">🪟 Win 7/8</div>
+      <div class="sys-box">✨ Win 10/11 & AI</div>
+    </div>
+    <div class="robot-wrap" style="margin-top:10px">
+      <div class="robot-speech">ยอดเยี่ยมมากครับ! เรียนรู้ครบแล้ว 🎊</div>
+      <div class="robot" style="transform:scale(.65)">
+        <div class="robot-head"><div class="robot-eyes"><i></i><i></i></div><div class="robot-mouth"></div></div>
+        <div class="robot-body"></div>
+        <div class="robot-arm left"></div><div class="robot-arm right"></div>
+      </div>
+    </div>
+  `,
+  caption:"Windows พัฒนาความสามารถ ความปลอดภัย และเพิ่มเครื่องมือ AI เพื่อรองรับผู้ใช้ในยุคปัจจุบัน"
+}
+
+];
+
+/* ===================================
+   ตัวแปรควบคุมระบบแอนิเมชัน
+=================================== */
+
+let currentScene = 0;
+let playing = false;
+let soundEnabled = false;
+let elapsed = 0;
+let lastTime = 0;
+let animationFrame = null;
+let audioContext = null;
+
+const totalDuration = scenes.reduce((sum,s)=>sum+s.duration,0);
+
+const screen = document.getElementById("screen");
+const sceneContent = document.getElementById("sceneContent");
+const caption = document.getElementById("caption");
+const progressBar = document.getElementById("progressBar");
+const playBtn = document.getElementById("playBtn");
+
+function createStars() {
+  const container = document.getElementById("stars");
+  container.innerHTML = "";
+  for(let i=0;i<25;i++){
+    const star = document.createElement("div");
+    star.className = "star";
+    star.innerHTML = ["✦","✧","·","✨"][i%4];
+    star.style.left = Math.random()*95+"%";
+    star.style.top = Math.random()*85+"%";
+    star.style.animationDelay = Math.random()*2+"s";
+    star.style.fontSize = (10+Math.random()*17)+"px";
+    container.appendChild(star);
+  }
+}
+
+function renderScene(index) {
+  currentScene = index;
+  const scene = scenes[index];
+  screen.className = "screen scene-"+(index+1);
+  sceneContent.innerHTML = scene.visual;
+  caption.textContent = scene.caption;
+  document.getElementById("sceneName").textContent = scene.name;
+  createStars();
+  updateProgress();
+}
+
+function initAudio() {
+  if(!audioContext) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if(AudioCtx) audioContext = new AudioCtx();
+  }
+  if(audioContext && audioContext.state === "suspended") {
+    audioContext.resume();
+  }
+}
+
+function beep(freq=600,duration=.15,type="sine",volume=.06) {
+  if(!soundEnabled) return;
+  initAudio();
+  if(!audioContext) return;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(freq,audioContext.currentTime);
+  gain.gain.setValueAtTime(volume,audioContext.currentTime);
+  gain.gain.exponentialRampToValueAtTime(.001,audioContext.currentTime+duration);
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime+duration);
+}
+
+function playSFX(index) {
+  if(!soundEnabled) return;
+  beep(500 + index*80, .2);
+}
+
+function speakScene(index) {
+  if(!soundEnabled || !("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(scenes[index].speech);
+  utterance.lang = "th-TH";
+  utterance.rate = 0.92;
+  utterance.pitch = 1.05;
+  utterance.volume = 1;
+  window.speechSynthesis.speak(utterance);
+}
+
+function stopSpeech() {
+  if("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+function startScene() {
+  renderScene(currentScene);
+  playSFX(currentScene);
+  speakScene(currentScene);
+}
+
+function togglePlay() {
+  if(playing) {
+    pause();
+  } else {
+    play();
+  }
+}
+
+function play() {
+  if(currentScene===0 && elapsed===0) {
+    startScene();
+  } else if(!playing) {
+    startScene();
+  }
+  initAudio();
+  playing = true;
+  lastTime = performance.now();
+  playBtn.innerHTML = "Ⅱ หยุดชั่วคราว";
+  cancelAnimationFrame(animationFrame);
+  animationFrame = requestAnimationFrame(update);
+}
+
+function pause() {
+  playing = false;
+  stopSpeech();
+  cancelAnimationFrame(animationFrame);
+  playBtn.innerHTML = "▶ เล่นต่อ";
+}
+
+function update(timestamp) {
+  if(!playing) return;
+  const delta = Math.min((timestamp-lastTime)/1000,.1);
+  lastTime = timestamp;
+  elapsed += delta;
+
+  let accumulated = 0;
+  let newIndex = 0;
+  for(let i=0;i<scenes.length;i++) {
+    if(elapsed >= accumulated + scenes[i].duration) {
+      accumulated += scenes[i].duration;
+      newIndex = i+1;
+    } else {
+      newIndex = i;
+      break;
+    }
+  }
+
+  if(newIndex >= scenes.length) {
+    finish();
+    return;
+  }
+
+  if(newIndex !== currentScene) {
+    currentScene = newIndex;
+    startScene();
+  }
+
+  updateProgress();
+  animationFrame = requestAnimationFrame(update);
+}
+
+function updateProgress() {
+  const progress = Math.min(elapsed/totalDuration*100,100);
+  progressBar.style.width = progress+"%";
+  const min = Math.floor(elapsed/60);
+  const sec = Math.floor(elapsed%60);
+  document.getElementById("timeText").textContent =
+    `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")} / 02:00`;
+}
+
+function finish() {
+  elapsed = totalDuration;
+  playing = false;
+  stopSpeech();
+  cancelAnimationFrame(animationFrame);
+  currentScene = scenes.length-1;
+  renderScene(currentScene);
+  progressBar.style.width = "100%";
+  document.getElementById("timeText").textContent = "02:00 / 02:00";
+  playBtn.innerHTML = "↺ เล่นอีกครั้ง";
+}
+
+function restart() {
+  pause();
+  elapsed = 0;
+  currentScene = 0;
+  renderScene(0);
+  playBtn.innerHTML = "▶ เล่นแอนิเมชัน";
+  updateProgress();
+}
+
+function nextScene() {
+  pause();
+  let time = 0;
+  for(let i=0;i<=currentScene;i++) {
+    time += scenes[i].duration;
+  }
+  elapsed = time;
+  currentScene = Math.min(currentScene+1,scenes.length-1);
+  startScene();
+  updateProgress();
+}
+
+function previousScene() {
+  pause();
+  let time = 0;
+  for(let i=0;i<Math.max(0,currentScene-1);i++) {
+    time += scenes[i].duration;
+  }
+  elapsed = time;
+  currentScene = Math.max(0,currentScene-1);
+  startScene();
+  updateProgress();
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  document.getElementById("soundBtn").innerHTML =
+    soundEnabled ? "🔊 เปิดเสียง" : "🔇 ปิดเสียง";
+  if(soundEnabled) {
+    initAudio();
+    playSFX(currentScene);
+    if(playing) speakScene(currentScene);
+  } else {
+    stopSpeech();
+  }
+}
+
+createStars();
+renderScene(0);
+updateProgress();
+</script>
+
+</body>
+</html>

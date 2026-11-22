@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="แอนิเมชันสรุปเนื้อหาบทที่ 6 ระบบปฏิบัติการ Windows 10">
+<title>แอนิเมชันสรุปบทที่ 6 | Windows 10</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700;800&display=swap');
+
+:root{
+  --pink-main: #e99cbd;
+  --pink-light: #fff0f6;
+  --pink-soft: #fce7f3;
+  --purple-soft: #f3e8ff;
+  --dark: #6d4257;
+  --text: #514e61;
+  --muted: #858095;
+  --white: #fff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Prompt',sans-serif;background:linear-gradient(130deg,#fff0f6,#fce7f3 65%,#f3e8ff);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+
+.container{width:100%;max-width:900px}
+.video-head{text-align:center;margin-bottom:25px}
+.eyebrow{color:#d1759d;font-size:12px;font-weight:700;letter-spacing:2px;margin-bottom:8px}
+.big-title{font-size:clamp(28px,5vw,42px);margin:0 0 10px;color:var(--dark);letter-spacing:-1px}
+.sub{color:var(--muted);font-size:14px;max-width:600px;margin:0 auto;line-height:1.7}
+
+.anim-shell{background:#fff;border:1px solid #ffd6e6;border-radius:28px;padding:clamp(16px,3vw,30px);box-shadow:0 24px 65px rgba(233,156,189,.2)}
+.anim-stage{position:relative;min-height:380px;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#fff0f6,#e99cbd 65%,#a86888);display:grid;place-items:center;padding:28px 28px 75px 28px;text-align:center}
+.anim-stage:before,.anim-stage:after{content:"";position:absolute;border:1px solid #fff4;border-radius:50%;width:340px;height:340px;animation:animOrbit 18s linear infinite}
+.anim-stage:after{width:470px;height:470px;animation-direction:reverse;opacity:.5}
+@keyframes animOrbit{to{transform:rotate(360deg)}}
+
+.anim-scene{position:relative;z-index:2;width:100%;display:none;animation:sceneIn .55s ease both}
+.anim-scene.active{display:block}
+@keyframes sceneIn{from{opacity:0;transform:translateY(15px) scale(.98)}to{opacity:1;transform:none}}
+
+/* ตัวละครหุ่นยนต์ AI (โทนสีชมพูอ่อน) */
+.robot{position:relative;width:105px;height:120px;margin:0 auto 10px;animation:robotFloat 2.5s ease-in-out infinite;filter:drop-shadow(0 10px 8px #6d42572e);flex-shrink:0}
+@keyframes robotFloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-14px) rotate(3deg)}}
+.robot-head{position:absolute;width:95px;height:75px;top:13px;left:5px;border-radius:25px;background:linear-gradient(145deg,#ffffff,#fff0f6);border:4px solid #e99cbd;box-shadow:inset -5px -5px 0 #ffd6e6}
+.robot-head::before{content:"";position:absolute;width:13px;height:13px;background:#f6d58c;border-radius:50%;top:-12px;left:37px;border:3px solid #e99cbd}
+.robot-eyes{position:absolute;display:flex;gap:22px;top:24px;left:24px}
+.robot-eyes i{width:11px;height:14px;border-radius:50%;background:#6d4257;display:block;position:relative}
+.robot-eyes i::after{content:"";position:absolute;width:4px;height:4px;border-radius:50%;background:white;top:2px;right:2px}
+.robot-mouth{position:absolute;width:19px;height:9px;border-bottom:3px solid #d1759d;border-radius:50%;left:35px;top:46px}
+.robot-body{position:absolute;width:48px;height:35px;left:29px;bottom:0;border-radius:12px;background:linear-gradient(135deg,#f4c4df,#e99cbd);border:3px solid #6d4257}
+.robot-body::after{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:#fff;top:9px;left:16px}
+.robot-arm{position:absolute;width:12px;height:32px;border-radius:20px;background:#f8d5e5;top:80px;animation:wave 1s ease-in-out infinite alternate}
+.robot-arm.left{left:14px;transform-origin:top}
+.robot-arm.right{right:10px;transform-origin:top;animation-delay:.3s}
+@keyframes wave{to{transform:rotate(35deg)}}
+
+.anim-icons{display:flex;justify-content:center;align-items:center;gap:clamp(12px,4vw,35px);flex-wrap:wrap;margin:8px 0 12px}
+.anim-icon{width:clamp(64px,10vw,95px);height:clamp(64px,10vw,95px);display:grid;place-items:center;background:#ffffffd9;border:1px solid #fff;border-radius:22px;font-size:clamp(30px,5vw,50px);box-shadow:0 12px 25px rgba(233,156,189,.2);animation:iconBob 2.8s ease-in-out infinite}
+.anim-icon:nth-child(2){animation-delay:.25s}.anim-icon:nth-child(3){animation-delay:.5s}
+@keyframes iconBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+
+.anim-scene h3{font-size:clamp(22px,3.5vw,34px);color:#fff;margin:6px 0;text-shadow:0 2px 4px rgba(0,0,0,.25)}
+.anim-scene p{max-width:700px;margin:0 auto;color:#fff0f6;font-size:clamp(13px,1.8vw,16px);line-height:1.8}
+.anim-tag{display:inline-block;background:#ffffff44;color:#fff0f6;border:1px solid #ffffff66;padding:5px 12px;border-radius:30px;font-size:11px;font-weight:700;letter-spacing:1px;margin-bottom:6px}
+
+/* กล่องซับไตเติล (Sub Thai) สีชมพูอ่อน ไร้คำกวนใจ */
+.anim-subtitle-box{position:absolute;bottom:14px;left:18px;right:18px;background:rgba(109, 66, 87, .92);backdrop-filter:blur(6px);color:#fff;padding:12px 16px;border-radius:12px;font-size:clamp(13px,1.6vw,15px);text-align:center;line-height:1.6;z-index:10;box-shadow:0 8px 20px rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.25);transition:.2s}
+
+.anim-caption{min-height:55px;padding:14px 12px 4px;text-align:center;color:#8a5771;line-height:1.7;font-size:14px}
+.anim-progress{height:8px;border-radius:20px;background:#ffd6e6;overflow:hidden;margin:10px 0 15px}
+.anim-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#e99cbd,#f4c4df);border-radius:20px;transition:width .25s}
+
+.anim-controls{display:flex;justify-content:center;align-items:center;gap:9px;flex-wrap:wrap}
+.anim-btn{border:0;border-radius:13px;padding:11px 17px;background:#fff0f6;color:#7a4b63;font-weight:600;font-size:13px;transition:.2s;cursor:pointer}
+.anim-btn:hover{transform:translateY(-2px);background:#ffd6e6}
+.anim-btn.primary{background:linear-gradient(120deg,#e99cbd,#f4c4df);color:#fff;box-shadow:0 8px 18px rgba(233,156,189,.35)}
+.anim-status{font-size:12px;color:#858095;text-align:center;margin-top:12px}
+
+.back-link{display:inline-block;margin-top:20px;color:#d1759d;font-weight:600;text-decoration:none;font-size:14px}
+.back-link:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="video-head">
+    <div class="eyebrow">SPECIAL ANIMATION · CHAPTER 6 SUMMARY</div>
+    <h2 class="big-title">สรุปเนื้อหาบทที่ 6</h2>
+    <p class="sub">วิดีโอแอนิเมชันสรุปการใช้งานระบบปฏิบัติการ Windows 10 โทนสีชมพูอ่อนละมุนตา พร้อมซับไตเติลและเสียงบรรยายภาษาไทย</p>
+  </div>
+
+  <div class="anim-shell">
+   <div class="anim-stage" id="animStage" aria-live="polite">
+    
+    <!-- ฉากที่ 1 -->
+    <div class="anim-scene active" data-duration="15" data-title="ยินดีต้อนรับสู่บทที่ 6 Windows 10" data-narration="ยินดีต้อนรับเข้าสู่บทเรียนบทที่ 6 ระบบปฏิบัติการ Windows 10 วันนี้เราจะมาเรียนรู้ส่วนประกอบเดสก์ท็อป และเครื่องมืออำนวยความสะดวกต่างๆ กันครับ">
+     <div class="robot">
+       <div class="robot-head"><div class="robot-eyes"><i></i><i></i></div><div class="robot-mouth"></div></div>
+       <div class="robot-body"></div><div class="robot-arm left"></div><div class="robot-arm right"></div>
+     </div>
+     <span class="anim-tag">WELCOME TO CHAPTER 6</span>
+     <h3>ระบบปฏิบัติการ Windows 10</h3>
+     <p>เรียนรู้แนวคิด ส่วนประกอบ และแป้นพิมพ์ลัดที่ช่วยให้ทำงานสะดวกยิ่งขึ้น</p>
+    </div>
+
+    <!-- ฉากที่ 2 -->
+    <div class="anim-scene" data-duration="20" data-title="แนวคิดการพัฒนา Windows 10" data-narration="Windows 10 ถูกพัฒนาต่อยอดจาก Windows 8 โดยออกแบบให้รองรับการใช้งานได้บนอุปกรณ์หลายประเภท ทั้งคอมพิวเตอร์ แท็บเล็ต และสมาร์ทโฟน ภายใต้แนวคิดแอปเดียวใช้งานได้หลายอุปกรณ์">
+     <div class="anim-icons"><div class="anim-icon">💻</div><div class="anim-icon">📱</div><div class="anim-icon">🎯</div></div>
+     <span class="anim-tag">SCENE 02 · CONCEPT</span>
+     <h3>แนวคิดการพัฒนา Windows 10</h3>
+     <p>รองรับการใช้งานหลายอุปกรณ์และแอปพลิเคชันที่ยืดหยุ่น</p>
+    </div>
+
+    <!-- ฉากที่ 3 -->
+    <div class="anim-scene" data-duration="20" data-title="ส่วนประกอบเดสก์ท็อปสำคัญ" data-narration="เดสก์ท็อปของ Windows 10 มีเครื่องมือจัดการหน้าต่างอันทรงพลัง เช่น Virtual Desktop สำหรับสร้างพื้นที่ทำงานหลายหน้าจอ, Task View จัดการหน้าต่าง, Snap Assist จัดเรียงหน้าต่างอัตโนมัติ และ Action Center รวมการแจ้งเตือน">
+     <div class="anim-icons"><div class="anim-icon">🖥️</div><div class="anim-icon">🗂️</div><div class="anim-icon">🔔</div></div>
+     <span class="anim-tag">SCENE 03 · DESKTOP FEATURES</span>
+     <h3>เครื่องมือจัดการหน้าจอ</h3>
+     <p>Virtual Desktop, Task View, Snap Assist และ Action Center</p>
+    </div>
+
+    <!-- ฉากที่ 4 -->
+    <div class="anim-scene" data-duration="20" data-title="แป้นพิมพ์ลัดและแอปพลิเคชัน" data-narration="ผู้ใช้งานสามารถใช้แป้นพิมพ์ลัดเช่น Win + Tab เพื่อเปิด Task View หรือ Win + D เพื่อแสดงเดสก์ท็อป และยังสามารถดาวน์โหลดแอปพลิเคชันเพิ่มเติมได้จาก Windows Store ทั้งแบบฟรีและมีค่าใช้จ่าย">
+     <div class="anim-icons"><div class="anim-icon">⌨️</div><div class="anim-icon">🛒</div><div class="anim-icon">✏️</div></div>
+     <span class="anim-tag">SCENE 04 · SHORTCUTS & APPS</span>
+     <h3>คีย์ลัดและ Windows Store</h3>
+     <p>เพิ่มความรวดเร็วในการทำงานด้วยคีย์ลัดและเลือกดาวน์โหลดแอปตามต้องการ</p>
+    </div>
+
+    <!-- ฉากที่ 5 -->
+    <div class="anim-scene" data-duration="20" data-title="สรุปบทเรียนบทที่ 6" data-narration="สรุปแล้ว Windows 10 เป็นระบบปฏิบัติการที่ทรงพลัง ยืดหยุ่น และใช้งานง่าย ช่วยให้การจัดการงานต่างๆ เป็นระบบ แล้วพบกันใหม่ในบทเรียนถัดไปครับ">
+     <div class="robot">
+       <div class="robot-head"><div class="robot-eyes"><i></i><i></i></div><div class="robot-mouth"></div></div>
+       <div class="robot-body"></div><div class="robot-arm left"></div><div class="robot-arm right"></div>
+     </div>
+     <span class="anim-tag">SCENE 05 · SUMMARY</span>
+     <h3>เก่ง Windows 10 ได้อย่างมืออาชีพ</h3>
+     <p>ใช้งานคล่องตัว จัดการหน้าต่างเยี่ยม พร้อมลุยทุกงาน</p>
+    </div>
+
+    <!-- กล่องซับไตเติล (Sub Thai) -->
+    <div class="anim-subtitle-box" id="animSubtitle">
+      กดปุ่มเล่นเพื่อเริ่มรับชมแอนิเมชัน
+    </div>
+
+   </div>
+   <div class="anim-caption"><strong id="animSceneTitle">ฉากที่ 1 จาก 5</strong></div>
+   <div class="anim-progress"><span id="animProgressBar"></span></div>
+   <div class="anim-controls">
+    <button class="anim-btn" id="animPrev" type="button">ย้อนกลับ</button>
+    <button class="anim-btn primary" id="animPlay" type="button">▶ เล่น</button>
+    <button class="anim-btn" id="animNext" type="button">ถัดไป</button>
+    <button class="anim-btn" id="animSound" type="button">🔊 เสียงบรรยาย: เปิด</button>
+    <button class="anim-btn" id="animRestart" type="button">↻ เริ่มใหม่</button>
+   </div>
+   <div class="anim-status" id="animStatus">ทั้งหมด 5 ฉาก · สามารถเลือกเปลี่ยนฉากได้ตลอดเวลา</div>
+  </div>
+
+  <div style="text-align: center;">
+    <a href="lesson6.html" class="back-link">← กลับสู่บทเรียนบทที่ 6</a>
+  </div>
+</div>
+
+<script>
+(() => {
+  const scenes=[...document.querySelectorAll('.anim-scene')];
+  if(!scenes.length) return;
+  const title=document.getElementById('animSceneTitle');
+  const subtitleBox=document.getElementById('animSubtitle');
+  const bar=document.getElementById('animProgressBar'), status=document.getElementById('animStatus');
+  const playBtn=document.getElementById('animPlay'), soundBtn=document.getElementById('animSound');
+  let index=0, elapsed=0, playing=false, soundOn=true, ticker=null, audioCtx=null;
+  const duration=i=>Number(scenes[i].dataset.duration)||20;
+  
+  function stopVoice(){if('speechSynthesis' in window) window.speechSynthesis.cancel();}
+  
+  function speak(){
+    if(!soundOn||!('speechSynthesis' in window))return;
+    stopVoice();
+    const narrationText = scenes[index].dataset.narration||'';
+    const u=new SpeechSynthesisUtterance(narrationText);
+    u.lang='th-TH';
+    u.rate=.92;
+    u.pitch=1.02;
+    
+    subtitleBox.textContent = narrationText;
+    window.speechSynthesis.speak(u);
+  }
+
+  function effect(){try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.setValueAtTime(520,audioCtx.currentTime);o.frequency.exponentialRampToValueAtTime(760,audioCtx.currentTime+.12);g.gain.setValueAtTime(.07,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.22);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.23);}catch(e){}}
+  
+  function render(){
+    scenes.forEach((s,i)=>s.classList.toggle('active',i===index));
+    title.textContent=`ฉากที่ ${index+1} จาก ${scenes.length} · ${scenes[index].dataset.title}`;
+    
+    if(!soundOn || !('speechSynthesis' in window)){
+      subtitleBox.textContent = scenes[index].dataset.narration;
+    }
+
+    bar.style.width=`${Math.min(100,(elapsed/duration(index))*100)}%`;
+    status.textContent=`ฉาก ${index+1}/${scenes.length} · ${Math.max(0,duration(index)-elapsed)} วินาทีที่เหลือในฉากนี้`;
+  }
+
+  function pause(){playing=false;clearInterval(ticker);ticker=null;playBtn.textContent='▶ เล่น';stopVoice();}
+  function show(i,announce=true){index=Math.max(0,Math.min(scenes.length-1,i));elapsed=0;render();effect();if(announce)speak();if(playing)startClock();}
+  function startClock(){clearInterval(ticker);ticker=setInterval(()=>{elapsed++;render();if(elapsed>=duration(index)){if(index<scenes.length-1){show(index+1,true);}else{pause();status.textContent='รับชมครบทุกฉากแล้ว กดเริ่มใหม่เพื่อรับชมอีกครั้ง';}}},1000);}
+  function play(){if(index===scenes.length-1&&elapsed>=duration(index)){index=0;elapsed=0;}playing=true;playBtn.textContent='Ⅱ หยุดชั่วคราว';speak();startClock();}
+  
+  playBtn.addEventListener('click',()=>playing?pause():play());
+  document.getElementById('animPrev').addEventListener('click',()=>{pause();show(index-1,true);});
+  document.getElementById('animNext').addEventListener('click',()=>{pause();show(index+1,true);});
+  document.getElementById('animRestart').addEventListener('click',()=>{pause();show(0,true);});
+  soundBtn.addEventListener('click',()=>{
+    soundOn=!soundOn;
+    soundBtn.textContent=soundOn?'🔊 เสียงบรรยาย: เปิด':'🔇 เสียงบรรยาย: ปิด';
+    if(soundOn) speak();
+    else { stopVoice(); render(); }
+  });
+
+  render();
+  subtitleBox.textContent = scenes[0].dataset.narration;
+})();
+</script>
+</body>
+</html>

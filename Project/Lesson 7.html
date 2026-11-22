@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="บทเรียนออนไลน์เรื่อง Windows 11 ธีมชีสะสุดอบอุ่น">
+<title>บทที่ 7 | Windows 11</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap');
+
+/* ===== SHISA THEME (โทนสีชีสะ: ส้มอิฐ ครีมละมุน น้ำตาลวอลนัท และเบจธรรมชาติ) ===== */
+:root {
+  --primary:#d97743;
+  --primary-dark:#b35928;
+  --accent:#e69567;
+  --dark:#4a3830;
+  --cream:#fcf8f2;
+  --yellow:#fcecdb;
+  --pink:#fbe2d8;
+  --green:#d6ebd9;
+  --text:#52423b;
+  --muted:#8c776f;
+  --white:#fff;
+}
+
+*{box-sizing:border-box}
+
+html{
+  scroll-behavior:smooth;
+  scroll-padding-top:95px;
+}
+
+body{
+  margin:0;
+  font-family:'Prompt',sans-serif;
+  background:#fcf9f5;
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+body.lock-scroll,
+body.loading-active{overflow:hidden}
+
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+
+.progress{
+  position:fixed;
+  top:0;
+  left:0;
+  height:4px;
+  width:0;
+  background:linear-gradient(90deg,#d97743,#e69567,#fcecdb);
+  z-index:9999;
+  transition:width .15s;
+}
+
+/* NAVIGATION */
+.nav{
+  position:fixed;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(1100px,calc(100% - 30px));
+  min-height:58px;
+  background:#FFFFFF;
+  backdrop-filter:blur(18px);
+  border:1px solid #f2e4dc;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 18px;
+  z-index:1000;
+  box-shadow:0 15px 40px rgba(74,56,48,.08);
+  gap:12px;
+}
+
+.menu-toggle{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  width:28px;
+  height:22px;
+  background:transparent;
+  border:none;
+  padding:0;
+}
+
+.menu-toggle span{
+  width:100%;
+  height:3px;
+  background:var(--dark);
+  border-radius:5px;
+  transition:.3s;
+}
+
+.menu-toggle:hover span{background:var(--primary)}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.logo-box{
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  font-size:12px;
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.nav-btn{
+  border:0;
+  background:transparent;
+  padding:8px 10px;
+  border-radius:10px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.nav-btn:hover{
+  background:#fcf0eb;
+  color:var(--primary);
+}
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed;
+  top:0;
+  left:-300px;
+  width:280px;
+  height:100%;
+  background:#FFFDFF;
+  box-shadow:5px 0 25px rgba(74,56,48,.15);
+  z-index:1200;
+  transition:.35s ease;
+  padding:30px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+  overflow-y:auto;
+}
+
+.sidebar.active{left:0}
+
+.sidebar-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.sidebar-title{
+  font-weight:700;
+  font-size:18px;
+}
+
+.close-btn{
+  background:transparent;
+  border:none;
+  font-size:25px;
+  color:var(--muted);
+}
+
+.sidebar-menu{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.sidebar-menu a{
+  padding:12px 15px;
+  border-radius:12px;
+  background:#fcf7f2;
+  color:var(--text);
+  font-size:13px;
+  transition:.2s;
+}
+
+.sidebar-menu a:hover{
+  background:var(--primary);
+  color:white;
+  transform:translateX(4px);
+}
+
+.sidebar-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(74,56,48,.28);
+  backdrop-filter:blur(4px);
+  z-index:1150;
+  opacity:0;
+  visibility:hidden;
+  transition:.3s;
+}
+
+.sidebar-overlay.active{
+  opacity:1;
+  visibility:visible;
+}
+
+/* LOADING */
+.loading-screen{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(252,249,245,.97);
+  backdrop-filter:blur(15px);
+  opacity:0;
+  visibility:hidden;
+  transition:.3s;
+}
+
+.loading-screen.show{
+  opacity:1;
+  visibility:visible;
+}
+
+.loading-card{
+  width:min(390px,100%);
+  padding:35px 28px;
+  background:#fff;
+  border:1px solid #f2e4dc;
+  border-radius:23px;
+  text-align:center;
+  box-shadow:0 25px 80px rgba(74,56,48,.15);
+}
+
+.loading-logo{
+  font-size:27px;
+  font-weight:800;
+  color:var(--dark);
+  margin-bottom:24px;
+}
+
+.loading-logo span{color:var(--primary)}
+
+.spinner{
+  width:56px;
+  height:56px;
+  margin:0 auto 22px;
+  border:5px solid #fcf0eb;
+  border-top-color:var(--primary);
+  border-right-color:#fcecdb;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.loading-card h2{font-size:21px}
+.loading-card p{
+  font-size:14px;
+  color:var(--muted);
+}
+
+.progress-track{
+  height:7px;
+  background:#fcf0eb;
+  border-radius:20px;
+  margin-top:23px;
+  overflow:hidden;
+}
+
+.progress-bar-load{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--primary),#fcecdb);
+  border-radius:20px;
+}
+
+.progress-percent{
+  display:block;
+  margin-top:9px;
+  text-align:right;
+  color:var(--primary-dark);
+  font-size:12px;
+}
+
+body.loading-active .nav,
+body.loading-active .slide,
+body.loading-active footer,
+body.loading-active .sidebar{
+  filter:blur(5px);
+  pointer-events:none;
+}
+
+/* GENERAL SECTION */
+.slide{
+  min-height:80vh;
+  padding:120px 7vw 80px;
+  position:relative;
+  overflow:hidden;
+}
+
+.inner{
+  max-width:1180px;
+  margin:auto;
+}
+
+.eyebrow{
+  color:var(--primary-dark);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:2px;
+  margin-bottom:12px;
+}
+
+.big-title{
+  font-size:clamp(38px,6vw,72px);
+  line-height:1.12;
+  margin:0 0 20px;
+  letter-spacing:-2px;
+}
+
+.sub{
+  color:var(--muted);
+  max-width:720px;
+  line-height:1.9;
+}
+
+/* HERO */
+.hero{
+  min-height:100vh;
+  background:linear-gradient(135deg,#fcf7f2 0%,#f7ebd9 55%,#fcf0eb 100%);
+  display:flex;
+  align-items:center;
+}
+
+.hero-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  align-items:center;
+}
+
+.chapter{
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:2px;
+  color:var(--primary-dark);
+  margin-bottom:18px;
+}
+
+.hero h1{
+  margin:0;
+  font-size:clamp(48px,7vw,90px);
+  line-height:1.05;
+  letter-spacing:-3px;
+  color:var(--dark);
+}
+
+.hero h1 span{color:var(--primary)}
+
+.hero-desc{
+  max-width:500px;
+  margin:28px 0;
+  font-size:16px;
+  color:var(--muted);
+  line-height:1.9;
+}
+
+.start{
+  display:inline-flex;
+  align-items:center;
+  gap:14px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  padding:15px 20px;
+  border-radius:14px;
+  font-size:13px;
+  transition:.25s;
+  border:0;
+  box-shadow:0 10px 24px rgba(179,89,40,0.2);
+}
+
+.start:hover{
+  transform:translateY(-3px);
+  box-shadow:0 15px 30px rgba(179,89,40,0.3);
+}
+
+/* HERO ART */
+.hero-art{
+  position:relative;
+  height:490px;
+  isolation:isolate;
+}
+
+.blob{
+  position:absolute;
+  width:410px;
+  height:410px;
+  right:15px;
+  top:25px;
+  background:#f5dfc9;
+  border-radius:46% 54% 62% 38% / 40% 43% 57% 60%;
+  animation:float 6s ease-in-out infinite;
+  z-index:-1;
+}
+
+.monitor{
+  position:absolute;
+  width:340px;
+  height:220px;
+  right:55px;
+  top:100px;
+  background:#4a3830;
+  border:10px solid #a89080;
+  border-radius:20px;
+  transform:rotate(-6deg);
+  box-shadow:0 22px 50px rgba(74,56,48,.22);
+  overflow:hidden;
+  z-index:0;
+}
+
+.monitor-screen{
+  height:100%;
+  background:radial-gradient(circle at 40% 40%, #fcecdb 0%, transparent 45%), linear-gradient(135deg,#d97743,#4a3830);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:white;
+}
+
+.monitor-os{
+  font-size:40px;
+  font-weight:800;
+  letter-spacing:-1px;
+  text-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+
+.monitor-text{
+  font-size:10px;
+  letter-spacing:3px;
+  opacity:.85;
+}
+
+.shisa-photo{
+  position:absolute;
+  display:block;
+  object-fit:cover;
+  border-radius:50%;
+  background:#ffffff;
+  border:6px solid rgba(255,255,255,.95);
+  box-shadow:0 15px 35px rgba(74,56,48,.22);
+  transition:transform .35s ease,box-shadow .35s ease;
+  animation:photoFloat 5s ease-in-out infinite;
+  z-index:2;
+}
+.shisa-photo:hover{
+  transform:scale(1.06) rotate(3deg);
+  box-shadow:0 20px 40px rgba(74,56,48,.3);
+}
+
+.shisa-photo.photo-one{ width:135px; height:135px; right:15px; top:12px; animation-delay:0s; }
+.shisa-photo.photo-two{ width:125px; height:125px; left:25px; bottom:25px; animation-delay:-1.5s; }
+.shisa-photo.photo-three{ width:115px; height:115px; right:45px; bottom:15px; animation-delay:-3s; }
+
+.sticker-bubble{
+  position:absolute;
+  background:#fff;
+  padding:9px 14px;
+  border-radius:14px;
+  font-size:11px;
+  font-weight:600;
+  box-shadow:0 8px 22px rgba(74,56,48,.12);
+  border:1px solid #f2e4dc;
+  z-index:3;
+}
+.sticker-bubble.bubble-one{ right:145px; top:42px; transform:rotate(2deg); color:var(--dark); }
+.sticker-bubble.bubble-two{ left:30px; top:35px; transform:rotate(-8deg); background:#fcecdb; color:#855c1b; }
+.sticker-bubble.bubble-three{ right:165px; bottom:38px; transform:rotate(-4deg); background:#d6ebd9; color:#2f5934; }
+
+@keyframes float{
+  0%,100%{transform:rotate(-12deg) translateY(0)}
+  50%{transform:rotate(-9deg) translateY(-12px)}
+}
+
+@keyframes photoFloat{
+  0%,100%{translate:0 0}
+  50%{translate:0 -8px}
+}
+
+/* TOPICS */
+.topics{background:#FFFDFF}
+
+.topic-layout{
+  margin-top:55px;
+  display:grid;
+  grid-template-columns:1.3fr .7fr;
+  gap:20px;
+}
+
+.topic-main{
+  min-height:350px;
+  border-radius:30px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:white;
+  padding:40px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 15px 35px rgba(217,119,67,.25);
+}
+
+.topic-main h2{
+  font-size:clamp(28px,3vw,40px);
+  margin:0;
+  line-height:1.3;
+  position:relative;
+  z-index:1;
+}
+
+.topic-main p{
+  max-width:480px;
+  color:#fcf8f2;
+  line-height:1.85;
+  position:relative;
+  z-index:1;
+}
+
+.topic-number{
+  position:absolute;
+  right:-20px;
+  bottom:-55px;
+  font-size:230px;
+  font-weight:800;
+  opacity:.12;
+}
+
+.topic-side{
+  display:grid;
+  gap:20px;
+}
+
+.topic-card{
+  border-radius:24px;
+  padding:28px;
+  min-height:165px;
+  position:relative;
+  border:1px solid #f2e4dc;
+}
+
+.topic-card:nth-child(1){background:#fcf0eb}
+.topic-card:nth-child(2){background:#fbe2d8}
+
+.topic-card h3{
+  margin:0 0 10px;
+  font-size:24px;
+}
+
+.topic-card p{
+  line-height:1.8;
+  font-size:14px;
+  color:var(--muted);
+}
+
+/* CONCEPT */
+.concept{
+  background:linear-gradient(145deg,#4a3830,#2e2520);
+  color:white;
+}
+
+.concept .big-title{color:white}
+.concept .sub{color:#d5cdc6}
+.concept .eyebrow{color:#fcecdb!important}
+
+.system{
+  margin-top:55px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.system-box{
+  min-height:230px;
+  border-radius:24px;
+  padding:25px;
+  position:relative;
+  overflow:hidden;
+  transition:.25s;
+}
+
+.system-box:hover{transform:translateY(-8px)}
+
+.system-box:nth-child(1){background:#7092be}
+.system-box:nth-child(2){background:#d97743}
+.system-box:nth-child(3){background:#e69567}
+.system-box:nth-child(4){background:#83bebe}
+.system-box{color:#fff}
+
+.system-box .num{
+  font-size:12px;
+  opacity:.7;
+}
+
+.system-box h3{
+  font-size:22px;
+  margin-top:55px;
+  margin-bottom:5px;
+}
+
+.system-box p{
+  font-size:12px;
+  opacity:.95;
+  line-height:1.8;
+}
+
+.system-box .symbol{
+  position:absolute;
+  right:18px;
+  top:12px;
+  font-size:50px;
+  opacity:.25;
+}
+
+/* COMPETENCY */
+.competency{background:#fcf8f2}
+
+.competency-grid{
+  margin-top:50px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+
+.comp{
+  background:white;
+  border-radius:24px;
+  padding:28px;
+  min-height:260px;
+  border:1px solid #f2e4dc;
+  transition:.25s;
+}
+
+.comp:hover{
+  transform:translateY(-7px);
+  box-shadow:0 20px 40px rgba(74,56,48,.08);
+}
+
+.comp-icon{font-size:38px}
+
+.comp h3{
+  font-size:20px;
+  margin:30px 0 8px;
+}
+
+.comp p{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.8;
+}
+
+/* CONTENT */
+.content{background:#FFFDFF}
+
+.content-intro{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:30px;
+  margin-bottom:45px;
+}
+
+.content-tag{
+  display:inline-block;
+  padding:8px 12px;
+  background:#fcf0eb;
+  color:var(--primary);
+  border-radius:10px;
+  font-size:11px;
+  font-weight:600;
+}
+
+.content-block{
+  margin:30px 0;
+  border-radius:30px;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:.8fr 1.2fr;
+  min-height:300px;
+  border:1px solid #f2e4dc;
+}
+
+.content-visual{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:clamp(60px,8vw,100px);
+  background:#f5dfc9;
+  min-height:220px;
+}
+
+.content-text{
+  padding:clamp(24px,4vw,45px);
+  background:#fcf8f2;
+}
+
+.content-text h3{
+  font-size:clamp(23px,3vw,30px);
+  margin:0 0 15px;
+  line-height:1.4;
+  color:var(--dark);
+}
+
+.content-text p{
+  color:#7a6d65;
+  font-size:14px;
+  line-height:2;
+}
+
+.content-block:nth-of-type(even) .content-visual{background:#fbe2d8}
+.content-block:nth-of-type(3n) .content-visual{background:#fcecdb}
+
+.steps{
+  display:grid;
+  gap:12px;
+  margin-top:20px;
+}
+
+.step{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  padding:17px;
+  background:white;
+  border:1px solid #f2e4dc;
+  border-radius:15px;
+  transition:.25s;
+}
+
+.step:hover{
+  transform:translateX(5px);
+  border-color:var(--primary);
+  box-shadow:0 8px 20px rgba(217,119,67,0.1);
+}
+
+.step-num{
+  flex:0 0 35px;
+  width:35px;
+  height:35px;
+  display:grid;
+  place-items:center;
+  background:var(--primary);
+  color:white;
+  border-radius:11px;
+  font-weight:700;
+  font-size:13px;
+}
+
+.step h4{
+  margin:0 0 5px;
+  font-size:15px;
+  color:var(--dark);
+}
+
+.step p{
+  margin:0;
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.9;
+}
+
+/* OUTCOME */
+.outcome{
+  background:linear-gradient(120deg,#fcf0eb,#f7ebd9,#e8f2ec);
+  padding:32px;
+  border-radius:24px;
+  border:1px solid #f2e4dc;
+  box-shadow:0 8px 25px rgba(217,119,67,.08);
+}
+
+.outcome p{
+  color:var(--text);
+  margin:0;
+}
+
+/* QUIZ */
+.quiz-question{
+  background:#fcf8f2;
+  padding:22px;
+  border-radius:18px;
+  margin:18px 0;
+  border:1px solid #f2e4dc;
+}
+
+.quiz-question p{
+  font-weight:600;
+  margin-bottom:12px;
+  color:var(--dark);
+}
+
+.quiz-question label{
+  display:block;
+  color:var(--text);
+  margin:8px 0;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.quiz-question input{
+  accent-color:var(--primary);
+  margin-right:8px;
+}
+
+.quiz-button{
+  background:linear-gradient(120deg,var(--primary),var(--primary-dark));
+  color:white;
+  border:none;
+  padding:13px 30px;
+  border-radius:30px;
+  font-size:15px;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(217,119,67,.25);
+  transition:.2s;
+  font-weight:600;
+}
+
+.quiz-button:hover{
+  transform:translateY(-3px);
+}
+
+#quizResult{
+  margin-top:18px;
+  font-weight:700;
+  color:var(--primary);
+}
+
+/* SUMMARY */
+.summary{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:white;
+  padding:75px 12%;
+  text-align:center;
+}
+
+.summary-grid{
+  margin-top:50px;
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:20px;
+  text-align:left;
+}
+
+.summary-main{
+  background:white;
+  color:var(--text);
+  border-radius:28px;
+  padding:35px;
+  box-shadow:0 15px 40px rgba(74,56,48,.1);
+}
+
+.summary-main h3{
+  font-size:26px;
+  margin-top:0;
+  color:var(--dark);
+}
+
+.summary-points{
+  display:grid;
+  gap:10px;
+}
+
+.summary-point{
+  padding:15px;
+  border-radius:14px;
+  background:#fcf8f2;
+  font-size:13px;
+  line-height:1.9;
+  color:var(--muted);
+}
+
+.summary-side{
+  border-radius:28px;
+  background:#4a3830;
+  padding:35px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  line-height:1.8;
+}
+
+.summary-side .big{
+  font-size:65px;
+  font-weight:800;
+  line-height:1;
+  color:#fcecdb;
+}
+
+/* FOOTER */
+.footer{
+  background:#4a3830;
+  color:#f2e4dc;
+  text-align:center;
+  padding:35px 20px;
+  font-size:12px;
+  line-height:1.9;
+}
+
+/* REVEAL */
+.reveal{
+  opacity:0;
+  transform:translateY(25px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+
+.reveal.show{
+  opacity:1;
+  transform:none;
+}
+
+/* Walnut Peanut Click Effect (ถั่ววอลนัทสีน้ำตาล 🥜) */
+.nut-effect{
+  position:fixed;
+  z-index:9998;
+  width:1px;height:1px;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+}
+.nut-click{
+  position:absolute;
+  left:0;top:0;
+  transform:translate(-50%,-50%) scale(.4) rotate(-20deg);
+  font-size:30px;
+  filter:drop-shadow(0 3px 6px rgba(179,89,40,0.3));
+  animation:nutBloom .52s cubic-bezier(.2,.8,.2,1) forwards;
+}
+@keyframes nutBloom{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(-35deg)}
+  65%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(10deg)}
+  100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}
+}
+.nut-petal{
+  position:absolute;
+  left:0;top:0;
+  opacity:0;
+  transform:translate(-50%,-50%) scale(.2);
+}
+.bursting .nut-petal{
+  animation:nutBurst .78s cubic-bezier(.12,.72,.22,1) forwards;
+}
+@keyframes nutBurst{
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(0) scale(.2)}
+  18%{opacity:1}
+  100%{
+    opacity:0;
+    transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) rotate(var(--turn)) scale(1.05);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-card">
+    <div class="loading-logo">WIN <span>11</span></div>
+    <div class="spinner"></div>
+    <h2 id="loadingTitle">กำลังโหลดบทเรียน</h2>
+    <p>กรุณารอสักครู่ ระบบกำลังพาคุณไปยังหน้าที่เลือก</p>
+    <div class="progress-track">
+      <div class="progress-bar-load" id="progressBarLoad"></div>
+    </div>
+    <span class="progress-percent" id="progressPercent">0%</span>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">เมนูการเรียนรู้ 🥜</div>
+    <button class="close-btn" id="closeSidebar">&times;</button>
+  </div>
+
+  <div class="sidebar-menu">
+    <a href="Index.html" class="nav-link-load">🏠 หน้าแรก</a>
+    <a href="#home">🚀 หน้าหลักบทที่ 7</a>
+    <a href="#objective">📌 แนวคิดสำคัญและจุดประสงค์</a>
+    <a href="#lesson">📚 เนื้อหาบทเรียน</a>
+    <a href="#apps">📱 การจัดการแอปพลิเคชัน</a>
+    <a href="#features">🖥️ ฟีเจอร์และการจัดการหน้าจอ</a>
+    <a href="#files">📁 การจัดการไฟล์และโฟลเดอร์</a>
+    <a href="#system">⚙️ การจัดการระบบคอมพิวเตอร์</a>
+    <a href="#summary">📝 สรุปท้ายบทเรียน</a>
+  </div>
+</aside>
+
+<!-- NAVBAR -->
+<nav class="nav">
+  <div style="display:flex;align-items:center;gap:15px">
+    <button class="menu-toggle" id="menuToggle" aria-label="เปิดเมนู">
+      <span></span><span></span><span></span>
+    </button>
+
+    <a class="logo nav-link-load" href="Index.html">
+      <span class="logo-box">บทที่ 7</span>
+      <span>Windows 11</span>
+    </a>
+  </div>
+
+  <div class="nav-right">
+    <a class="nav-btn" href="#objective">แนวคิด</a>
+    <a class="nav-btn" href="#lesson">เนื้อหา</a>
+    <a class="nav-btn" href="#activity" style="color:var(--primary);font-weight:700">แบบทดสอบ</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="slide hero" id="home">
+  <div class="inner hero-grid">
+
+    <div class="reveal">
+      <div class="chapter">บทเรียนที่ 7 · OS LEARNING</div>
+
+      <h1>
+        การใช้งาน<br>
+        <span>Windows 11</span><br>
+        เบื้องต้น
+      </h1>
+
+      <p class="hero-desc">
+        เรียนรู้การจัดการแอปพลิเคชัน การใช้งานฟีเจอร์ 
+        การจัดการไฟล์ และการดูแลระบบคอมพิวเตอร์ 
+        เพื่อให้สามารถใช้งาน Windows 11 ได้อย่างมีประสิทธิภาพ
+      </p>
+
+      <a href="#objective" class="start">
+        เริ่มเรียนบทที่ 7 <span>→</span>
+      </a>
+    </div>
+
+    <div class="hero-art reveal">
+      <div class="blob"></div>
+
+      <div class="monitor">
+        <div class="monitor-screen">
+          <div class="monitor-os">WIN 11</div>
+          <div class="monitor-text">WINDOWS SYSTEM</div>
+        </div>
+      </div>
+
+      <!-- รูปตัวละครทั้ง 3 รูปตามชื่อที่คุณกำหนด: ฟูรูฮอนยะ1.jpg, ฟูรูฮอนยะ2.jpg, ฟุรูฮอนยะ3.jpg (หรือเปลี่ยนเป็นรูปชีสะ) -->
+      <img class="shisa-photo photo-one" src="ชิสะ1.jpg" alt="ชีสะ 1">
+      <img class="shisa-photo photo-two" src="ชิสะ2.png" alt="ชีสะ 2">
+      <img class="shisa-photo photo-three" src="ชิสะ3.png" alt="ชีสะ 3">
+
+      <div class="sticker-bubble bubble-one">สู้ๆ นะฮับ 🥜</div>
+      <div class="sticker-bubble bubble-two">WIN 11 🤎</div>
+      <div class="sticker-bubble bubble-three">OS LEARNING ✨</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- OBJECTIVE -->
+<section class="slide competency" id="objective">
+  <div class="inner">
+
+    <div class="reveal">
+      <div class="eyebrow">01 · OBJECTIVES</div>
+      <h2 class="big-title">
+        แนวคิดสำคัญและจุดประสงค์<br>
+        <span style="color:var(--primary)">สิ่งที่คุณจะได้เรียนรู้ในบทที่ 7</span>
+      </h2>
+    </div>
+
+    <div class="competency-grid reveal">
+      <div class="comp">
+        <div class="comp-icon">📱</div>
+        <h3>การจัดการแอปพลิเคชัน</h3>
+        <p>เรียนรู้การติดตั้ง การถอนการติดตั้ง และการจัดการไอคอนของแอปพลิเคชัน</p>
+      </div>
+
+      <div class="comp">
+        <div class="comp-icon">🖥️</div>
+        <h3>การใช้งานฟีเจอร์ Windows</h3>
+        <p>เรียนรู้ฟังก์ชันต่าง ๆ และการปรับแต่งหน้าจอให้เหมาะสมกับการใช้งาน</p>
+      </div>
+
+      <div class="comp">
+        <div class="comp-icon">📁</div>
+        <h3>การจัดการไฟล์</h3>
+        <p>เรียนรู้การใช้งาน File Explorer และการจัดการไฟล์ผ่านเมนูคลิกขวา</p>
+      </div>
+
+      <div class="comp">
+        <div class="comp-icon">⚙️</div>
+        <h3>การจัดการระบบ</h3>
+        <p>เรียนรู้การแก้ไขปัญหาโปรแกรมค้างและการปิดเครื่องอย่างถูกวิธี</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- LESSON -->
+<section class="slide content" id="lesson">
+  <div class="inner">
+
+    <div class="content-intro reveal">
+      <div>
+        <div class="eyebrow">02 · LESSON CONTENT</div>
+        <h2 class="big-title">เนื้อหาบทเรียน</h2>
+        <p class="sub">การใช้งาน Windows 11 ทั้ง 4 หัวข้อสำคัญ</p>
+      </div>
+      <span class="content-tag">CHAPTER 07</span>
+    </div>
+
+    <!-- หัวข้อ 1 -->
+    <article class="content-block reveal" id="apps">
+      <div class="content-visual">📱</div>
+      <div class="content-text">
+        <div class="content-tag">7.1 · APPLICATIONS</div>
+        <h3>1. การจัดการแอปพลิเคชันและไอคอน</h3>
+        <p>การจัดการแอปพลิเคชันช่วยให้ผู้ใช้สามารถเรียกใช้งานโปรแกรมได้สะดวกและรวดเร็ว</p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>Pin to Taskbar</h4>
+              <p>การตรึงไอคอนบนทาสก์บาร์เพื่อความรวดเร็วในการเข้าถึง</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>Pin to Desktop</h4>
+              <p>การนำไอคอนโปรแกรมมาไว้บนหน้าเดสก์ท็อป</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>Microsoft Store</h4>
+              <p>แหล่งดาวน์โหลดแอปพลิเคชันที่ปลอดภัยและเป็นทางการ</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div>
+              <h4>Uninstall</h4>
+              <p>การถอนการติดตั้งโปรแกรมที่ไม่ใช้งานออก</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- หัวข้อ 2 -->
+    <article class="content-block reveal" id="features">
+      <div class="content-visual" style="background:#fcecdb">🖥️</div>
+      <div class="content-text">
+        <div class="content-tag">7.2 · FEATURES</div>
+        <h3>2. ฟีเจอร์และการจัดการหน้าจอ</h3>
+        <p>Windows 11 มีฟีเจอร์ช่วยเพิ่มความสะดวกในการทำงานและปรับแต่งหน้าจอ</p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>Snap Windows</h4>
+              <p>ฟีเจอร์การแบ่งหน้าจอ จัดเรียงหลายโปรแกรมพร้อมกันได้อย่างเป็นระเบียบ</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>Microsoft Edge</h4>
+              <p>โปรแกรมเว็บเบราว์เซอร์สำหรับการค้นหาข้อมูล</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>Display Settings</h4>
+              <p>การตั้งค่าการแสดงผลและความละเอียดหน้าจอ</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- หัวข้อ 3 -->
+    <article class="content-block reveal" id="files">
+      <div class="content-visual" style="background:#fbe2d8">📁</div>
+      <div class="content-text">
+        <div class="content-tag">7.3 · FILE EXPLORER</div>
+        <h3>3. การใช้งาน File Explorer และ Context Menu</h3>
+        <p>File Explorer เป็นเครื่องมือสำหรับจัดการไฟล์และโฟลเดอร์ภายในคอมพิวเตอร์</p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>การจัดการไฟล์และโฟลเดอร์</h4>
+              <p>สร้าง คัดลอก ย้าย และลบไฟล์ได้อย่างง่ายดาย</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>การเปิดหลายแท็บ (Tabs)</h4>
+              <p>ใช้งานหลายโฟลเดอร์ในหน้าต่างเดียวโดยไม่ต้องเปิดซ้อนกัน</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>Context Menu</h4>
+              <p>เมนูคลิกขวาและคำสั่งเพิ่มเติม (Show more options)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- หัวข้อ 4 -->
+    <article class="content-block reveal" id="system">
+      <div class="content-visual" style="background:#d6ebd9">⚙️</div>
+      <div class="content-text">
+        <div class="content-tag">7.4 · SYSTEM MANAGEMENT</div>
+        <h3>4. การจัดการระบบเมื่อเครื่องค้างและการปิดเครื่อง</h3>
+        <p>เรียนรู้การจัดการระบบเบื้องต้นเมื่อโปรแกรมไม่ตอบสนองและการปิดเครื่องอย่างถูกวิธี</p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div>
+              <h4>Task Manager</h4>
+              <p>เครื่องมือจัดการโปรแกรม กด <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Esc</kbd> เพื่อเปิดอย่างรวดเร็ว</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div>
+              <h4>End Task</h4>
+              <p>การบังคับปิดโปรแกรมที่ค้างหรือไม่ตอบสนอง</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div>
+              <h4>Power Options</h4>
+              <p>การ Sleep, Shut down และ Restart ระบบ</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="summary" id="summary">
+  <div class="inner">
+    <div class="reveal">
+      <div class="eyebrow" style="color:#fcf8f2">03 · SUMMARY</div>
+      <h2 class="big-title">
+        สรุปท้ายบทเรียน<br>
+        <span style="color:#fcecdb">ใช้งาน Windows 11 ได้อย่างคล่องตัว</span>
+      </h2>
+    </div>
+
+    <div class="summary-grid reveal">
+      <div class="summary-main">
+        <h3>สรุปสาระสำคัญ บทที่ 7</h3>
+        <div class="summary-points">
+          <div class="summary-point"><b>01</b> การจัดการแอปพลิเคชันและการตรึงไอคอนบนทาสก์บาร์</div>
+          <div class="summary-point"><b>02</b> การใช้งานฟีเจอร์ Snap Windows แบ่งหน้าจอทำงานร่วมกัน</div>
+          <div class="summary-point"><b>03</b> การใช้งาน File Explorer แบบหลายแท็บและเมนูคลิกขวา</div>
+          <div class="summary-point"><b>04</b> การใช้ Task Manager แก้ไขปัญหาโปรแกรมค้าง</div>
+        </div>
+      </div>
+
+      <div class="summary-side">
+        <div class="big">WIN 11</div>
+        <h3>เก่งคอมพิวเตอร์<br>ในสไตล์ชีสะ</h3>
+        <p>ฝึกฝนใช้งานระบบปฏิบัติการอย่างต่อเนื่องเพื่อทักษะที่ดีเยี่ยม</p>
+
+        <a href="Index.html" class="start nav-link-load" style="background:#fff;color:#4a3830;margin-top:15px;justify-content:center;">
+          กลับหน้าแรก ↑
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <strong>SHISA LEARNING 🥜</strong><br>
+  เว็บไซต์ประกอบการเรียนรู้รายวิชาระบบปฏิบัติการคอมพิวเตอร์<br>
+  บทเรียนที่ 7 : การใช้งาน Windows 11 เบื้องต้น
+</footer>
+
+<script>
+(() => {
+  // SCROLL PROGRESS
+  const progress = document.getElementById('progress');
+  function updateProgress(){
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
+    progress.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+  }
+  window.addEventListener('scroll', updateProgress, {passive:true});
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+
+  // SIDEBAR
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const closeSidebar = document.getElementById('closeSidebar');
+
+  function openMenu(){
+    sidebar.classList.add('active');
+    overlay.classList.add('active');
+    document.body.classList.add('lock-scroll');
+  }
+
+  function closeMenu(){
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+    document.body.classList.remove('lock-scroll');
+  }
+
+  menuToggle.addEventListener('click', openMenu);
+  closeSidebar.addEventListener('click', closeMenu);
+  overlay.addEventListener('click', closeMenu);
+
+  sidebar.querySelectorAll('a:not(.nav-link-load)').forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') closeMenu();
+  });
+
+  // LOADING SCREEN
+  const loadingScreen = document.getElementById('loadingScreen');
+  const progressBarLoad = document.getElementById('progressBarLoad');
+  const progressPercent = document.getElementById('progressPercent');
+
+  document.querySelectorAll('.nav-link-load').forEach(link => {
+    link.addEventListener('click', function(e){
+      const targetUrl = this.getAttribute('href');
+      if(!targetUrl || targetUrl === '#') return;
+      e.preventDefault();
+      closeMenu();
+      loadingScreen.classList.add('show');
+      document.body.classList.add('loading-active');
+
+      let currentPercent = 0;
+      const duration = 700;
+      const intervalTime = 20;
+      const step = (intervalTime / duration) * 100;
+
+      const timer = setInterval(() => {
+        currentPercent += step;
+        if(currentPercent >= 100){
+          currentPercent = 100;
+          clearInterval(timer);
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 150);
+        }
+        progressBarLoad.style.width = `${currentPercent}%`;
+        progressPercent.textContent = `${Math.round(currentPercent)}%`;
+      }, intervalTime);
+    });
+  });
+
+  // Walnut Peanut Click Effect (ถั่ววอลนัทสีน้ำตาล 🥜)
+  document.addEventListener('click', function(e){
+    if (e.target.closest('.loading-screen')) return;
+
+    const x = e.clientX;
+    const y = e.clientY;
+    const holder = document.createElement('div');
+    holder.className = 'nut-effect';
+    holder.style.left = x + 'px';
+    holder.style.top = y + 'px';
+    holder.setAttribute('aria-hidden', 'true');
+
+    const item = document.createElement('span');
+    item.className = 'nut-click';
+    item.textContent = '🥜';
+    holder.appendChild(item);
+    document.body.appendChild(holder);
+
+    window.setTimeout(() => {
+      item.remove();
+      const symbols = ['🥜','🤎','✨','🌰','⭐','🤎','✨','🥜'];
+      const colors = ['#b35928','#d97743','#e69567','#855c1b','#fcecdb'];
+      symbols.forEach((symbol, index) => {
+        const petal = document.createElement('span');
+        petal.className = 'nut-petal';
+        petal.textContent = symbol;
+        petal.style.setProperty('--dx', (Math.cos(index * Math.PI / 4) * 65) + 'px');
+        petal.style.setProperty('--dy', (Math.sin(index * Math.PI / 4) * 65) + 'px');
+        petal.style.setProperty('--turn', (Math.random() * 220 - 110) + 'deg');
+        petal.style.color = colors[index % colors.length];
+        petal.style.fontSize = (12 + Math.random() * 10) + 'px';
+        holder.appendChild(petal);
+      });
+      holder.classList.add('bursting');
+      window.setTimeout(() => holder.remove(), 800);
+    }, 450);
+  });
+
+  // REVEAL ANIMATION
+  const revealItems = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('show');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.1});
+    revealItems.forEach(item => observer.observe(item));
+  } else {
+    revealItems.forEach(item => item.classList.add('show'));
+  }
+
+})();
+</script>
+
+</body>
+</html>
